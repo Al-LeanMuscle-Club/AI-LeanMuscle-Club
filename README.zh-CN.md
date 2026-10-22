@@ -1,9 +1,6 @@
 # AI 薄肌俱乐部 💪🤖
 
-<p>
-  <a href="README.md"><img src="assets/lang-en.svg" alt="English" height="28"></a>
-  <a href="README.zh-CN.md"><img src="assets/lang-zh.svg" alt="中文" height="28"></a>
-</p>
+[English](README.md) | **简体中文**
 
 **练模型，也练身体。**
 
@@ -12,7 +9,7 @@
 [制定周计划](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [查看大家的计划](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=label%3Aweekly-plan) · [分享经验](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [评分规则（英文）](docs/SCORING.md) · [维护者设置指南（英文）](docs/SETUP.md)
 
 <p align="center">
-  <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI 薄肌俱乐部：面向 AI 科研人员，一起兼顾科研与健康。练模型，也练身体。海报附微信群邀请二维码。" width="520"></a>
+  <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI 薄肌俱乐部：面向 AI 科研人员，一起兼顾科研与健康。练模型，也练身体。海报附微信群邀请二维码。" width="1000"></a>
 </p>
 
 当前微信群邀请二维码标注的有效期为 **2026 年 10 月 29 日前**。如果已经过期，请向现有成员获取最新邀请。邀请更新后，维护者可以替换 `assets/club-poster.png`。

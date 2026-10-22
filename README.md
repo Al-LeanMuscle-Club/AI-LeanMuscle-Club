@@ -1,9 +1,6 @@
 # AI Lean Muscle Club 💪🤖
 
-<p>
-  <a href="README.md"><img src="assets/lang-en.svg" alt="English" height="28"></a>
-  <a href="README.zh-CN.md"><img src="assets/lang-zh.svg" alt="中文" height="28"></a>
-</p>
+**English** | [简体中文](README.zh-CN.md)
 
 **Train models. Train your body.**
 
@@ -12,7 +9,7 @@ A community for AI researchers to make room for exercise, recovery, and a life a
 [Plan your week](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [Browse weekly plans](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=label%3Aweekly-plan) · [Share an experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [Scoring rules](docs/SCORING.md) · [Maintainer setup](docs/SETUP.md)
 
 <p align="center">
-  <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI Lean Muscle Club: For AI Researchers to Keep Healthy. Train models. Train your body. Includes a WeChat group invitation QR code." width="520"></a>
+  <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI Lean Muscle Club: For AI Researchers to Keep Healthy. Train models. Train your body. Includes a WeChat group invitation QR code." width="1000"></a>
 </p>
 
 The supplied WeChat invitation is marked valid **before October 29, 2026**. If it has expired, ask an existing member for a current invitation. Maintainers can replace `assets/club-poster.png` when the invitation changes.
