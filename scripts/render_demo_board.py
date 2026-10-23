@@ -1,7 +1,8 @@
 """Render a deterministic fictional leaderboard, never live community data.
 
 Run ``python scripts/render_demo_board.py`` to rebuild the two demo artifacts
-and the independent DEMO blocks in both READMEs. ``--check`` is read-only and
+and the independent DEMO blocks in README.md (Chinese) and README.en.md. The
+legacy README.zh-CN.md navigation page is not read or generated. ``--check`` is read-only and
 returns 1 when an output is missing or stale. ``--root`` selects the repository
 containing the fixture and READMEs, which also permits isolated local checks.
 
@@ -121,7 +122,7 @@ def readme_demo(board: dict[str, Any], chinese: bool) -> str:
                  "| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
     else:
         lines = ["### Fictional demo leaderboard — week of 2026-10-12", "",
-                 "**Static fictional examples, not real members, check-ins, or results. These do not enter the live community counts or standings below.** "
+                 "**Static fictional examples, not real members, check-ins, or results. These do not enter the live community counts or standings.** "
                  "The demo cutoff is 2026-10-19 12:00 UTC, with six ranked fictional members and one fictional Recovery member from offline sample data.", "",
                  "| Rank | Fictional member | Sports | Full / planned | Partial | Training days | Meal days | Points / 10 |",
                  "| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
@@ -147,9 +148,9 @@ def update_readme(text: str, demo: str, chinese: bool) -> str:
     next_heading = text.find("\n## ", lower)
     upper = len(text) if next_heading < 0 else next_heading
     live_start = text.find("<!-- CLUB:START -->", lower, upper)
-    if not chinese and live_start < 0:
-        raise ValueError("Keep the existing live CLUB block in the English README.")
-    anchor = text.find("[查看最新概况", lower, upper) if chinese else live_start
+    if chinese and live_start < 0:
+        raise ValueError("Keep the existing live CLUB block in the Chinese README.")
+    anchor = live_start if chinese else text.find("[View latest overview", lower, upper)
     if anchor < 0:
         raise ValueError("README must retain its live-community overview entry.")
     if text.count(DEMO_START) == text.count(DEMO_END) == 0:
@@ -251,13 +252,12 @@ def generated_files(root: Path) -> dict[Path, str]:
         Path("examples/demo-leaderboard.json"): json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
         Path("examples/demo-training-records.md"): record_markdown(records, board),
     }
-    for filename, chinese in (("README.md", False), ("README.zh-CN.md", True)):
+    for filename, chinese in (("README.md", True), ("README.en.md", False)):
         original = read_text(root / filename)
         updated = update_readme(original, readme_demo(board, chinese), chinese)
-        if not chinese:
-            pattern = r"<!-- CLUB:START -->[\s\S]*?<!-- CLUB:END -->"
-            if re.findall(pattern, original) != re.findall(pattern, updated):
-                raise ValueError("The live CLUB block must remain unchanged.")
+        pattern = r"<!-- CLUB:START -->[\s\S]*?<!-- CLUB:END -->"
+        if re.findall(pattern, original) != re.findall(pattern, updated):
+            raise ValueError("The live CLUB block must remain unchanged in every README.")
         outputs[Path(filename)] = updated
     return outputs
 

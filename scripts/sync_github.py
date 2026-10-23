@@ -21,11 +21,19 @@ from scripts.github_api import GitHubReader, validate_repository  # noqa: E402
 START = "<!-- CLUB:START -->"
 END = "<!-- CLUB:END -->"
 INDEX_WEEKS = 12
+CHINESE_README = "<!-- README:LANG=zh-CN -->"
 
 
-def scoring_rules_note(board: dict) -> str:
+def scoring_rules_note(board: dict, language: str = "en") -> str:
     """Describe the saved rules without assigning today's formula to old data."""
     version = board.get("scoring_version")
+    if language == "zh-CN":
+        if type(version) is int and version == SCORING_VERSION:
+            return (f"计分规则：v{version}。整次完成或按预设替代方案完成计 1 次，部分完成计 0.5 次；"
+                    "已确认计划固定计分分母。")
+        if type(version) is int and version > 0:
+            return f"计分规则：v{version}。保留该快照所记录规则下的分数。"
+        return "计分规则：未记录。保留快照分数，不将当前公式追溯用于旧记录。"
     if type(version) is int and version == SCORING_VERSION:
         return (f"Scoring rules: v{version}. Full/fallback = 1, partial = 0.5; "
                 "the confirmed plan fixes the denominator.")
@@ -35,7 +43,7 @@ def scoring_rules_note(board: dict) -> str:
             "do not apply the current formula retroactively.")
 
 
-def board_summary(board: dict) -> str:
+def board_summary(board: dict, language: str = "en") -> str:
     """Keep the home page bounded; full member rows live in weekly reports."""
     summary = board.get("summary", {})
     rows = board["leaderboard"]
@@ -43,6 +51,26 @@ def board_summary(board: dict) -> str:
     completed = summary.get("completed_sessions", sum(row["completed"] for row in rows))
     reviewed = summary.get("reviewed_members", sum(bool(row["review_points"]) for row in rows))
     week = board["week_start"]
+    if language == "zh-CN":
+        lines = [
+            f"### 周次：{week} 起", "",
+            f"参与人数：**{board['participants_count']}** · 恢复/暂停人数：**{board['recovery_count']}**", "",
+            f"公开参与人数：**{len(rows)}** · 已记录完成：**{completed}/{planned}** · 周复盘：**{reviewed}**", "",
+            "次数仅汇总选择公开的活跃成员各自的计划，不代表健康或运动能力排名。", "",
+            scoring_rules_note(board, language), "",
+            f"[完整周报](reports/{week}.md) · [公开数据](reports/{week}.json) · [查找计划与打卡助手](tools/index.html)", "",
+            f"更新时间：{board['generated_at']}",
+        ]
+        if board.get("counts_updated_at"):
+            lines += [f"参与/恢复人数更新：{board['counts_updated_at']}（得分快照时间不变）。"]
+        if board["warnings"]:
+            translated = {
+                "A weekly plan was skipped because required fields were invalid.": "有周计划因必填字段无效而被跳过。",
+                "Duplicate weekly plans were found; only the earliest valid plan counts.": "发现重复周计划，仅统计最早的有效计划。",
+            }
+            messages = [translated.get(message, "另有记录提示，请查看完整周报。") for message in board["warnings"]]
+            lines += ["", "有些记录需要检查：" + " ".join(messages)]
+        return "\n".join(lines) + "\n"
     lines = [
         f"### Week starting {week}", "",
         f"Participants: **{board['participants_count']}** · Recovery/paused: **{board['recovery_count']}**", "",
@@ -151,7 +179,8 @@ def replace_readme(text: str, boards: list[dict]) -> str:
         raise ValueError("README needs exactly one correctly ordered CLUB:START / CLUB:END block.")
     start = text.index(START) + len(START)
     end = text.index(END)
-    block = "\n\n" + "\n".join(board_markdown(board, True) for board in boards) + "\n"
+    language = "zh-CN" if CHINESE_README in text else "en"
+    block = "\n\n" + "\n".join(board_summary(board, language) for board in boards) + "\n"
     return text[:start] + block + text[end:]
 
 

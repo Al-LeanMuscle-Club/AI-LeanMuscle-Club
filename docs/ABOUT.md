@@ -26,4 +26,4 @@ AI researchers in universities, research institutes, and industry, including stu
 
 "Lean Muscle" is our club name, not a required body type. Members choose their own activities, goals, and level of public participation. Reading, chatting, sharing, or taking a recovery week are valid ways to belong.
 
-[Back to the README](../README.md)
+[Back to the English README](../README.en.md)
