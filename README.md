@@ -77,7 +77,7 @@ Session totals describe opted-in active members' own plans; they are not health 
 
 [Full weekly report](reports/2026-10-19.md) · [Public data](reports/2026-10-19.json) · [Find my plan / browser helper](tools/index.html)
 
-Updated: 2026-10-23T08:34:08.619316Z
+Updated: 2026-10-23T08:34:23.040020Z
 
 ### Week starting 2026-10-12
 
@@ -89,7 +89,7 @@ Session totals describe opted-in active members' own plans; they are not health 
 
 [Full weekly report](reports/2026-10-12.md) · [Public data](reports/2026-10-12.json) · [Find my plan / browser helper](tools/index.html)
 
-Updated: 2026-10-23T08:34:08.619316Z
+Updated: 2026-10-23T08:34:23.040020Z
 
 <!-- CLUB:END -->
 
