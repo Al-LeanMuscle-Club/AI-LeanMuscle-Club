@@ -1,3 +1,5 @@
+[English](training-and-recovery.en.md) | 简体中文
+
 > **虚构示例 / Fictional examples.** 下列人物、活动和数字仅演示格式，不代表真实成员、打卡、排名或规定训练安排。请勿把整份示例发成真实社区帖子；只借用适合自己的格式。
 
 # 训练交流与记录 / Training and recovery

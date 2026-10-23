@@ -1,3 +1,5 @@
+[English](README.en.md) | 简体中文 / Bilingual
+
 # Optional record templates / 可选记录模板
 
 These are fictional examples of record formats, not actual participation, training prescriptions, or nutrition targets. Copy only fields you find useful. Do not publish these examples as real community activity.
@@ -10,16 +12,18 @@ See [the member guide](../docs/MEMBER_GUIDE.md) / [成员使用指南](../docs/M
 
 Every file contains two short fictional scenarios. They are reference material, not live posts or real participation data.
 
-| Topic / 主题 | Independent examples / 独立示例 | Where to participate / 参与位置 |
-| --- | --- | --- |
-| 新人报到 | [Beginners](beginners.md) | Discussions → Beginners |
-| 训练交流与打卡 | [Training and recovery](training-and-recovery.md) | Discussion or Activity record Issue |
-| 饮食记录与分享 | [Nutrition](nutrition.md) | Discussion or Meal record Issue |
-| 找搭子 | [Buddies and events](buddies-and-events.md) | Discussion |
-| 科研与 Agent | [Research and Agents](research-and-agents.md) | Discussion or Experience sharing Issue |
-| 排名 | [Ranking](ranking.md) | Isolated offline examples; never `reports/` |
+| Topic / 主题 | 中文示例 | English examples | Where to participate / 参与位置 |
+| --- | --- | --- | --- |
+| 新人报到 | [新人报到](beginners.md) | [Beginners](beginners.en.md) | Discussions → Beginners |
+| 训练交流与打卡 | [训练交流与记录](training-and-recovery.md) | [Training and recovery](training-and-recovery.en.md) | Discussion or Activity record Issue |
+| 饮食记录与分享 | [饮食记录与分享](nutrition.md) | [Nutrition](nutrition.en.md) | Discussion or Meal record Issue |
+| 找搭子 | [找搭子与活动](buddies-and-events.md) | [Buddies and events](buddies-and-events.en.md) | Discussion |
+| 科研与 Agent | [科研与 Agent](research-and-agents.md) | [Research and Agents](research-and-agents.en.md) | Discussion or Experience sharing Issue |
+| 排名 | [排名演示](ranking.md) | [Ranking](ranking.en.md) | Isolated offline examples; never `reports/` |
 
 Discussion categories must be enabled and created by maintainers before the forms can be used. The templates do not create live posts or fake members.
+
+如果尚未创建上述分类，可使用 General 或 Show and tell 等已有合适分类。公开演示帖须明确标注虚构，不作为真实参与或计分记录。
 
 ## A mixed-sport week / 混合运动周
 

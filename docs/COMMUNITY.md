@@ -31,7 +31,7 @@ A maintainer must enable **Settings → General → Features → Discussions** a
 
 All six have forms in `.github/DISCUSSION_TEMPLATE/`, including `announcements.yml`. The filename must match the category’s actual slug; verify it after creating or renaming a category. Keep Announcements restricted to maintainer posting through the category’s announcement format. Templates must be on the repository’s default branch before they are used.
 
-Welcome new members in Beginners; no plan, training experience, or leaderboard opt-in is required. The [six independent example files](../examples/README.md) illustrate introductions, training, food, partners, research/Agents, and participation points. All examples are fictional and remain separate from real reports; do not turn them into live posts or member statistics.
+Welcome new members in Beginners; no plan, training experience, or leaderboard opt-in is required. The [six independent example files](../examples/README.en.md) illustrate introductions, training, food, partners, research/Agents, and participation points. All examples are fictional and remain separate from real reports. Published demonstrations must be clearly marked as fictional and excluded from participation scoring and member statistics.
 
 Start with these broad categories. A growing category can later gain an additional dedicated space if its conversations justify the split.
 
