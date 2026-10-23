@@ -6,6 +6,21 @@ These are fictional examples of record formats, not actual participation, traini
 
 See [the member guide](../docs/MEMBER_GUIDE.md) / [成员使用指南](../docs/MEMBER_GUIDE.zh-CN.md) for accepted commands and scoring. Put each command in its own comment on your weekly Issue. Optional prose after it does not add points or enter generated report data; it remains public in the source Issue.
 
+## Six community examples / 六类参与示例
+
+Every file contains two short fictional scenarios. They are reference material, not live posts or real participation data.
+
+| Topic / 主题 | Independent examples / 独立示例 | Where to participate / 参与位置 |
+| --- | --- | --- |
+| 新人报到 | [Beginners](beginners.md) | Discussions → Beginners |
+| 训练交流与打卡 | [Training and recovery](training-and-recovery.md) | Discussion or Activity record Issue |
+| 饮食记录与分享 | [Nutrition](nutrition.md) | Discussion or Meal record Issue |
+| 找搭子 | [Buddies and events](buddies-and-events.md) | Discussion |
+| 科研与 Agent | [Research and Agents](research-and-agents.md) | Discussion or Experience sharing Issue |
+| 排名 | [Ranking](ranking.md) | Isolated offline examples; never `reports/` |
+
+Discussion categories must be enabled and created by maintainers before the forms can be used. The templates do not create live posts or fake members.
+
 ## A mixed-sport week / 混合运动周
 
 Enter these lines in the **Planned sessions** field, after choosing your own activities and schedule:
@@ -63,9 +78,9 @@ What I did / 实际完成的内容:
 What I will adjust / 准备调整的地方:
 ```
 
-`partial` preserves a useful record without awarding full completion credit. The latest valid status wins if you later correct the record. An incomplete week can still receive reflection points.
+`partial` gives half a session of execution credit while remaining separate from full completion. The latest valid status wins if you later correct the record. An incomplete week can still receive reflection points.
 
-`partial` 保留有用的记录，但不按完整完成计分。之后更正时以最新有效状态为准；没有完成计划也可以正常获得复盘积分。
+`partial` 获得半次执行额度，并单独保留部分完成状态，不算完整完成。之后更正时以最新有效状态为准；没有完成计划也可以正常获得复盘积分。
 
 ## A food record without calorie counting / 不算热量的饮食记录
 
@@ -112,6 +127,6 @@ Did I use it for exercise or rest? / 是否真的用于运动或休息:
 Limits / 适用范围与局限:
 ```
 
-Keep claims about time savings grounded in what you observed. A personal observation about energy or work does not establish that an activity causes better research performance for everyone. Reusable experiences can be submitted through the experience Issue form; contribution credit requires a maintainer's `points-approved` label and stays capped at one point per member per week.
+Keep claims about time savings grounded in what you observed. A personal observation about energy or work does not establish that an activity causes better research performance for everyone. Reusable experiences can be submitted through the experience Issue form; contribution credit requires a maintainer's `points-approved` label plus a trusted repository approval entry matching the current body, author, and week, and stays capped at one point per member per week.
 
-节时说明以实际观察为准。个人精力或工作感受不能证明某种运动会普遍提高科研表现。可复用经验可以通过经验分享 Issue 提交，由维护者添加 `points-approved` 后按原规则考虑贡献积分；每人每周仍最多 1 分。
+节时说明以实际观察为准。个人精力或工作感受不能证明某种运动会普遍提高科研表现。可复用经验可以通过经验分享 Issue 提交，贡献积分需要维护者添加 `points-approved` 并提交匹配当前正文、作者和周次的可信仓库审批记录，单独标签不足以计分；每人每周仍最多 1 分。

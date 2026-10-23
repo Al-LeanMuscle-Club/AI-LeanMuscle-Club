@@ -298,4 +298,3 @@ test("empty or unavailable public reports show honest empty states while local t
     } finally {page.restore();}
   }
 });
-

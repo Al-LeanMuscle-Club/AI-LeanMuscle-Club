@@ -25,4 +25,3 @@ jobs:
       - run: python scripts/check_submission.py
         env:
           GH_TOKEN: ${{ github.token }}
-
