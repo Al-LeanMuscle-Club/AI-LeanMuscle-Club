@@ -21,7 +21,7 @@
 
 一句话或一张照片也欢迎。自由运动与饮食记录不要求先制定周计划，也不加入积分榜；发到这里的内容都是公开的。结构化周记录还会展示训练记录天数、饮食记录天数和部分完成情况，食物数量与身体指标不加分。
 
-[成员辅助页与周榜](tools/index.html) · [新人、训练、饮食、搭子、Agent 与排名示例](examples/README.md)。辅助页可在本地运行，或由维护者[配置 Pages](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment)；直接在 GitHub 打开 HTML 文件只会显示源码。社区 Issue 表单合并到默认分支后即可使用。
+[成员辅助页与周榜](tools/index.html) · [新人、训练、饮食、搭子、Agent 与排名示例](examples/README.md)。辅助页可在本地运行，或由维护者按照[中文 Pages 启用指南](docs/PAGES_QUICKSTART.zh-CN.md)部署；成功部署后访问 Actions 中提供的站点地址。直接在 GitHub 打开 HTML 文件只会显示源码。社区 Issue 表单合并到默认分支后即可使用。
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI 薄肌俱乐部：面向 AI 科研人员，一起兼顾科研与健康。练模型，也练身体。海报附微信群邀请二维码。" width="1000"></a>
