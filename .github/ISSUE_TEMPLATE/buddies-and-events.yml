@@ -1,0 +1,32 @@
+name: "Buddies and events / 搭子与活动"
+description: "Find an activity buddy or propose an event; no plan or scoring. 寻找运动搭子或发起活动，无需周计划，不计分。"
+title: "[Buddies] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎简短交流，无需先建周计划或参加排名。此社区 Issue 公开，请只分享你愿意公开的信息。
+        Short posts are welcome. No weekly plan or leaderboard participation is required. This community Issue is public; share only what you want public.
+        这类帖子、点赞和回复不计分；想申请经验贡献审核，请使用单独的 Experience sharing 表单。
+        Posts, reactions, and replies here earn no points. For contribution review, use the separate Experience sharing form.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "Activity or invitation"
+      description: "想找什么运动搭子，或组织什么活动？ What kind of activity buddy are you looking for, or what event would you like to organize?"
+    validations:
+      required: true
+  - type: textarea
+    id: availability
+    attributes:
+      label: "General availability"
+      description: "可选大致时间、时区、线上或线下。不要公开私人联系方式或精确住址。 Optional general availability, time zone, and online or in-person format. Do not share private contact details or exact home addresses."
+    validations:
+      required: false
+  - type: textarea
+    id: joining
+    attributes:
+      label: "How to join"
+      description: "可以先在此贴回复；约定活动范围、人数或取消方式。不要替他人报名。 Members can reply here first. Describe the activity scope, group size, or cancellation arrangements; do not sign others up."
+    validations:
+      required: false

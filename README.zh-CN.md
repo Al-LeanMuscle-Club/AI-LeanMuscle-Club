@@ -6,7 +6,7 @@
 
 面向 AI 科研人员的交流社区，一起为运动、恢复和科研之外的生活留出时间。
 
-[运动打卡](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [记录饮食](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [分享交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [每周参与榜](reports/README.md)
+[运动打卡](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [记录饮食](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [分享交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) · [每周参与榜](reports/README.md)
 
 ## 今天想怎样参与
 
@@ -14,12 +14,12 @@
 | --- | --- |
 | 随手记录今天的运动，暂时不做周计划 | [自由运动打卡](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
 | 保存一餐、照片或备餐灵感 | [饮食记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
-| 新人报到、提问、找搭子、交流 Agent 工作流 | [社区交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [各类示例](examples/README.md) |
+| 新人报到、提问、找搭子、交流 Agent 工作流 | [社区交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) · [各类示例](examples/README.md) |
 | 做一份周计划，并自愿参加排名 | [创建周计划](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [积分细则](docs/SCORING.md) |
 
 一句话或一张照片也欢迎。自由运动与饮食记录不要求先制定周计划，也不加入积分榜；发到这里的内容都是公开的。结构化周记录还会展示训练记录天数、饮食记录天数和部分完成情况，食物数量与身体指标不加分。
 
-[成员辅助页与周榜](tools/index.html) · [新人、训练、饮食、搭子、Agent 与排名示例](examples/README.md)。辅助页可在本地运行，或由维护者[配置 Pages](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment)；直接在 GitHub 打开 HTML 文件只会显示源码。讨论栏目和表单需要维护者在默认分支上完成设置后启用。
+[成员辅助页与周榜](tools/index.html) · [新人、训练、饮食、搭子、Agent 与排名示例](examples/README.md)。辅助页可在本地运行，或由维护者[配置 Pages](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment)；直接在 GitHub 打开 HTML 文件只会显示源码。社区 Issue 表单合并到默认分支后即可使用。
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI 薄肌俱乐部：面向 AI 科研人员，一起兼顾科研与健康。练模型，也练身体。海报附微信群邀请二维码。" width="1000"></a>
@@ -83,7 +83,7 @@ S3 | Saturday | running | 轻松跑
 
 ## 交流、饮食和科研工作流
 
-维护者开启并建立栏目后，可以在 [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) 中交流训练与恢复、饮食、科研与 Agent、搭子与活动，以及公告。周计划与日常打卡留在 Issues；精选资源通过文档和 PR 沉淀。讨论帖不会自动获得贡献分；需要参与现有认可流程时，使用[经验分享 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml)。[社区栏目说明（英文）→](docs/COMMUNITY.md)
+统一使用 [社区 Issues](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) 新人报到、交流训练与恢复、分享饮食、科研与 Agent 工作流、找搭子和发布活动或公告。选择相应表单后，在该 Issue 的评论中继续交流；精选资源通过文档和 PR 沉淀。社区帖及回复不会自动获得贡献分；需要申请审核时，使用[经验分享 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml)。[社区 Issue 使用说明（英文）→](docs/COMMUNITY.md)
 
 可以自愿用 `/meal YYYY-MM-DD` 记录餐食，附文字、照片、分量、热量估算来源和不确定性。这些记录不额外加分。当前没有配置统一热量目标、自动模型估算或餐食健康评分；饮食细节和身体数据始终选填。[饮食记录示例 →](docs/MEMBER_GUIDE.zh-CN.md)
 
@@ -93,6 +93,6 @@ S3 | Saturday | running | 轻松跑
 
 诚实、友善，尊重不同的身体、训练基础与生活安排。休息和重新开始都欢迎。不要强迫训练、索要照片、公开保密科研资料、未经许可分享他人信息，或发布广告。公开 Issue、评论、图片和提交历史可能被复制与保留；不参加排名不会让记录变成私密。
 
-维护者完成设置后，报告流程会在相关 Issue／评论变化后，以及**每天北京时间 09:15**更新当前和上一报告周，GitHub 的定时任务可能延迟。报告周按北京时间选择，每次打卡日期按成员所填时区解释，历史报告允许纠正。仓库权限、标签和讨论栏目需要[手工设置（英文）](docs/SETUP.md)，上传文件不会自动开启这些功能。当前没有连接外部 AI 模型或微信群采集器。
+维护者完成设置后，报告流程会在相关 Issue／评论变化后，以及**每天北京时间 09:15**更新当前和上一报告周，GitHub 的定时任务可能延迟。报告周按北京时间选择，每次打卡日期按成员所填时区解释，历史报告允许纠正。仓库权限与计分标签需要[手工设置（英文）](docs/SETUP.md)，社区 Issue 表单需要合并到默认分支后使用。当前没有连接外部 AI 模型或微信群采集器。
 
 [中文参与指南](docs/MEMBER_GUIDE.zh-CN.md) · [贡献指南（英文）](CONTRIBUTING.md) · [行为准则（英文）](CODE_OF_CONDUCT.md) · [维护者设置（英文）](docs/SETUP.md)

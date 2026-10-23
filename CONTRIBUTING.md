@@ -8,7 +8,7 @@ Joining a conversation does not commit you to a training plan or a leaderboard. 
 
 Use the **Activity record / 自由运动记录** or **Meal record / 饮食记录** Issue form for a quick standalone record. These do not require a weekly plan or enter rankings. A short description is enough; measurements, calories, and photos are optional. Food Issues also stay outside weekly-plan meal-day counts.
 
-Use **Beginners** in Discussions to introduce yourself, whether you are starting, returning, or just looking around. [Six fictional example files](examples/README.md) show how to take part without inventing real members or activity. Maintainers must enable Discussions and its categories before the forms appear.
+Use the [Beginners Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml) to introduce yourself, whether you are starting, returning, or just looking around. [Six fictional example files](examples/README.en.md) show the formats. Community forms are available after merging them into the default branch; no weekly plan or leaderboard opt-in is required.
 
 ## Plan and check in without a pull request
 
@@ -33,7 +33,7 @@ Keep one weekly issue per person. If a plan needs to change, edit it and leave a
 
 ## Share experience and help others
 
-Use [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions), once enabled, for questions, open conversations, partner matching, and events. Its six broad categories keep content separate from the sports and goals stored in weekly plans. [Community organization](docs/COMMUNITY.md) explains the categories and required setup.
+Use [community Issues](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) for questions, conversations, partner matching, events, and notices. Choose one of six topic forms and use its title prefix to find related posts. Community forms do not add scoring labels or award points. [Community organization](docs/COMMUNITY.md) explains how they relate to free records and scored plans.
 
 Use the **Experience sharing** issue form for an idea that other members may find useful and that you would like a maintainer to consider for contribution points. Include enough context for someone to understand when it worked and when it might not.
 

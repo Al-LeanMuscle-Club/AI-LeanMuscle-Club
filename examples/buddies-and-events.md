@@ -4,7 +4,7 @@
 
 # 找搭子与活动 / Buddies and events
 
-发布位置：Discussions → **Buddies and events**。先在帖内表达兴趣，再由参与者确认安排。
+发布位置：[找搭子与活动 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml)，标题使用 `[Buddies]` 前缀。先在 Issue 评论中表达兴趣，再由参与者确认安排；此类社区 Issue 不自动计分。
 
 ## 示例一：线上一起开始运动
 

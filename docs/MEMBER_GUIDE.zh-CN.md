@@ -10,7 +10,7 @@
 
 - [自由运动记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml)：不需要周计划或命令，写下今天做了什么；此类 Issue 不参加排名。
 - [饮食记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml)：不要求周计划、热量或照片；独立 Issue 不参加排名，也不自动进入周计划饮食天数汇总。
-- [社区讨论](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions)：新人报到、提问、分享和找搭子；需要维护者先启用对应类别。
+- [社区 Issues](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose)：新人报到、提问、分享、找搭子和活动公告，选择对应话题表单即可。
 - **Weekly training plan**：如果想按计划记录，并可选参加每周参与积分榜，使用下面的周计划流程。
 
 [六类虚构示例](../examples/README.md)可以参考格式。无论选择哪种方式，原 Issue 和讨论都是公开的。
@@ -117,7 +117,7 @@ S3 | Saturday | running | 自己选择的路线
 
 每周仍最多 **10 分**：计划 1 分、执行 0–6 分、复盘 2 分、审核通过的经验贡献 0–1 分。执行额度按完整或替代完成为 1、partial 为 0.5，除以已确认计分活动数。完整完成率仍只统计完整或替代完成。积分描述参与，不代表健身实力。细节见[完整评分规则（英文）](SCORING.md)和[虚构排名示例](../examples/ranking.md)。
 
-Discussions 回复不会自动加贡献分。经验 Issue 必须同时具备 `points-approved` 标签和匹配当前正文、作者、周次的可信仓库审批记录；单独标签不足以计分，修改已审批正文后需重新审核。维护者通过[设置指南](SETUP.md)中的流程生成待审查审批记录。
+社区 Issue 发帖和回复不会自动加贡献分。经验 Issue 必须同时具备 `points-approved` 标签和匹配当前正文、作者、周次的可信仓库审批记录；单独标签不足以计分，修改已审批正文后需重新审核。维护者通过[设置指南](SETUP.md)中的流程生成待审查审批记录。
 
 需要退出计分时，选择 `Recovery`，或评论 `/pause`。暂停会持续到你编辑或删除该评论为止，重复发送 `/pause` 不会切回计分状态。
 
@@ -166,4 +166,4 @@ python scripts/member_tools.py --repository Al-LeanMuscle-Club/AI-LeanMuscle-Clu
 
 公开仓库中的 Issue、评论和照片都是公开内容，即使排行榜选了 **No** 也一样。生成的索引和报告行只包含主动同意的 Active 成员，这不会改变原帖的可见性。公开汇总行可以包含目标与科研周类型、运动项目、训练状态及日期、完成次数、执行额度、当前与已确认计划摘要、饮食记录天数和积分；不会包含自由文字、热量数字或个人备注。
 
-身材照片、具体体重、健康史、精确位置和保密科研信息都不作要求。需要保密的信息请放在公开仓库之外。可复用资源见[示例目录](../examples/README.md)，提问和找搭子见[社区讨论说明（英文）](COMMUNITY.md)。
+身材照片、具体体重、健康史、精确位置和保密科研信息都不作要求。需要保密的信息请放在公开仓库之外。可复用资源见[示例目录](../examples/README.md)，提问和找搭子见[社区 Issue 说明（英文）](COMMUNITY.md)。

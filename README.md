@@ -6,7 +6,7 @@
 
 A community for AI researchers to make room for exercise, recovery, and a life alongside research.
 
-[Log a workout](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [Share a meal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [Meet the community](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [Weekly participation board](reports/README.md)
+[Log a workout](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [Share a meal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [Meet the community](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) · [Weekly participation board](reports/README.md)
 
 ## Choose how to join today
 
@@ -14,12 +14,12 @@ A community for AI researchers to make room for exercise, recovery, and a life a
 | --- | --- |
 | Record today's movement without making a plan | [Quick workout record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
 | Save a meal, a photo, or a food-preparation idea | [Food record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
-| Introduce myself, ask a question, or find a partner | [Community conversations](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [Examples](examples/README.en.md) |
+| Introduce myself, ask a question, or find a partner | [Community conversations](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) · [Examples](examples/README.en.md) |
 | Make a weekly plan and optionally join the board | [Weekly plan](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [Participation rules](docs/SCORING.md) |
 
 A photo or one sentence is welcome. Free workout and food records do not require a weekly plan and do not enter the ranking. All records posted here are public. Structured weekly records can also show training days, meal-record days, and partial completions without awarding points for food quantities or body metrics.
 
-[Member helper and weekly standings](tools/index.html) · [Newcomer, training, food, partner, Agent, and ranking examples](examples/README.en.md). The helper runs locally or after [Pages setup](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment); GitHub's source viewer displays its HTML. Discussion categories and forms become available after maintainer setup on the default branch.
+[Member helper and weekly standings](tools/index.html) · [Newcomer, training, food, partner, Agent, and ranking examples](examples/README.en.md). The helper runs locally or after [Pages setup](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment); GitHub's source viewer displays its HTML. Community Issue forms become available after they are merged into the default branch.
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI Lean Muscle Club: For AI Researchers to Keep Healthy. Train models. Train your body. Includes a WeChat group invitation QR code." width="1000"></a>
@@ -113,7 +113,7 @@ A confirmed fallback counts as completion of the same session; partial completio
 
 ## Keep conversations useful
 
-Use [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) for training and recovery, nutrition, research and agents, partners and events, and announcements **after maintainers enable the categories**. Keep weekly records in Issues and lasting resources in documentation or PRs. Discussions do not automatically earn contribution points; use an [experience Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) for the existing approval process. [Community organization →](docs/COMMUNITY.md)
+Use [community Issues](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) for newcomer introductions, training and recovery, food sharing, research and Agents, partners and events, and announcements. Choose the matching form and continue in its comments. Keep lasting resources in documentation or PRs. Community posts and replies do not automatically earn contribution points; use an [experience Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) for the existing approval process. [Community organization →](docs/COMMUNITY.md)
 
 Optional `/meal YYYY-MM-DD` comments can contain food descriptions, photographs, portions, and calorie estimates with their source and uncertainty. No food-photo bonus, calorie target, automatic model estimate, or meal-health score is configured. Detailed food and body records are always optional. [Food-log examples →](docs/MEMBER_GUIDE.md#3-add-food-records-only-if-they-help-you)
 
@@ -123,6 +123,6 @@ For agent workflows, share **the task → agent's role → checking/rework → n
 
 Be honest, kind, and respectful of different bodies and schedules. Recovery and restarting belong here. Do not pressure others to train, demand photographs, post private research, share someone else's information without permission, or advertise. Public Issues, comments, images, and committed history may be copied and retained. Opting out of standings does not make records private.
 
-The reporting workflow refreshes the current and previous Asia/Shanghai reporting weeks on relevant Issue/comment changes and at **09:15 Asia/Shanghai daily**, once enabled on the default branch. Session dates use each member's declared time zone. Reports are revisable snapshots, and scheduled runs may be delayed. Repository settings, labels, and Discussion categories require [maintainer setup](docs/SETUP.md); the files alone do not enable them. There is no connected external AI model or WeChat collector.
+The reporting workflow refreshes the current and previous Asia/Shanghai reporting weeks on relevant Issue/comment changes and at **09:15 Asia/Shanghai daily**, once enabled on the default branch. Session dates use each member's declared time zone. Reports are revisable snapshots, and scheduled runs may be delayed. Repository settings, scoring labels, and default-branch Issue forms require [maintainer setup](docs/SETUP.md). There is no connected external AI model or WeChat collector.
 
 [Member guide](docs/MEMBER_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)

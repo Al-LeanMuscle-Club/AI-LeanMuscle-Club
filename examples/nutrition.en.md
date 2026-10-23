@@ -4,7 +4,7 @@
 
 # Meal records and sharing / Nutrition
 
-Use Discussions → **Nutrition** for conversations and a **Meal record** Issue for a record. If you already have a weekly plan, you can also post a `/meal` comment on that plan's Issue.
+Use the [nutrition-sharing Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=nutrition.yml) for conversations, with the `[Food]` title prefix, and a [Meal record Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) for a record. If you already have a weekly plan, you can also post a `/meal` comment on that plan’s Issue. Community sharing and standalone meal records do not automatically earn points.
 
 ## Example 1: Lunch without calorie numbers
 
@@ -40,5 +40,5 @@ I made noodles and want to record how I made time to cook today.
 
 Both valid dates are the same, so the weekly report shows **1 meal record day**, and the total score stays the same. Eating less, polished photos, or frequent posting should not become competition goals.
 
-**Discussion question:** [Food] How do you prepare tomorrow's lunch when you are busy?
+**Question for a community Issue:** [Food] How do you prepare tomorrow's lunch when you are busy?
 You can share arrangements that fit your own schedule. A nutrition rating or a common meal plan is not required.

@@ -14,16 +14,18 @@ Every file contains two short fictional scenarios. They are reference material, 
 
 | Topic / 主题 | 中文示例 | English examples | Where to participate / 参与位置 |
 | --- | --- | --- | --- |
-| 新人报到 | [新人报到](beginners.md) | [Beginners](beginners.en.md) | Discussions → Beginners |
-| 训练交流与打卡 | [训练交流与记录](training-and-recovery.md) | [Training and recovery](training-and-recovery.en.md) | Discussion or Activity record Issue |
-| 饮食记录与分享 | [饮食记录与分享](nutrition.md) | [Nutrition](nutrition.en.md) | Discussion or Meal record Issue |
-| 找搭子 | [找搭子与活动](buddies-and-events.md) | [Buddies and events](buddies-and-events.en.md) | Discussion |
-| 科研与 Agent | [科研与 Agent](research-and-agents.md) | [Research and Agents](research-and-agents.en.md) | Discussion or Experience sharing Issue |
-| 排名 | [排名演示](ranking.md) | [Ranking](ranking.en.md) | Isolated offline examples; never `reports/` |
+| 新人报到 | [新人报到](beginners.md) | [Beginners](beginners.en.md) | [新人报到 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml) · `[Hello]` |
+| 训练交流与打卡 | [训练交流与记录](training-and-recovery.md) | [Training and recovery](training-and-recovery.en.md) | [训练交流 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=training-and-recovery.yml) / [自由运动记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
+| 饮食记录与分享 | [饮食记录与分享](nutrition.md) | [Nutrition](nutrition.en.md) | [饮食分享 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=nutrition.yml) / [饮食记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
+| 找搭子 | [找搭子与活动](buddies-and-events.md) | [Buddies and events](buddies-and-events.en.md) | [找搭子 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml) · `[Buddies]` |
+| 科研与 Agent | [科研与 Agent](research-and-agents.md) | [Research and Agents](research-and-agents.en.md) | [科研与 Agent Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=research-and-agents.yml) / [经验分享 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) |
+| 排名 | [排名演示](ranking.md) | [Ranking](ranking.en.md) | 独立离线示例，不写入 `reports/`；真实计分使用 [每周计划 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) |
 
-Discussion categories must be enabled and created by maintainers before the forms can be used. The templates do not create live posts or fake members.
+所有社区交流都使用 Issues 表单。主题按 `[Hello]`、`[Training]`、`[Food]`、`[Buddies]`、`[Research / Agent]` 等标题前缀区分，无需启用额外类别或新增社区标签。维护者公告使用 [公告 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=announcements.yml)（`[Club]`）。
 
-如果尚未创建上述分类，可使用 General 或 Show and tell 等已有合适分类。公开演示帖须明确标注虚构，不作为真实参与或计分记录。
+Community conversations use Issue forms and title prefixes; no additional category setup or new community labels are required. Templates do not create live posts or fake members. Published demonstrations must stay clearly marked as fictional and unscored. A research/Agent community Issue does not automatically earn points: use the separate experience Issue and the existing approval-label plus trusted-ledger review process when requesting contribution recognition.
+
+公开演示帖须明确标注虚构，不作为真实参与或计分记录。社区分享不会自动计分；科研与 Agent 经验需要另建经验 Issue，并沿用审批标签及可信 ledger 流程申请贡献认可。
 
 ## A mixed-sport week / 混合运动周
 

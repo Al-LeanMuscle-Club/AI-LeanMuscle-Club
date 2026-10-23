@@ -6,6 +6,8 @@
 
 **此文件为离线演示，不是社区周报。** 虚构代号不对应任何成员，不链接真实 Issue；数据不写入 `reports/` 或首页参与统计。
 
+真实计分记录请使用 [每周计划 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml)，随手记录可用 [自由运动 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml)；不要把下面的虚构活动当作自己的真实打卡发布。
+
 当前是每周 **参与积分**，满分 10：计划 1、执行 0–6、复盘 2、审核通过的贡献 0–1。分数不比较体能、训练难度或身体变化。
 
 ## 示例一：完整完成和部分完成分开展示

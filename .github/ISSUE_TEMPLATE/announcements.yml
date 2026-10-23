@@ -1,0 +1,27 @@
+name: "Announcements / 社区公告"
+description: "Propose a club notice for maintainer review; no plan or scoring. 提交社区通知供维护者审核，无需周计划，不计分。"
+title: "[Club] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎简短交流，无需先建周计划或参加排名。此社区 Issue 公开，请只分享你愿意公开的信息。
+        Short posts are welcome. No weekly plan or leaderboard participation is required. This community Issue is public; share only what you want public.
+        这类帖子、点赞和回复不计分；想申请经验贡献审核，请使用单独的 Experience sharing 表单。
+        Posts, reactions, and replies here earn no points. For contribution review, use the separate Experience sharing form.
+        任何成员都可提交公告建议；维护者审核后决定是否置顶。这个表单不会限制谁能发 Issue。
+        Any member may propose a notice. Maintainers review it and decide whether to pin it. This form does not restrict who can open an Issue.
+  - type: textarea
+    id: announcement
+    attributes:
+      label: "Announcement"
+      description: "提交社区安排、规则调整或活动通知，供维护者审核。请写清适用范围。 Club plans, rule changes, or event notices for maintainer review. State who the notice applies to."
+    validations:
+      required: true
+  - type: textarea
+    id: action
+    attributes:
+      label: "What members need to do"
+      description: "可选参与步骤、时间与时区、原始链接。没有需要采取的行动可以留空。 Optional participation steps, time and time zone, and original links. Leave blank if no action is needed."
+    validations:
+      required: false

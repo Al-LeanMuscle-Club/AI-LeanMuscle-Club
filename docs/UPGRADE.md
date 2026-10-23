@@ -9,7 +9,7 @@ This update expands the original weekly-plan pilot while keeping its 10-point ca
 - Optional `/meal` records with estimate source and uncertainty; no calorie or food-health scoring.
 - A short README overview, full weekly reports, and a recent-12-week public index.
 - Read-only member CLI tools, a mobile-friendly browser helper, and editable format feedback.
-- Discussion category forms, detailed English/Chinese instructions, and reusable examples.
+- Six community Issue forms, detailed English/Chinese instructions, and reusable examples.
 - Optional private sync caching with incremental reads and weekly reconciliation.
 - Stable GitHub user-ID confirmations that survive username changes, with migration of matching legacy username entries.
 - Explicit scoring-rule versions in reports, indexes, and member history, without relabeling unversioned snapshots.
@@ -32,4 +32,4 @@ Run Python and browser-helper checks, enable the required settings in [SETUP.md]
 
 After copying this package into an existing repository, avoid overwriting a populated `reports/index.json` with the starter's empty index; let the report workflow regenerate it from your existing reports. The included empty index has no synthetic participants.
 
-Pages hosting and Discussion categories require initial manual setup. Existing manual Pages publishing remains available. To enable automatic publishing after successful report runs and relevant changes on the default branch, set the repository Actions variable `PUBLISH_MEMBER_HELPER` to `true` after reviewing the site's visibility; see [SETUP](SETUP.md#9-optional-browser-helper-and-pages-deployment). Forks and repositories without this opt-in do not publish automatically. The included AI guidance is a workflow specification, not a connected model or automatic nutrition analysis service.
+Pages hosting requires initial manual setup. Community Issue forms are available after merging `.github/ISSUE_TEMPLATE/` into the default branch with Issues enabled; no separate community categories or new labels are required. Existing manual Pages publishing remains available. To enable automatic publishing after successful report runs and relevant changes on the default branch, set the repository Actions variable `PUBLISH_MEMBER_HELPER` to `true` after reviewing the site's visibility; see [SETUP](SETUP.md#9-optional-browser-helper-and-pages-deployment). Forks and repositories without this opt-in do not publish automatically. The included AI guidance is a workflow specification, not a connected model or automatic nutrition analysis service.

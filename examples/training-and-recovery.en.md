@@ -2,9 +2,9 @@
 
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, standings, or prescribed training schedules. These examples do not earn points. Do not submit an entire example as a real community post; use only the format that suits you.
 
-# Training discussions and records / Training and recovery
+# Training conversations and records / Training and recovery
 
-Use Discussions → **Training and recovery** for conversations. For a casual check-in, use an **Activity record** Issue; for a scored record, comment on your own weekly plan.
+Use the [training and recovery Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=training-and-recovery.yml) for conversations, with the `[Training]` title prefix. Community conversation does not automatically earn points. For a casual check-in, use an [Activity record Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml); for a scored record, comment on your own weekly plan.
 
 ## Example 1: Recording without a plan
 
@@ -31,7 +31,7 @@ This is a standalone activity record. It does not enter the weekly standings, an
 
 ## Example 2: Completing only part of a planned session
 
-**Discussion title:** [Training] How do you record a session when your schedule changes unexpectedly?
+**Community Issue title:** [Training] How do you record a session when your schedule changes unexpectedly?
 
 **Question or experience**
 I planned to practice basketball on Tuesday, but something came up and I completed only part of the session. I want to record that honestly and think about how to make future plans easier to follow.

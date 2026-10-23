@@ -4,7 +4,7 @@
 
 # 训练交流与记录 / Training and recovery
 
-交流放 Discussions → **Training and recovery**。随手打卡用 **Activity record / 自由运动记录** Issue；计分记录放自己的周计划评论。
+交流使用 [训练与恢复 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=training-and-recovery.yml)，标题使用 `[Training]` 前缀，社区交流本身不自动计分。随手打卡用 [Activity record / 自由运动记录 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml)；计分记录放自己的周计划评论。
 
 ## 示例一：不建计划也能记录
 
@@ -31,7 +31,7 @@ walking
 
 ## 示例二：计划内只完成一部分
 
-**讨论标题：** [Training] 临时改日程时，你们怎么记录？
+**社区 Issue 标题：** [Training] 临时改日程时，你们怎么记录？
 
 **Question or experience**
 我计划周二练球，但临时有事，只完成了一部分。想如实记下，也看看以后怎样安排更容易执行。

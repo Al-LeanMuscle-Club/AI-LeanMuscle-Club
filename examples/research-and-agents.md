@@ -4,7 +4,7 @@
 
 # 科研与 Agent / Research and Agents
 
-发布位置：Discussions → **Research and Agents**。复用价值明确时，可整理成 Experience sharing Issue；不会自动获得贡献分。
+发布位置：[科研与 Agent Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=research-and-agents.yml)，标题使用 `[Research / Agent]` 前缀。此类社区 Issue 不自动计分。复用价值明确时，可另用 [Experience sharing 经验 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) 整理并链接原帖；贡献积分仍需 `points-approved` 标签和匹配正文、作者、周次的可信审批 ledger，由维护者按现有流程审核。
 
 ## 示例一：整理公开实验结果表
 

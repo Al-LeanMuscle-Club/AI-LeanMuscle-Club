@@ -1,0 +1,32 @@
+name: "Training and recovery / 训练与恢复"
+description: "Discuss training, recovery, or recording; no plan or scoring. 交流训练、恢复与记录，无需周计划，不计分。"
+title: "[Training] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎简短交流，无需先建周计划或参加排名。此社区 Issue 公开，请只分享你愿意公开的信息。
+        Short posts are welcome. No weekly plan or leaderboard participation is required. This community Issue is public; share only what you want public.
+        这类帖子、点赞和回复不计分；想申请经验贡献审核，请使用单独的 Experience sharing 表单。
+        Posts, reactions, and replies here earn no points. For contribution review, use the separate Experience sharing form.
+  - type: textarea
+    id: topic
+    attributes:
+      label: "Question or experience"
+      description: "想聊什么训练安排、运动记录或恢复体会？ What training arrangements, activity records, or recovery experiences would you like to discuss?"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "Context and what I tried"
+      description: "可选经验背景、已尝试方法和时间限制。不要求身体或健康数据。 Optional background, approaches tried, and time constraints. Body or health data are not required."
+    validations:
+      required: false
+  - type: textarea
+    id: feedback
+    attributes:
+      label: "Feedback I would find useful"
+      description: "想听排期经验、动作记录方法或其他建议？ Would scheduling experiences, ways to record exercises, or other suggestions help?"
+    validations:
+      required: false

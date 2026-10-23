@@ -1,4 +1,4 @@
-# Organizing the community
+# Organizing the community with Issues
 
 Use one repository to connect training, research rhythms, and shared experience. Members can take part in several sports and pursue a changing goal; they do not need a separate account, folder, or subgroup for each combination.
 
@@ -10,30 +10,28 @@ Use one repository to connect training, research rhythms, and shared experience.
 | Activity-record and meal-record Issues | Free records without a weekly plan or ranking; labels `activity-record` and `meal-record` |
 | Weekly-plan Issues | One person's weekly plan, short records, optional meal logs, and reflection |
 | Experience Issues | Reusable experiences eligible for the existing maintainer approval process |
-| Discussions | Questions, conversations, partners, events, and announcements |
+| Community Issues | Introductions, questions, conversations, partners, events, and announcements |
 | Documentation and PRs | Curated resources, examples, rules, and tool changes |
 | Browser helper and generated reports | Prepare comments, find plans, and browse opted-in records |
 
-A Discussion does not earn a contribution point automatically. If its author wants an experience considered for points, they can summarize it in an experience Issue, link the source, and request maintainer review. Multiple posts about the same work cannot exceed the one-point-per-author-per-week contribution cap.
+Community Issue posts and replies do not earn contribution points automatically. To request review, summarize a reusable experience in an Experience sharing Issue and link the source. Contribution credit requires `experience`, `points-approved`, and a trusted approval record matching the body, author, and week. Multiple posts about the same work cannot exceed one contribution point per author per week.
 
-## Six Discussion categories
+## Six community Issue forms
 
-A maintainer must enable **Settings → General → Features → Discussions** and create the following categories. Adding template files does not create categories or enable Discussions.
+Open [New issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose), choose a topic, and continue the conversation in its comments. The forms become available after `.github/ISSUE_TEMPLATE/` is merged into the default branch with Issues enabled. No weekly plan, leaderboard opt-in, extra category setting, or new community label is required.
 
-| Category name | Required slug / template | Suggested format |
+| Topic | Issue form | Title prefix |
 | --- | --- | --- |
-| Beginners / 新人报到 | `beginners` | Open-ended discussion |
-| Training and recovery | `training-and-recovery` | Open-ended discussion |
-| Nutrition | `nutrition` | Open-ended discussion |
-| Research and Agents | `research-and-agents` | Open-ended discussion |
-| Buddies and events | `buddies-and-events` | Open-ended discussion |
-| Announcements | `announcements` | Announcement |
+| Newcomer introductions / 新人报到 | [Beginners](../.github/ISSUE_TEMPLATE/beginners.yml) | `[Hello]` |
+| Training and recovery / 训练交流 | [Training and recovery](../.github/ISSUE_TEMPLATE/training-and-recovery.yml) | `[Training]` |
+| Food conversations / 饮食分享 | [Nutrition](../.github/ISSUE_TEMPLATE/nutrition.yml) | `[Food]` |
+| Research and Agents / 科研与 Agent | [Research and Agents](../.github/ISSUE_TEMPLATE/research-and-agents.yml) | `[Research / Agent]` |
+| Finding partners and events / 找搭子与活动 | [Buddies and events](../.github/ISSUE_TEMPLATE/buddies-and-events.yml) | `[Buddies]` |
+| Community notices / 社区公告 | [Announcements](../.github/ISSUE_TEMPLATE/announcements.yml) | `[Club]` |
 
-All six have forms in `.github/DISCUSSION_TEMPLATE/`, including `announcements.yml`. The filename must match the category’s actual slug; verify it after creating or renaming a category. Keep Announcements restricted to maintainer posting through the category’s announcement format. Templates must be on the repository’s default branch before they are used.
+Use title prefixes to find related Issues. Announcements are ordinary Issues: anyone who can open an Issue can submit one. Maintainers review proposed notices and decide which to publish as official notices or pin; a template does not enforce maintainer-only posting.
 
-Welcome new members in Beginners; no plan, training experience, or leaderboard opt-in is required. The [six independent example files](../examples/README.en.md) illustrate introductions, training, food, partners, research/Agents, and participation points. All examples are fictional and remain separate from real reports. Published demonstrations must be clearly marked as fictional and excluded from participation scoring and member statistics.
-
-Start with these broad categories. A growing category can later gain an additional dedicated space if its conversations justify the split.
+Welcome new and returning members through the Beginners Issue form. The [six independent example files](../examples/README.en.md) illustrate introductions, training, food, partners, research/Agents, and participation points. Published demonstrations must be clearly marked as fictional and excluded from participation scoring and member statistics.
 
 ## Independent classification
 
@@ -64,7 +62,19 @@ See [member instructions](MEMBER_GUIDE.md), [scoring](SCORING.md), and [maintain
 
 ## GitHub references
 
-- [Discussion categories](https://docs.github.com/en/discussions/managing-discussions-for-your-community/managing-categories-for-discussions)
-- [Discussion category forms](https://docs.github.com/en/discussions/managing-discussions-for-your-community/creating-discussion-category-forms)
-- [Form syntax](https://docs.github.com/en/discussions/managing-discussions-for-your-community/syntax-for-discussion-category-forms)
+- [Creating an Issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue)
+- [Creating Issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-issue-forms)
+- [Issue form syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms)
 
+<!-- club-published-issue-examples:start -->
+## Published examples
+
+These are fictional, unscored examples. Choose a language below to open its Issue.
+
+| Topic | 中文 Issue | English Issue |
+| --- | --- | --- |
+| Newcomer introductions | [#16](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/16) | [#19](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/19) |
+| Finding exercise buddies | [#17](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/17) | [#20](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/20) |
+| Research and Agents | [#18](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/18) | [#21](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/21) |
+
+<!-- club-published-issue-examples:end -->

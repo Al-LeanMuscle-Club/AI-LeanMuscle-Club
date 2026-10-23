@@ -4,7 +4,7 @@
 
 # New member introductions / Beginners
 
-Post in Discussions → **Beginners**. You do not need to create a weekly plan or join the standings first.
+Post using the [newcomer introduction Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml) with the `[Hello]` title prefix. You do not need to create a weekly plan or join the standings first. These community Issues do not automatically earn points.
 
 ## Example 1: Starting to keep records
 
