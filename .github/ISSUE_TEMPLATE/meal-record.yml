@@ -1,0 +1,42 @@
+name: Meal record / 饮食记录
+description: 记录吃了什么或分享餐食，无需周计划，不参加排名。
+title: "[Meal] YYYY-MM-DD · "
+labels: ["meal-record"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        一句话或一张自愿分享的照片都可以；不要求热量、体重或详细营养数据。
+        此 Issue 全部公开。独立饮食记录不参加运动排名，也不会自动进入周计划的饮食天数汇总。
+        已有周计划时，也可在该 Issue 下用 /meal YYYY-MM-DD 记录；它只汇总有效日期天数，不加积分。
+  - type: input
+    id: meal-date
+    attributes:
+      label: Meal date
+      description: 实际本地用餐日期，格式 YYYY-MM-DD。
+      placeholder: "2026-10-26"
+    validations:
+      required: true
+  - type: input
+    id: time-zone
+    attributes:
+      label: Time zone
+      description: 记录日期使用的 IANA 时区，例如 Asia/Shanghai。
+      placeholder: Asia/Shanghai
+    validations:
+      required: true
+  - type: textarea
+    id: food
+    attributes:
+      label: Food and context
+      description: 吃了什么？也可以聊聊准备过程或忙碌时怎样安排。照片、分量选填。
+      placeholder: 今天带了昨天剩下的饭菜，省去了临时找午餐的时间。
+    validations:
+      required: true
+  - type: textarea
+    id: optional-estimate
+    attributes:
+      label: Optional estimate and source
+      description: 只有想记录时才填写。请同时说明包装、配方、本人或模型估算来源、分量假设和未知信息；不清楚就留空。没有自动餐食评分服务。
+    validations:
+      required: false

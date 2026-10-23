@@ -1,0 +1,47 @@
+name: Experience sharing / 经验分享
+description: 分享有具体背景和实际体会的经验，可申请每周贡献认可。
+title: "[Experience] "
+labels: ["experience"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        分享训练安排、饮食记录方法、找搭子或科研与 Agent 经验。所有内容公开。
+        发帖本身不加分；贡献分需要维护者审核、points-approved 标签及匹配当前正文的仓库审批记录，每人每周最多 1 分。
+        随意交流也欢迎使用 Discussions；不要提交虚构经历作为真实活动。
+  - type: input
+    id: week-starting
+    attributes:
+      label: Week starting
+      description: 这条经验希望归属的周一，格式 YYYY-MM-DD。
+      placeholder: "2026-10-26"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: 遇到什么问题？当时有什么时间或场景限制？
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: What I tried
+      description: 实际采用了什么做法？可以附原始讨论或记录链接。
+    validations:
+      required: true
+  - type: textarea
+    id: observation
+    attributes:
+      label: What happened
+      description: 实际效果、没有奏效的地方，以及适用条件。Agent 经验请计入设置、检查和返工的时间。
+    validations:
+      required: true
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Limits and sources
+      description: 可选局限、来源和不确定性。区分亲身观察与一般性结论。
+    validations:
+      required: false

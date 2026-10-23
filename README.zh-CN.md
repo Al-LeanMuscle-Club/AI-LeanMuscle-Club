@@ -6,7 +6,20 @@
 
 面向 AI 科研人员的交流社区，一起为运动、恢复和科研之外的生活留出时间。
 
-[制定周计划](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [查看大家的计划](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=label%3Aweekly-plan) · [分享经验](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [评分规则（英文）](docs/SCORING.md) · [维护者设置指南（英文）](docs/SETUP.md)
+[运动打卡](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [记录饮食](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [分享交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [每周参与榜](reports/README.md)
+
+## 今天想怎样参与
+
+| 我想…… | 从这里开始 |
+| --- | --- |
+| 随手记录今天的运动，暂时不做周计划 | [自由运动打卡](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
+| 保存一餐、照片或备餐灵感 | [饮食记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
+| 新人报到、提问、找搭子、交流 Agent 工作流 | [社区交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [各类示例](examples/README.md) |
+| 做一份周计划，并自愿参加排名 | [创建周计划](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [积分细则](docs/SCORING.md) |
+
+一句话或一张照片也欢迎。自由运动与饮食记录不要求先制定周计划，也不加入积分榜；发到这里的内容都是公开的。结构化周记录还会展示训练记录天数、饮食记录天数和部分完成情况，食物数量与身体指标不加分。
+
+[成员辅助页与周榜](tools/index.html) · [新人、训练、饮食、搭子、Agent 与排名示例](examples/README.md)。辅助页可在本地运行，或由维护者[配置 Pages](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment)；直接在 GitHub 打开 HTML 文件只会显示源码。讨论栏目和表单需要维护者在默认分支上完成设置后启用。
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI 薄肌俱乐部：面向 AI 科研人员，一起兼顾科研与健康。练模型，也练身体。海报附微信群邀请二维码。" width="1000"></a>
@@ -16,7 +29,7 @@
 
 了解俱乐部的[建群初衷](docs/ABOUT.zh-CN.md#建群初衷)与[面向哪些人](docs/ABOUT.zh-CN.md#面向哪些人)。
 
-## 三步开始参与
+## 自愿制定周计划：三步开始
 
 1. [创建一个周计划 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml)，填写时区、当前目标、科研节奏和现实可行的训练安排。**默认不加入公开排名**。
 2. 训练后在自己的 Issue 下评论。简短命令就够了，照片和详细运动数据始终选填。
@@ -36,7 +49,7 @@ S3 | Saturday | running | 轻松跑
 /done S1 2026-10-27 | 今天缩短了训练时间。
 ```
 
-完成 S1 已声明的替代方案时，用 `/fallback S1 YYYY-MM-DD`；部分完成用 `/partial`，跳过用 `/skip`，后二者只记录状态，不获得执行分。同一训练只计一次，使用最新有效状态。每条评论只放一个命令。[完整操作与饮食记录说明 →](docs/MEMBER_GUIDE.zh-CN.md)
+完成 S1 已确认的替代方案时，用 `/fallback S1 YYYY-MM-DD`；部分完成用 `/partial`，获得该次执行额度的一半；跳过用 `/skip`，不获得执行分。同一训练只计一次，使用最新有效状态。首次成功同步会确认本周计分训练，之后调整会单独展示，删掉未完成项目不能提高积分。每条评论只放一个命令。[完整操作与饮食记录说明 →](docs/MEMBER_GUIDE.zh-CN.md)
 
 **快捷工具：** [查找我的计划／生成打卡评论](tools/index.html)（[本地打开方式](docs/MEMBER_GUIDE.md#browser-helper)）· [沿用上周计划](docs/MEMBER_GUIDE.zh-CN.md) · [自愿公开的报告数据](reports/index.json)
 
@@ -61,12 +74,12 @@ S3 | Saturday | running | 轻松跑
 | 项目 | 最高积分 |
 | --- | ---: |
 | 一个有效的 Active 周计划 | 1 |
-| 个人计划执行：`6 × 完成次数 / 计划次数`，保留两位小数 | 6 |
+| 个人计划执行：`6 ×（完成次数 + 0.5 × 部分完成次数）/ 已确认计划次数`，保留两位小数 | 6 |
 | 一条非空的周末 `/review`，与完成情况无关 | 2 |
 | 经维护者认可的有用经验 Issue | 1 |
 | **每周上限** | **10** |
 
-完成预先声明的替代方案计作同一次训练的完成；部分完成和跳过保留记录，不获得执行分。重量、里程、时长、热量、减重、照片和发帖数量都不额外加分。积分按周重置，自愿参加，同分并列。选择 Recovery，或本人评论 `/pause`，即可让该周退出排名，不产生欠分。[完整规则与纠错方式（英文）→](docs/SCORING.md)
+完成已确认的替代方案计作同一次训练的完成；部分完成获得半次执行额度，跳过不计执行分。参与榜分别展示计划、执行、复盘与贡献分，衡量个人承诺的兑现和社区参与。重量、里程、时长、热量、减重、照片和发帖数量都不额外加分。积分按周重置，自愿参加，同分并列。选择 Recovery，或本人评论 `/pause`，即可让该周退出排名，不产生欠分。经验贡献审批绑定作者、所属周和完整正文，只加标签不能获得贡献分。[完整规则与纠错方式（英文）→](docs/SCORING.md)
 
 ## 交流、饮食和科研工作流
 
@@ -80,6 +93,6 @@ S3 | Saturday | running | 轻松跑
 
 诚实、友善，尊重不同的身体、训练基础与生活安排。休息和重新开始都欢迎。不要强迫训练、索要照片、公开保密科研资料、未经许可分享他人信息，或发布广告。公开 Issue、评论、图片和提交历史可能被复制与保留；不参加排名不会让记录变成私密。
 
-维护者完成设置后，报告流程计划在**每天北京时间 09:15**更新当前和上一报告周，GitHub 的定时任务可能延迟。报告周按北京时间选择，每次打卡日期按成员所填时区解释，历史报告允许纠正。仓库权限、标签和讨论栏目需要[手工设置（英文）](docs/SETUP.md)，上传文件不会自动开启这些功能。当前没有连接外部 AI 模型或微信群采集器。
+维护者完成设置后，报告流程会在相关 Issue／评论变化后，以及**每天北京时间 09:15**更新当前和上一报告周，GitHub 的定时任务可能延迟。报告周按北京时间选择，每次打卡日期按成员所填时区解释，历史报告允许纠正。仓库权限、标签和讨论栏目需要[手工设置（英文）](docs/SETUP.md)，上传文件不会自动开启这些功能。当前没有连接外部 AI 模型或微信群采集器。
 
 [中文参与指南](docs/MEMBER_GUIDE.zh-CN.md) · [贡献指南（英文）](CONTRIBUTING.md) · [行为准则（英文）](CODE_OF_CONDUCT.md) · [维护者设置（英文）](docs/SETUP.md)

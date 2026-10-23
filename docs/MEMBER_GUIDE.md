@@ -2,9 +2,18 @@
 
 **English** | [简体中文](MEMBER_GUIDE.zh-CN.md)
 
-Keep one weekly Issue for your plan, records, and reflection. Daily pull requests, body photos, exercise measurements, and leaderboard participation are never required.
+Start with a free activity record, a meal record, or a conversation. A weekly plan is optional; use one weekly Issue for planned check-ins and reflection if you choose it. Daily pull requests, body photos, exercise measurements, and leaderboard participation are never required.
 
 All examples below are fictional templates, not prescribed training plans or actual member activity. Choose your own activities, schedule, and amount of detail.
+
+## Choose how to take part
+
+- [Activity record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml): record what you did without a plan or scoring commands; these Issues do not enter standings.
+- [Meal record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml): record food without a plan, calories, or photographs; these Issues do not enter standings or the weekly-plan meal-day summary.
+- [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions): introduce yourself, ask questions, share, or find a partner once maintainers enable the categories.
+- **Weekly training plan**: choose the structured plan below if you want to follow your own commitments and optionally join the weekly participation board.
+
+See [six short sets of fictional examples](../examples/README.md). Original Issues and Discussions are public whichever route you choose.
 
 ## 1. Make a plan that fits this research week
 
@@ -35,7 +44,7 @@ The older three-column format `S1 | Tuesday | My activity` still works and is cl
 
 Write any session-specific alternative in advance. The general **Busy-week fallback** field remains useful context, but a `/fallback` completion requires an alternative in the fifth column of that particular session. Keep the original plan and explain changes rather than rewriting past commitments to manufacture a score.
 
-The calculator reads the current declared plan, not a frozen history of earlier edits. This remains an honor-based system; leave an explanation when changing commitments and keep completed session IDs stable.
+The first successful report sync confirms a scoring snapshot of the week’s sessions. Later edits can update your current schedule, but deleting unfinished activities does not shrink the confirmed scoring denominator; added sessions can be recorded without adding execution points. Reports distinguish the current plan from the confirmed plan. Leave an explanation for changes and keep completed session IDs stable. See [scoring and corrections](SCORING.md) for the confirmation boundary.
 
 ## 2. Record a session in a short comment
 
@@ -45,7 +54,7 @@ Put one command on the first nonempty line of a comment on your own weekly Issue
 | --- | --- | --- |
 | `/done S1 2026-10-27` | Completed the planned session | Yes |
 | `/fallback S1 2026-10-27` | Completed S1's predeclared fifth-column alternative | Yes, at most once for S1 |
-| `/partial S1 2026-10-27` | Did some of the session | Recorded, no completion credit |
+| `/partial S1 2026-10-27` | Did some of the session | Half a session of execution credit; not a full completion |
 | `/skip S1 2026-10-27` | Did not do this session | Recorded, no completion credit |
 
 Add optional notes after `|` or on later lines:
@@ -87,6 +96,8 @@ What I want to learn: one observation about meal planning during this research w
 
 Use your declared local time zone and a date within that plan's week. You can log without calories, a photo, or a complete recipe. If you record numbers, keep the source and uncertainty beside them and correct estimates when you learn more. A model estimate is not a measurement.
 
+The report can show the number of distinct valid meal-record dates on your weekly plan: two meals on the same date count as one day. This is a record count, not a meal rating. Independent Meal record Issues stay outside that summary.
+
 The repository does not run an automatic calorie estimator or meal-health grader. Food records earn no separate points, and eating less or posting more photos cannot increase a score. A thoughtful food reflection can form part of your ordinary weekly reflection or an experience Issue; existing weekly limits still apply. Raw food notes, images, and calorie numbers are not exported to the generated public index or report JSON.
 
 ## 4. Reflect, including on an incomplete week
@@ -104,7 +115,9 @@ and whether I actually used that time for movement or rest.
 
 Reflection receives the same two points after an incomplete week. Research output, citation counts, body measurements, and health outcomes are not scored.
 
-The weekly maximum stays **10**: plan 1, recorded completion 0–6, reflection 2, and a maintainer-approved experience contribution 0–1. See [the full scoring rules](SCORING.md). Discussion replies do not automatically grant contribution points; submit a useful experience Issue if you want it considered under the existing approval process.
+The weekly maximum stays **10**: plan 1, execution 0–6, reflection 2, and an approved experience contribution 0–1. Execution uses full/fallback = 1 and partial = 0.5 against confirmed sessions. The full-completion percentage still counts only full/fallback sessions. Scores measure participation, not athletic ability. See [the full scoring rules](SCORING.md) and [fictional ranking examples](../examples/ranking.md).
+
+Discussion replies do not automatically grant contribution points. An experience Issue needs both `points-approved` and a trusted repository approval entry matching its current body, author, and week. Editing an approved body requires review again; labels alone do not grant credit. Maintainers prepare approval records for review using the process in [setup](SETUP.md).
 
 To step away from scoring, choose `Recovery` or comment `/pause`. A pause stays in effect until you edit or remove that pause comment; posting it again does not toggle participation back on.
 
@@ -116,7 +129,7 @@ The [member helper](../tools/index.html) prepares search links, check-in text, a
 python3 -m http.server 8000
 ```
 
-Then open [the local helper](http://localhost:8000/tools/). A published hosted copy is optional and requires maintainers to configure hosting separately; this repository does not automatically deploy Pages. Review generated text and paste it into GitHub yourself.
+Then open [the local helper](http://localhost:8000/tools/). A hosted copy becomes available only after maintainers configure Pages and enable its deployment workflow; see [setup](SETUP.md). Review generated text and paste it into GitHub yourself.
 
 ## Command-line tools
 
@@ -147,6 +160,6 @@ For offline work, use the global `--fixture /path/to/synthetic-issues.json` opti
 
 ## Public sharing
 
-All Issues, comments, and attached photos in this public repository are public, including posts by people who select **No** for the leaderboard. The generated index and report rows include only consenting Active participants; this does not change the visibility of the original posts. Opted-in rows can include goal and research-week classifications, sports, session status/dates, completion counts, and points. They exclude free-text descriptions, calorie numbers, and personal notes.
+All Issues, comments, and attached photos in this public repository are public, including posts by people who select **No** for the leaderboard. The generated index and report rows include only consenting Active participants; this does not change the visibility of the original posts. Opted-in rows can include goal and research-week classifications, sports, session status/dates, completion counts, execution credit, confirmed/current plan summaries, meal-record day counts, and points. They exclude free-text descriptions, calorie numbers, and personal notes.
 
 Body photos, exact weight, health history, precise location, and confidential research information are never required. Keep any information you want private outside the public repository. For reusable resources and examples, see [the examples directory](../examples/README.md); for questions and finding partners, see [community discussions](COMMUNITY.md).

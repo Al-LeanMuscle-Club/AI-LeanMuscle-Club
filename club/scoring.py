@@ -8,7 +8,7 @@ not call a model, execute member-supplied content, or infer completed exercise.
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 import re
@@ -17,6 +17,7 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from club.taxonomy import GOALS, RESEARCH_WEEKS, SPORTS
+from club.ranking_state import body_sha256, clean_state, new_state, plan_fingerprint
 
 
 _DATE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
@@ -331,11 +332,12 @@ def validate_submission(
 
 def _activity(
     plan: _Plan, start: date, as_of: datetime,
-) -> tuple[list[dict[str, Any]], bool, bool]:
+) -> tuple[list[dict[str, Any]], bool, bool, int]:
     states: dict[str, dict[str, Any]] = {}
     latest: dict[str, tuple[datetime, int]] = {}
     reviewed = False
     paused = False
+    meal_dates: set[str] = set()
     for index, comment in enumerate(plan.comments):
         if not isinstance(comment, Mapping):
             continue
@@ -346,7 +348,9 @@ def _activity(
             paused = True
         elif event["kind"] == "review":
             reviewed = True
-        elif event["kind"] != "meal":
+        elif event["kind"] == "meal":
+            meal_dates.add(event["date"])
+        else:
             session_id = event["session_id"]
             identifier = event.get("id")
             order = (event["effective_at"], identifier if isinstance(identifier, int) and not isinstance(identifier, bool) else index)
@@ -361,11 +365,33 @@ def _activity(
         {"id": session.id, "day": session.day, "sport": session.sport,
          **states.get(session.id, {"status": "planned", "date": None, "used_fallback": False})}
         for session in plan.sessions
-    ], reviewed, paused
+    ], reviewed, paused, len(meal_dates)
+
+
+def _confirmed_plan(plan: _Plan, week: str, as_of: datetime, state: dict[str, Any]) -> tuple[_Plan, set[str], bool]:
+    """Lock the first scored session set, keeping deleted IDs and showing extras.
+
+    Only structure is retained. Descriptions remain editable and honor based;
+    a confirmation cannot reconstruct edits made before the first live sync.
+    """
+    key = plan_fingerprint(week, plan.handle)
+    current = [{"id": session.id, "day": session.day, "sport": session.sport,
+                "fallback": session.fallback} for session in plan.sessions]
+    confirmation = state["confirmed_plans"].get(key)
+    if confirmation is None:
+        confirmation = {"confirmed_at": as_of.isoformat().replace("+00:00", "Z"), "sessions": current}
+        state["confirmed_plans"][key] = confirmation
+    baseline = confirmation["sessions"]
+    confirmed_ids = {session["id"] for session in baseline}
+    current_by_id = {session.id: session for session in plan.sessions}
+    sessions = [current_by_id.get(session["id"], _Session(**session)) for session in baseline]
+    sessions += [session for session in plan.sessions if session.id not in confirmed_ids]
+    return replace(plan, sessions=tuple(sessions)), confirmed_ids, current != baseline
 
 
 def build_week(
     issues: Iterable[Any], week_start: str, as_of: datetime,
+    *, ranking_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return a JSON-serializable weekly board and anonymous participation counts.
 
@@ -387,6 +413,11 @@ def build_week(
     descriptions, food logs, and training metrics are never republished. Warnings
     contain no names, issue numbers, URLs, or member-provided text. The latest
     valid session status wins; full and fallback completions share one cap.
+    A partial completion earns half a completion's execution credit. The first
+    successful scored sync confirms session IDs and the denominator. Additional
+    sessions remain visible but cannot increase execution credit. Pass the
+    trusted persisted ranking_state in live runs; without it confirmations are
+    temporary for this call and labels alone still do not approve contributions.
     """
     start = _iso_date(week_start)
     if start is None or start.weekday() != 0:
@@ -398,6 +429,7 @@ def build_week(
     ):
         raise ValueError("as_of must be a timezone-aware UTC datetime")
     as_of = as_of.astimezone(timezone.utc)
+    state = clean_state(ranking_state) if ranking_state is not None else new_state()
     warnings: list[str] = []
 
     def warn(message: str) -> None:
@@ -430,27 +462,43 @@ def build_week(
         if {"experience", "points-approved"}.issubset(labels):
             handle = _handle(issue)
             created = _timestamp(issue.get("created_at"))
+            approval = state["contribution_approvals"].get(str(issue.get("number")))
             if (
                 handle is not None
                 and sections is not None
                 and sections.get("Week starting") == week_start
                 and created is not None
                 and created <= as_of
+                and approval is not None
+                and approval["author"].casefold() == handle.casefold()
+                and approval["week_start"] == week_start
+                and approval["body_sha256"] == body_sha256(issue["body"])
+                and _timestamp(approval["approved_at"]) <= as_of
             ):
                 contributions.add(handle.casefold())
 
     rows: list[dict[str, Any]] = []
     recovery_count = 0
     for key, plan in plans.items():
-        sessions, reviewed, paused = _activity(plan, start, as_of)
+        # Check pause before confirming: opting out/recovery must not create a
+        # named public ledger. Existing fingerprints survive later withdrawal.
+        _, _, paused, _ = _activity(plan, start, as_of)
         if plan.mode == "Recovery" or paused:
             recovery_count += 1
             continue
         if not plan.public:
             continue
-        count = sum(s["status"] in {"completed", "fallback"} for s in sessions)
-        planned = len(plan.sessions)
-        execution = (Decimal(6) * count / planned).quantize(
+        current_planned = len(plan.sessions)
+        scored_plan, confirmed_ids, plan_changed = _confirmed_plan(plan, week_start, as_of, state)
+        sessions, reviewed, _, meal_days = _activity(scored_plan, start, as_of)
+        for session in sessions:
+            session["confirmed"] = session["id"] in confirmed_ids
+        scored = [session for session in sessions if session["confirmed"]]
+        count = sum(s["status"] in {"completed", "fallback"} for s in scored)
+        partial = sum(s["status"] == "partial" for s in scored)
+        planned = len(confirmed_ids)
+        execution_rate = (Decimal(count) + Decimal("0.5") * partial) / planned
+        execution = (Decimal(6) * execution_rate).quantize(
             Decimal("0.01"), rounding=ROUND_HALF_UP
         )
         review = 2 if reviewed else 0
@@ -462,8 +510,15 @@ def build_week(
             "issue_number": plan.number,
             "issue_url": plan.url,
             "planned": planned,
+            "confirmed_planned": planned,
+            "current_planned": current_planned,
+            "plan_changed": plan_changed,
             "completed": count,
             "completion_rate": round(count / planned, 6),
+            "execution_rate": float(round(execution_rate, 6)),
+            "meal_days": meal_days,
+            "recorded_training_days": len({s["date"] for s in sessions
+                                            if s["status"] in {"completed", "fallback", "partial"}}),
             "plan_points": 1,
             "execution_points": float(execution),
             "review_points": review,
@@ -471,9 +526,9 @@ def build_week(
             "total_points": float(total),
             "goal": plan.goal,
             "research_week": plan.research_week,
-            "sports": sorted({s.sport for s in plan.sessions}),
-            "partial": sum(s["status"] == "partial" for s in sessions),
-            "skipped": sum(s["status"] == "skipped" for s in sessions),
+            "sports": sorted({s["sport"] for s in sessions}),
+            "partial": partial,
+            "skipped": sum(s["status"] == "skipped" for s in scored),
             "sessions": sessions,
         })
     rows.sort(key=lambda row: (
@@ -488,10 +543,14 @@ def build_week(
         previous_score = row["total_points"]
     sports = []
     for sport in SPORTS:
-        selected = [session for row in rows for session in row["sessions"] if session["sport"] == sport]
+        selected = [session for row in rows for session in row["sessions"]
+                    if session["sport"] == sport and session["confirmed"]]
         if selected:
             sports.append({"sport": sport, "planned": len(selected),
                            "completed": sum(session["status"] in {"completed", "fallback"} for session in selected)})
+    if ranking_state is not None:
+        ranking_state.clear()
+        ranking_state.update(state)
     return {
         "schema_version": 2,
         "summary": {

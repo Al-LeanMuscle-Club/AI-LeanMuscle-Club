@@ -1,0 +1,87 @@
+name: Weekly training plan / 每周运动计划
+description: 制定本周计划并在评论中打卡；是否参加公开排名由你选择。
+title: "[Plan] YYYY-MM-DD · "
+labels: ["weekly-plan"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        每人每周一个计划。所有 Issue 和评论均公开；排行榜选择 No 也不会使原帖私密。
+        首次成功同步会确认本周计分活动，之后删减不会缩小计分分母，新增活动可记录但不额外加分。
+        只想随手记录？请选自由运动记录或饮食记录表单，无需先建周计划。
+  - type: input
+    id: week-starting
+    attributes:
+      label: Week starting
+      description: 本周周一的日期，格式 YYYY-MM-DD。
+      placeholder: "2026-10-26"
+    validations:
+      required: true
+  - type: input
+    id: time-zone
+    attributes:
+      label: Time zone
+      description: 运动记录所用的 IANA 时区，例如 Asia/Shanghai 或 America/New_York。
+      placeholder: Asia/Shanghai
+    validations:
+      required: true
+  - type: dropdown
+    id: participation-mode
+    attributes:
+      label: Participation mode
+      description: Active 参与计分；Recovery 记录恢复周并退出计分排名。
+      options: ["Active", "Recovery"]
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: public-leaderboard
+    attributes:
+      label: Public leaderboard
+      description: Yes 同意在公开周报中展示用户名和允许汇总的字段；No 不进入具名排名，原帖仍公开。
+      options: ["No", "Yes"]
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: primary-goal
+    attributes:
+      label: Primary goal
+      description: 当前主要目标；不影响积分倍率，也不限制本周运动项目。
+      options: ["fat-loss", "muscle-gain", "cardio", "skill", "habit"]
+      default: 4
+    validations:
+      required: false
+  - type: dropdown
+    id: research-week
+    attributes:
+      label: Research week
+      description: regular 常规、deadline 赶稿、travel 出差；仅作为安排背景。
+      options: ["regular", "deadline", "travel"]
+      default: 0
+    validations:
+      required: false
+  - type: textarea
+    id: planned-sessions
+    attributes:
+      label: Planned sessions
+      description: Active 必须填 1–14 行；Recovery 可以留空。列为 ID | 完整英文星期 | 运动项目 | 内容 | 可选替代方案。ID 使用 S1–S99 且不重复。示例仅演示格式，请按自己的情况填写。
+      placeholder: |
+        S1 | Tuesday | walking | 自己选择的散步 | 自己选择的忙周替代方案
+        S2 | Saturday | basketball | 和朋友练球
+    validations:
+      required: false
+  - type: textarea
+    id: busy-week-fallback
+    attributes:
+      label: Busy-week fallback
+      description: 忙碌时如何调整。若希望使用 /fallback，请在相应活动的第五列提前填写方案；此通用字段不代替第五列。
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: 可选背景、休息日或想交流的事情。不要求时长、体重、热量或照片。
+    validations:
+      required: false

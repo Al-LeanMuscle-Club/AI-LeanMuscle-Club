@@ -19,6 +19,8 @@ Enable **Settings → General → Features → Issues**. Create these labels bef
 | `weekly-plan` | `0759FF` | Weekly commitments and comment check-ins |
 | `experience` | `0E8A16` | Reusable experiences and research/fitness workflows |
 | `points-approved` | `FBCA04` | A maintainer's approval for an eligible contribution |
+| `activity-record` | `5319E7` | Free workout records, outside the points board |
+| `meal-record` | `D4C5F9` | Free food records, outside the points board |
 
 You can use the Issues label interface or, with GitHub CLI authenticated, run:
 
@@ -26,9 +28,11 @@ You can use the Issues label interface or, with GitHub CLI authenticated, run:
 gh label create weekly-plan --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 0759FF --description "Weekly plans and check-ins"
 gh label create experience --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 0E8A16 --description "Community experiences and workflows"
 gh label create points-approved --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color FBCA04 --description "Maintainer-approved weekly contribution"
+gh label create activity-record --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 5319E7 --description "Free workout records"
+gh label create meal-record --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color D4C5F9 --description "Free food records"
 ```
 
-Skip labels that already exist. Only trusted maintainers should decide which experience Issues receive `points-approved`. Members do not need repository write access to open Issues and comment on public Issues.
+Skip labels that already exist. Only trusted maintainers should decide which experience Issues receive `points-approved`. The label is necessary but no longer sufficient for points: an approval must also bind the exact content revision, author, and week in the reviewed ledger. Members do not need repository write access to open Issues and comment on public Issues.
 
 ## 3. Enable and test Actions
 
@@ -36,9 +40,9 @@ Skip labels that already exist. Only trusted maintainers should decide which exp
 2. Enable GitHub Actions for this repository and allow `actions/checkout`, `actions/setup-python`, `actions/setup-node`, and `actions/cache` if your organization restricts Actions.
 3. The report job requests `contents: write` and `issues: read` using GitHub's built-in token. No personal token or paid model key needs to be stored in the repository.
 4. Open **Actions → Update weekly participation reports → Run workflow** on the default branch. An empty `week_start` uses the current and previous Asia/Shanghai reporting weeks. For one older week, supply its Monday as `YYYY-MM-DD`. A specific-week run also displays that week in the README; the next empty-input or scheduled run restores the usual current-and-previous-week view.
-5. Confirm the run finishes and commits only README.md and reports/. With no real members, it should show an empty board.
+5. Confirm the run finishes and commits only README.md, reports/, and data/ranking-state.json. With no real members, it should show an empty board and no synthetic records.
 
-The scheduled run is **01:15 UTC / 09:15 Asia/Shanghai daily**. It is a daily refresh of weekly scores, not an LLM-written report. GitHub may delay scheduled runs, and inactive public repositories can have scheduled workflows disabled; a manual run is available.
+The scheduled run is **01:15 UTC / 09:15 Asia/Shanghai daily**. Relevant human Issue/comment changes also trigger a refresh, including the first successful plan confirmation. Workflows read trusted default-branch code, serialize report jobs, skip bot/PR events, and commit only an explicit output allowlist. They calculate participation scores without an LLM. GitHub may delay scheduled runs; a manual run is available. CI runs the Python and JavaScript tests for pushes and pull requests.
 
 If a branch rule requires PRs or rejects the bot push, the job will fail without force-pushing. Use a reviewed PR publishing approach for that repository, or keep local/manual report generation and commit through the normal review path. Do not weaken branch rules just to make the starter pass.
 
@@ -54,7 +58,7 @@ node --test tests/test_member_page.js
 python scripts/sync_github.py --repository Al-LeanMuscle-Club/AI-LeanMuscle-Club
 ```
 
-Do not commit credentials or raw downloaded Issue records. The script saves only public opt-in rows and anonymous aggregate counts. The current and previous weeks are refreshed by default; past reports remain historical snapshots unless refreshed manually.
+Do not commit credentials or raw downloaded Issue records. Reports save only public opt-in rows and aggregate counts. The separate reviewed data/ranking-state.json file stores structural plan confirmations and content-bound contribution approvals. Commit that state together with real reports so a later sync cannot reset a confirmed plan's denominator. Never delete or recreate a live ledger to resolve a validation error; restore a trusted version. The current and previous weeks are refreshed by default; past scores remain historical snapshots unless refreshed manually.
 
 For an **offline test only**, supply synthetic issue data and an explicit time:
 
@@ -72,7 +76,7 @@ Keep the chat available for members who do not want public tracking. Add nutriti
 
 ## 6. Configure the expanded community
 
-Follow [community organization](COMMUNITY.md) to enable Discussions and create the five categories. Category forms are shipped as files; they do not create or enable the categories. The existing `experience` Issue and `points-approved` label remain the only contribution-point approval route.
+Follow [community organization](COMMUNITY.md) to enable Discussions and create the six categories, including newcomer introductions. Category forms do not create or enable categories. Free activity and meal Issues work without a scoring plan. Discussions and free records do not enter the points board automatically. The experience-Issue route needs both the approval label and a matching maintainer-reviewed ledger record.
 
 The plan form now collects independent goals and research-week context. Each training row can specify its own sport and fallback. Old three-column plans and `/done` comments still work. Detailed instructions are in the [member guide](MEMBER_GUIDE.md) and its [Chinese version](MEMBER_GUIDE.zh-CN.md).
 
@@ -80,7 +84,7 @@ The plan form now collects independent goals and research-week context. Each tra
 
 `check-submission.yml` runs trusted default-branch code for a `weekly-plan` Issue or an author's command comment. Its token has `contents: read` and `issues: write`. It parses the JSON event rather than interpolating member text into shell commands. Bot comments, PRs, peer comments, and ordinary conversation do not cause reply loops. It maintains one editable format-status comment per thread, so each check-in does not add another bot reply.
 
-Format validation checks fields, authorship, session IDs, fallbacks, and dates. It does not verify physical activity, assess health, approve an experience, or refresh the public report. The scheduled report remains a separate job. If your organization blocks Issues writes, members can still validate locally; the check workflow will fail without changing their record.
+Format validation checks fields, authorship, session IDs, fallbacks, and dates. It does not verify physical activity, assess health, or approve an experience. The report workflow separately refreshes on relevant events and on schedule. If your organization blocks Issues writes, members can still validate locally. Free activity/meal records use their own forms and do not need command validation.
 
 From the repository root, with `GH_TOKEN` securely configured for read access:
 
@@ -94,11 +98,11 @@ These commands never submit changes. Carry-over writes a local draft and resets 
 
 ## 8. Scale reporting without growing the homepage
 
-The README contains aggregate overviews and links, not member-by-member standings. Full weekly Markdown and JSON reports remain in `reports/`. `reports/index.json` indexes the latest **12 available report weeks** for the browser helper; `reports/README.md` links older reports. Detailed free-text notes, meal contents, calorie estimates, photos, and body measurements are not copied into these outputs. The original Issues remain public. Live synchronization checks historical rows against current source metadata: a withdrawn opt-in, Recovery mode, invalid plan, or removed plan label removes the corresponding historical row from regenerated reports and indexes. Deleted Issues disappear after full reconciliation, which can be forced with `--refresh`. Git history and previously deployed Pages snapshots may retain older copies; republish Pages after a withdrawal. Refresh an older week explicitly to recalculate its training status, pause, or points.
+The README contains aggregate overviews and links. Full weekly Markdown and JSON reports remain in `reports/`. The index includes the latest **12 available report weeks**; the helper can load older public reports on demand. Raw notes, meal contents, calorie estimates, photos, and body measurements are not copied into outputs. Structured weekly rows display meal-record days and training days separately; free activity/meal Issues remain at their original sources and are outside these scoring counts. Live synchronization checks historical eligibility, including withdrawal, Recovery, pause, invalid plans, and removed labels, and updates participation/recovery counts when withdrawing rows. Deleted Issues disappear after full reconciliation, which can be forced with `--refresh`. Git history and previous Pages snapshots may retain older copies; republish Pages after withdrawal. Refresh an older week explicitly to recalculate its training scores or contribution approvals.
 
 Live synchronization defaults to `.club-cache/issues.json`, an ignored local cache containing source Issue/comment data. It stores no token, is written atomically with restricted local permissions, and must never be committed or copied into a website. Scheduled jobs restore it using `actions/cache`, scoped by repository ID. Organizations that do not want source records in Actions caches can remove the restore-cache step and use `--no-cache`.
 
-An initial run scans all plan metadata. Later runs read changed Issues and comments, refreshing affected current/previous-week threads; a full reconciliation runs every seven days. Removed labels and revoked contribution approvals are handled. A failed read retains the previous cache and reports. Historical reports remain snapshots until explicitly refreshed.
+An initial run scans all plan metadata. Later runs read changed Issues and comments, refreshing affected reporting and archived threads; a full reconciliation runs every seven days. Removed labels and revoked approvals are handled for selected scoring weeks. A failed read retains the previous cache and reports. Historical scores remain snapshots until explicitly refreshed; each weekly report retains its own generation time.
 
 ```bash
 python scripts/sync_github.py --refresh
@@ -107,7 +111,7 @@ python scripts/sync_github.py --no-cache
 
 ## 9. Optional browser helper and Pages deployment
 
-The responsive `tools/` page prepares search links, check-in comments, and carry-over drafts. It filters public opt-in weekly records by member, sport, and goal. It has no sign-in or stored credential and never submits a record automatically. It includes no connected food-analysis model.
+The Chinese-first `tools/` page provides free workout/meal links, check-in text, carry-over drafts, a weekly leaderboard with score components, and opt-in personal history. Sport filters select members whose plans include that sport; displayed points remain whole-week participation points. History summarizes available public participation weeks, training days, and meal-record days; old rows with unknown counts are not treated as zero. It has no sign-in, stored credential, automatic posting, or food-analysis model.
 
 To run locally, start this command at the repository root and open `http://localhost:8000/tools/`:
 
@@ -115,9 +119,29 @@ To run locally, start this command at the repository root and open `http://local
 python -m http.server 8000
 ```
 
-GitHub's source-code view does not run HTML. For a hosted page, choose **Settings → Pages → Build and deployment → Source: GitHub Actions**, allow `actions/upload-pages-artifact` and `actions/deploy-pages`, then manually run **Actions → Publish optional member helper** on the default branch. The workflow publishes only `tools/` and generated `reports/`, excluding source caches. Use the deployed URL shown in the successful workflow; repository ownership or custom-domain settings can change its address.
+GitHub's source-code view does not run HTML. For a hosted page, choose **Settings → Pages → Build and deployment → Source: GitHub Actions**, allow `actions/upload-pages-artifact` and `actions/deploy-pages`, then manually run **Actions → Publish optional member helper** on the default branch. The workflow publishes only `tools/`, generated `reports/`, and clearly marked `examples/`, excluding source caches and the ranking ledger. Use the deployed URL shown in the successful workflow; repository ownership or custom-domain settings can change its address.
 
 Pages deployment is opt-in and manual. Re-run this publish workflow after reports change to refresh the hosted snapshot. Opening a README link to `tools/index.html` still opens GitHub's code viewer; add your actual deployed URL to the README once deployment succeeds. No Pages settings or repository features are changed by copying these files.
+
+## 10. Confirmed plans and contribution approval
+
+The first successful live report locks the structured sessions of an opted-in Active plan. Confirmations persist in `data/ranking-state.json`; the ledger retains a lookup fingerprint and session structure after withdrawal so rejoining cannot reset the denominator. Fingerprints are not an anonymity guarantee. No descriptions, food text, photos, or tokens are stored there. Changes before the first successful confirmation cannot be reconstructed.
+
+For a useful experience Issue, first review its author, selected week, and current text, then add `points-approved`. With a securely configured read token, prepare the matching local approval:
+
+```bash
+python scripts/manage_ranking.py approve --issue 123
+```
+
+Review the ledger diff and submit it through a maintainer-reviewed PR. The point is awarded only after that approval record reaches the trusted reporting branch. Editing the Issue text, author, or selected week invalidates the match and needs another review. To withdraw approval, remove the label or prepare and commit a revocation:
+
+```bash
+python scripts/manage_ranking.py revoke --issue 123
+```
+
+Refresh the relevant week after approval changes. Protect ledger changes with normal maintainer review; a label or unreviewed PR alone must not authorize points. The CLI writes local files only.
+
+The example directory contains six separate topic guides and optional synthetic fixture data. Fixture runs use temporary confirmation state and `--dry-run` prints JSON without publishing it. Keep demonstrations out of `reports/` and out of the live ledger.
 
 ## References
 

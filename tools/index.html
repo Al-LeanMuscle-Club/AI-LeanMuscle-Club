@@ -1,114 +1,124 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>Member tools · AI Lean Muscle Club</title>
+  <meta name="description" content="AI 科研同行的运动与生活社区：准备训练打卡、记录饮食、查看每周参与榜和自己的公开记录。">
+  <title>记录与社区 · AI Lean Muscle Club</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
 <body>
   <header class="page-header wrap">
-    <a class="brand" href="../">AI Lean Muscle Club <span>MEMBER TOOLS</span></a>
-    <p class="eyebrow">Train models. Train your body.</p>
-    <h1>Make room for your next session.</h1>
-    <p class="intro">Find your plan, prepare a check-in, and look back at your own weeks. 简单记录，持续回来。</p>
-    <div class="notice">These tools prepare text and links. Review and submit it yourself on GitHub. All issues, comments, and photos in a public repository are public.</div>
+    <a class="brand" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club">AI Lean Muscle Club <span>运动 · 饮食 · 科研生活</span></a>
+    <p class="eyebrow">给科研生活，留一点运动的位置。</p>
+    <h1>记录今天，<br>下次一起回来。</h1>
+    <p class="intro">练了什么、吃了什么、忙碌的一周怎样安排？简单记录，也看看同行的尝试。</p>
+    <nav class="entry-grid" aria-label="参与入口">
+      <a id="start-workout" class="entry" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml" target="_blank" rel="noopener noreferrer"><strong>运动打卡 <span aria-hidden="true">↗</span></strong><span>随手记一次运动，无须周计划</span></a>
+      <a id="start-meal" class="entry" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml" target="_blank" rel="noopener noreferrer"><strong>记录饮食 <span aria-hidden="true">↗</span></strong><span>直接记录一餐，无须周计划</span></a>
+      <a class="entry" href="#ranking-heading"><strong>看看大家 <span aria-hidden="true">↓</span></strong><span>每周参与榜与公开记录</span></a>
+      <a class="entry" href="#community-heading"><strong>分享交流 <span aria-hidden="true">↓</span></strong><span>训练、饮食、搭子与 Agent</span></a>
+    </nav>
+    <p class="notice">这里帮你准备文字和链接。请自行到 GitHub 检查并发布；公开仓库中的 Issue、评论和照片都可被任何人看到。</p>
   </header>
 
   <main class="wrap">
-    <section class="settings" aria-label="Repository setting">
-      <label for="repository">GitHub repository / 仓库</label>
-      <input id="repository" value="Al-LeanMuscle-Club/AI-LeanMuscle-Club" autocomplete="off" spellcheck="false">
-      <p class="hint">Used for the plan-search and comment links. Public reports below come from this deployed site's repository.</p>
+    <section class="welcome" aria-labelledby="welcome-heading">
+      <div><p class="eyebrow">第一次来？</p><h2 id="welcome-heading">随手记录，也可以认真规划。</h2><p>点击上方运动或饮食入口即可自由记录，无须先建周计划。想按计划练习、复盘或自愿参加周榜，可以另外创建周计划。自由记录不会自动进入周榜，也不计入下方榜单的饮食日统计。</p></div>
+      <div class="welcome-links"><a class="button-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml" target="_blank" rel="noopener noreferrer">可选：创建本周计划 ↗</a><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples">先看完整参与示例</a></div>
     </section>
+
+    <details class="settings"><summary>仓库设置</summary><label for="repository">GitHub 仓库</label><input id="repository" value="Al-LeanMuscle-Club/AI-LeanMuscle-Club" autocomplete="off" spellcheck="false"><p class="hint">此设置只用于找计划和打开评论链接。下方榜单读取当前部署站点的公开报告。</p></details>
 
     <div class="tool-grid">
       <section class="card" aria-labelledby="find-heading">
-        <span class="step">01 / FIND</span>
-        <h2 id="find-heading">Your weekly plan / 找计划</h2>
-        <p>Search includes both open and closed issues, whether or not you joined the leaderboard.</p>
+        <span class="step">01 / 找计划</span>
+        <h2 id="find-heading">找到我的本周计划</h2>
+        <p>未参加排名、恢复中或已关闭的计划也可以找到。</p>
         <form id="find-form">
-          <label for="find-handle">GitHub username</label>
-          <input id="find-handle" placeholder="your-username" autocomplete="off" spellcheck="false" required>
-          <label for="find-week">Week starting / 周一日期</label>
-          <input id="find-week" type="date" required>
-          <button type="submit">Prepare search link</button>
+          <label for="find-handle">GitHub 用户名</label><input id="find-handle" placeholder="例如 your-username" autocomplete="off" spellcheck="false" required>
+          <label for="find-week">这一周的周一</label><input id="find-week" type="date" required>
+          <button type="submit">生成搜索链接</button>
         </form>
         <p id="find-message" class="message" role="status"></p>
-        <a id="find-link" class="action-link" hidden target="_blank" rel="noopener noreferrer">Open my weekly plans ↗</a>
+        <a id="find-link" class="action-link" hidden target="_blank" rel="noopener noreferrer">打开我的周计划 ↗</a>
       </section>
 
       <section class="card" aria-labelledby="log-heading">
-        <span class="step">02 / CHECK IN</span>
-        <h2 id="log-heading">Prepare a comment / 打卡</h2>
+        <span class="step">02 / 记下今天</span>
+        <h2 id="log-heading" tabindex="-1">已有周计划？准备一条评论</h2>
+        <p>已有周计划，可在此生成评论并发布到自己的计划中。没有计划也可以直接<a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml" target="_blank" rel="noopener noreferrer">自由记录运动 ↗</a>或<a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml" target="_blank" rel="noopener noreferrer">记录一餐 ↗</a>。</p>
+        <div class="actions" aria-label="周计划评论类型"><button id="plan-workout" class="secondary" type="button">周计划 · 运动评论</button><button id="plan-meal" class="secondary" type="button">周计划 · 饮食评论</button></div>
         <form id="log-form">
           <div class="field-pair">
-            <div><label for="log-issue">Your plan issue number</label><input id="log-issue" inputmode="numeric" placeholder="123" required></div>
-            <div><label for="log-date">Actual date / 实际日期</label><input id="log-date" type="date" required></div>
+            <div><label for="log-issue">周计划 Issue 编号</label><input id="log-issue" inputmode="numeric" placeholder="链接末尾的数字，如 123" required></div>
+            <div><label for="log-date">实际记录日期</label><input id="log-date" type="date" required></div>
           </div>
           <div class="field-pair">
-            <div><label for="log-status">Record type</label><select id="log-status"><option value="done">Completed / 完成</option><option value="fallback">Declared fallback / 替代完成</option><option value="partial">Partly completed / 部分完成</option><option value="skip">Skipped / 跳过</option><option value="meal">Optional meal / 饮食记录</option></select></div>
-            <div><label for="log-session">Session ID</label><input id="log-session" value="S1" autocomplete="off" spellcheck="false"></div>
+            <div><label for="log-status">记录类型</label><select id="log-status"><option value="done">运动 · 整次完成</option><option value="fallback">运动 · 按预设替代方案完成</option><option value="partial">运动 · 部分完成（半次额度）</option><option value="skip">运动 · 跳过</option><option value="meal">饮食 · 记录一餐（不加分）</option></select></div>
+            <div><label for="log-session">训练编号</label><input id="log-session" value="S1" autocomplete="off" spellcheck="false"></div>
           </div>
-          <p id="status-help" class="hint">One session counts once. Optional training details may follow the command.</p>
-          <label for="log-notes">Optional notes / 可选记录</label>
-          <textarea id="log-notes" rows="3" placeholder="What did you do? How did it fit your research day?"></textarea>
-          <button type="submit">Prepare comment</button>
+          <p id="status-help" class="hint">同一训练编号只计一次，可以附上训练内容和感受。</p>
+          <label for="log-notes">今天的记录（选填）</label><textarea id="log-notes" rows="3" placeholder="例如：跑步 20 分钟，今天状态不错。或：午餐是米饭、鸡肉和青菜。"></textarea>
+          <button type="submit">生成可复制的打卡文字</button>
         </form>
         <p id="log-message" class="message" role="status"></p>
         <div id="log-result" hidden>
-          <label for="log-output">Review, then copy into your own issue</label>
-          <textarea id="log-output" rows="4" readonly></textarea>
-          <div class="actions"><button id="copy-log" class="secondary" type="button">Copy comment</button><a id="log-link" class="action-link" target="_blank" rel="noopener noreferrer">Open plan ↗</a></div>
+          <label for="log-output">检查后复制到自己的 Issue 评论区</label><textarea id="log-output" rows="4" readonly></textarea>
+          <div class="actions"><button id="copy-log" class="secondary" type="button">复制文字</button><a id="log-link" class="action-link" target="_blank" rel="noopener noreferrer">打开计划并发布 ↗</a></div>
+          <p class="hint">照片可在 GitHub 评论中添加。点击“生成”或“复制”不会自动发布记录。</p>
         </div>
       </section>
 
-      <section class="card wide" aria-labelledby="carry-heading">
-        <span class="step">03 / NEXT WEEK</span>
-        <h2 id="carry-heading">Reuse a plan / 沿用上周计划</h2>
-        <p>Paste the <strong>raw Markdown body</strong> of a previous weekly-plan issue. This creates a local draft, resets leaderboard consent to <strong>No</strong>, and removes session check marks. Review the schedule and any old personal details before posting.</p>
-        <form id="carry-form">
-          <label for="carry-source">Previous plan Markdown</label>
-          <textarea id="carry-source" rows="5" spellcheck="false" placeholder="### Week starting&#10;&#10;2026-10-26&#10;&#10;### Time zone&#10;&#10;Asia/Shanghai&#10;&#10;..." required></textarea>
-          <label for="carry-week">New week starting / 新一周的周一</label>
-          <input id="carry-week" type="date" required>
-          <button type="submit">Prepare next week's draft</button>
-        </form>
-        <p id="carry-message" class="message" role="status"></p>
-        <div id="carry-result" hidden>
-          <label for="carry-output">Local draft — not submitted</label>
-          <textarea id="carry-output" rows="8" readonly></textarea>
-          <button id="copy-carry" class="secondary" type="button">Copy draft</button>
-          <p class="hint">Use the weekly-plan form on GitHub and copy the reviewed fields. Existing comments and completions are never carried over.</p>
+      <section class="card wide" aria-labelledby="ranking-heading">
+        <div class="section-top"><div><span class="step">03 / 每周参与榜</span><h2 id="ranking-heading">看看大家这周的坚持</h2></div><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/blob/main/docs/SCORING.md">计分与更正规则 ↗</a></div>
+        <p>这是按个人计划完成情况计算的<strong>参与分</strong>，每周重置，上限 10 分。相同总分并列；不同运动量、体能和身体变化不作比较。</p>
+        <div class="score-guide" aria-label="分数组成"><span>计划 <strong>1</strong></span><span>执行 <strong>0–6</strong></span><span>复盘 <strong>0–2</strong></span><span>获批分享 <strong>0–1</strong></span></div>
+        <p class="hint">执行分 = 6 ×（整次完成 + 0.5 × 部分完成）÷ 已确认计划次数。替代完成计入整次完成；饮食记录不加分。首次成功同步确认计划后，删除计划项不会自动缩小计分分母。</p>
+        <div class="filters">
+          <div><label for="filter-week">选择报告周（周一）</label><select id="filter-week"><option value="">等待公开报告</option></select></div>
+          <div><label for="filter-handle">查找成员</label><input id="filter-handle" placeholder="用户名，可模糊搜索" autocomplete="off" spellcheck="false"></div>
+          <div><label for="filter-sport">计划包含的运动</label><select id="filter-sport"><option value="">所有运动</option><option value="strength">力量</option><option value="basketball">篮球</option><option value="running">跑步</option><option value="swimming">游泳</option><option value="cycling">骑行</option><option value="walking">步行</option><option value="mobility">活动恢复</option><option value="other">其他 / 旧格式计划</option></select></div>
+          <div><label for="filter-goal">个人目标</label><select id="filter-goal"><option value="">所有目标</option><option value="fat-loss">减脂</option><option value="muscle-gain">增肌</option><option value="cardio">心肺</option><option value="skill">运动技能</option><option value="habit">保持习惯</option></select></div>
         </div>
-        <details><summary>Command-line alternative</summary><p>From the repository, prepare a draft without submitting it:</p><pre><code>python scripts/member_tools.py carry --issue 123 --week 2026-11-02 --output draft.md</code></pre></details>
+        <p class="hint">运动筛选只筛出计划中包含该运动的成员，显示的仍是整周参与分，并非单项运动榜。筛选后保留原周榜名次。</p>
+        <p id="report-message" class="message" role="status">正在读取公开报告…</p>
+        <p id="report-snapshot" class="hint">周榜是发布时的快照；这里会显示所选周的生成时间。</p>
+        <div class="table-scroll"><table id="ranking-table" class="responsive-table" hidden><caption class="visually-hidden">所选周公开参与榜</caption><thead><tr><th>周榜名次</th><th>成员与目标</th><th>计划完成情况</th><th>参与分 / 10</th><th>计划状态</th><th>来源</th></tr></thead><tbody id="ranking-body"></tbody></table></div>
+        <p class="hint">只展示同意公开且处于 Active 状态的成员。未出现不代表没有运动；Recovery、暂停和选择 No 的成员仍可用上方工具找计划。</p>
       </section>
 
       <section class="card wide" aria-labelledby="history-heading">
-        <span class="step">04 / LOOK BACK</span>
-        <h2 id="history-heading">Public weekly records / 周记录</h2>
-        <p>Browse the recent 12 report weeks for members who opted into the public board. Scores describe each person's own plan; they do not compare fitness, health, or research output. Meal details and free-text notes are not shown here. <a href="../reports/README.md">Older weekly reports / 历史归档</a></p>
-        <div class="filters">
-          <div><label for="filter-handle">Member / 用户名</label><input id="filter-handle" placeholder="Filter by username" autocomplete="off" spellcheck="false"></div>
-          <div><label for="filter-sport">Sport / 运动</label><select id="filter-sport"><option value="">All sports</option><option value="strength">Strength</option><option value="basketball">Basketball</option><option value="running">Running</option><option value="swimming">Swimming</option><option value="cycling">Cycling</option><option value="walking">Walking</option><option value="mobility">Mobility</option><option value="other">Other / legacy plan</option></select></div>
-          <div><label for="filter-goal">Goal / 目标</label><select id="filter-goal"><option value="">All goals</option><option value="fat-loss">Fat loss</option><option value="muscle-gain">Muscle gain</option><option value="cardio">Cardio</option><option value="skill">Sport skill</option><option value="habit">Maintain a habit</option></select></div>
-        </div>
-        <p id="report-message" class="message" role="status">Loading public reports…</p>
-        <p id="report-snapshot" class="hint">This is a deployed snapshot. Maintainers must republish Pages after reports change. 网页数据以最近一次发布为准。</p>
-        <div class="table-scroll"><table id="history-table" hidden><thead><tr><th>Week</th><th>Member</th><th>Goal</th><th>Sports</th><th>Completed / planned</th><th>Points / 10</th><th>Source</th></tr></thead><tbody id="history-body"></tbody></table></div>
-        <p class="hint">Not appearing here does not mean someone did not exercise. Use “Your weekly plan” above to find opt-out, paused, or recovery plans.</p>
+        <span class="step">04 / 我的公开记录</span><h2 id="history-heading">把每一周，慢慢积累起来</h2>
+        <p>输入完整用户名，查看自己已公开的参与周数、训练记录日和饮食记录日。训练日按日期去重，部分完成也属于记录；饮食日不增加分数。这里仅汇总同意公开的周计划记录，自由记录不自动加入。</p>
+        <label for="history-handle">完整 GitHub 用户名</label><input id="history-handle" placeholder="例如 your-username" autocomplete="off" spellcheck="false">
+        <div id="member-stats" class="stat-grid" hidden aria-live="polite"></div>
+        <p id="history-message" class="message" role="status">输入用户名后查看。仅统计已加载周报中的公开周计划记录；自由记录不在此汇总。</p>
+        <div class="table-scroll"><table id="history-table" class="responsive-table" hidden><caption class="visually-hidden">成员每周公开记录</caption><thead><tr><th>报告周</th><th>当周名次</th><th>计划完成情况</th><th>参与分 / 10</th><th>训练日</th><th>饮食日</th><th>来源与快照</th></tr></thead><tbody id="history-body"></tbody></table></div>
+        <div class="actions"><button id="load-older" class="secondary" type="button" hidden>载入更早的 12 周</button><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/blob/main/reports/README.md">打开全部历史周报 ↗</a></div>
+        <p id="history-window" class="hint">默认读取最近 12 个报告周，可以继续载入更早报告。旧报告未提供的天数显示“未记录”，不会当成 0。</p>
+      </section>
+
+      <section class="card wide" aria-labelledby="community-heading">
+        <span class="step">05 / 交流与搭子</span><h2 id="community-heading">分享一个别人也能试试的办法</h2>
+        <div class="community-grid"><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>新人报到与训练记录</strong><span>随手记一次运动，或用小计划记录中断与重新开始。</span></a><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>餐食与忙周安排</strong><span>食堂搭配、出差吃饭、快手菜与真实感受。</span></a><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>找运动搭子</strong><span>写清地点、时间、项目和对参与者的期待。</span></a><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>科研与 Agent 工作流</strong><span>分享实际用过的方法、效果和适用条件。</span></a></div>
+        <div class="actions"><a class="button-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions" target="_blank" rel="noopener noreferrer">前往 Discussions 交流 ↗</a><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples">先看交流示例</a></div><p class="hint">Discussions 需由维护者在仓库设置中启用；如暂不可用，可以先查看示例。示例内容为虚构演示，不代表真实成员记录。</p>
+      </section>
+
+      <section class="card wide" aria-labelledby="carry-heading">
+        <span class="step">06 / 下一周</span><h2 id="carry-heading">沿用上周计划，按情况调整</h2>
+        <p>粘贴原计划的 <strong>Markdown 正文</strong>，生成下周本地草稿。公开榜单选项会重置为 <strong>No</strong>；训练勾选状态不会沿用，请检查日程和旧的个人信息。</p>
+        <form id="carry-form"><label for="carry-source">上周计划 Markdown</label><textarea id="carry-source" rows="5" spellcheck="false" placeholder="### Week starting&#10;&#10;2026-10-26&#10;&#10;### Time zone&#10;&#10;Asia/Shanghai&#10;&#10;..." required></textarea><label for="carry-week">新一周的周一</label><input id="carry-week" type="date" required><button type="submit">生成下周草稿</button></form>
+        <p id="carry-message" class="message" role="status"></p>
+        <div id="carry-result" hidden><label for="carry-output">本地草稿 · 尚未提交</label><textarea id="carry-output" rows="8" readonly></textarea><button id="copy-carry" class="secondary" type="button">复制草稿</button><p class="hint">到 GitHub 周计划表单中填写检查后的字段。旧评论和打卡记录不会被带到下一周。</p></div>
+        <details><summary>命令行方式</summary><p>在仓库目录生成本地草稿：</p><pre><code>python scripts/member_tools.py carry --issue 123 --week 2026-11-02 --output draft.md</code></pre></details>
       </section>
     </div>
 
-    <section class="help" aria-labelledby="help-heading">
-      <h2 id="help-heading">Keep it simple.</h2>
-      <p>Fallback completion needs an alternative already declared for that session. Partial and skipped sessions earn no execution points. Meal records are optional and earn no extra points; model estimates are estimates, not a health score.</p>
-      <p>This page runs on GitHub Pages or a local web server. GitHub's code viewer does not execute HTML; use the deployed Pages URL, or download the repository and run <code>python -m http.server 8000</code>, then open <code>http://localhost:8000/tools/</code>.</p>
-      <p>There is no sign-in, saved credential, automatic submission, or connected food-analysis model here. Clipboard actions and drafts stay in your browser. The report view fetches this site's generated public report.</p>
-    </section>
+    <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">真实记录，按自己的节奏。</h2><p>照片、体重、热量和营养数据都不是参加条件。可选估算请注明来源和不确定之处；这里没有自动食物识别或营养评分。</p><p>此页面无需登录，不保存凭据，也不会自动发帖。草稿和复制操作留在浏览器；公开报告来自本站部署文件。报告更新后，维护者需要重新发布 Pages，网页才能反映新内容。</p><details><summary>本地预览说明</summary><p>GitHub 代码页面不会执行 HTML。请打开部署后的 Pages 地址，或在仓库目录运行 <code>python -m http.server 8000</code>，再打开 <code>http://localhost:8000/tools/</code>。</p></details></section>
   </main>
-  <footer class="wrap"><p>AI Lean Muscle Club · Make a realistic plan. Return when you can.</p></footer>
+  <footer class="wrap"><p>AI Lean Muscle Club · 计划可以小一点，也欢迎重新开始。</p></footer>
 </body>
 </html>

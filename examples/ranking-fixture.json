@@ -1,0 +1,193 @@
+[
+  {
+    "number": 1001,
+    "title": "[SYNTHETIC EXAMPLE] Weekly plan",
+    "body": "### Week starting\n\n2026-10-26\n\n### Time zone\n\nAsia/Shanghai\n\n### Participation mode\n\nActive\n\n### Public leaderboard\n\nYes\n\n### Primary goal\n\nhabit\n\n### Research week\n\nregular\n\n### Planned sessions\n\nS1 | Monday | strength | Illustrative session\nS2 | Wednesday | running | Illustrative session\nS3 | Friday | walking | Illustrative session\nS4 | Sunday | mobility | Illustrative session",
+    "labels": [
+      {
+        "name": "weekly-plan"
+      }
+    ],
+    "user": {
+      "login": "demo-member-a"
+    },
+    "html_url": "https://github.com/example/club/issues/1001",
+    "created_at": "2026-10-25T12:00:00Z",
+    "comments_data": [
+      {
+        "id": 1,
+        "body": "/done S1 2026-10-26",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 2,
+        "body": "/done S2 2026-10-28",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 3,
+        "body": "/partial S3 2026-10-30",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 4,
+        "body": "/review\nSynthetic reflection for testing.",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 5,
+        "body": "/meal 2026-10-26 | Synthetic meal note.",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 6,
+        "body": "/meal 2026-10-26 | Another note on the same day.",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 7,
+        "body": "/meal 2026-10-27 | Synthetic meal note.",
+        "user": {
+          "login": "demo-member-a"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      }
+    ]
+  },
+  {
+    "number": 1002,
+    "title": "[SYNTHETIC EXAMPLE] Weekly plan",
+    "body": "### Week starting\n\n2026-10-26\n\n### Time zone\n\nAsia/Shanghai\n\n### Participation mode\n\nActive\n\n### Public leaderboard\n\nYes\n\n### Primary goal\n\nhabit\n\n### Research week\n\nregular\n\n### Planned sessions\n\nS1 | Tuesday | basketball | Illustrative session",
+    "labels": [
+      {
+        "name": "weekly-plan"
+      }
+    ],
+    "user": {
+      "login": "demo-member-b"
+    },
+    "html_url": "https://github.com/example/club/issues/1002",
+    "created_at": "2026-10-25T12:00:00Z",
+    "comments_data": [
+      {
+        "id": 101,
+        "body": "/done S1 2026-10-27",
+        "user": {
+          "login": "demo-member-b"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 102,
+        "body": "/review\nSynthetic reflection for testing.",
+        "user": {
+          "login": "demo-member-b"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      }
+    ]
+  },
+  {
+    "number": 1003,
+    "title": "[SYNTHETIC EXAMPLE] Weekly plan",
+    "body": "### Week starting\n\n2026-10-26\n\n### Time zone\n\nAsia/Shanghai\n\n### Participation mode\n\nActive\n\n### Public leaderboard\n\nYes\n\n### Primary goal\n\nhabit\n\n### Research week\n\nregular\n\n### Planned sessions\n\nS1 | Monday | swimming | Illustrative session\nS2 | Wednesday | swimming | Illustrative session\nS3 | Friday | walking | Illustrative session\nS4 | Sunday | walking | Illustrative session",
+    "labels": [
+      {
+        "name": "weekly-plan"
+      }
+    ],
+    "user": {
+      "login": "demo-member-c"
+    },
+    "html_url": "https://github.com/example/club/issues/1003",
+    "created_at": "2026-10-25T12:00:00Z",
+    "comments_data": [
+      {
+        "id": 201,
+        "body": "/done S1 2026-10-26",
+        "user": {
+          "login": "demo-member-c"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 202,
+        "body": "/done S2 2026-10-28",
+        "user": {
+          "login": "demo-member-c"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      },
+      {
+        "id": 203,
+        "body": "/review\nSynthetic reflection for testing.",
+        "user": {
+          "login": "demo-member-c"
+        },
+        "created_at": "2026-11-01T12:00:00Z",
+        "updated_at": "2026-11-01T12:00:00Z"
+      }
+    ]
+  },
+  {
+    "number": 1004,
+    "title": "[SYNTHETIC EXAMPLE] Weekly plan",
+    "body": "### Week starting\n\n2026-10-26\n\n### Time zone\n\nAsia/Shanghai\n\n### Participation mode\n\nRecovery\n\n### Public leaderboard\n\nNo\n\n### Primary goal\n\nhabit\n\n### Research week\n\nregular\n\n### Planned sessions\n\n",
+    "labels": [
+      {
+        "name": "weekly-plan"
+      }
+    ],
+    "user": {
+      "login": "demo-recovery"
+    },
+    "html_url": "https://github.com/example/club/issues/1004",
+    "created_at": "2026-10-25T12:00:00Z",
+    "comments_data": []
+  },
+  {
+    "number": 1005,
+    "title": "[SYNTHETIC EXAMPLE] Weekly plan",
+    "body": "### Week starting\n\n2026-10-26\n\n### Time zone\n\nAsia/Shanghai\n\n### Participation mode\n\nActive\n\n### Public leaderboard\n\nNo\n\n### Primary goal\n\nhabit\n\n### Research week\n\nregular\n\n### Planned sessions\n\nS1 | Monday | walking | Illustrative session",
+    "labels": [
+      {
+        "name": "weekly-plan"
+      }
+    ],
+    "user": {
+      "login": "demo-optout"
+    },
+    "html_url": "https://github.com/example/club/issues/1005",
+    "created_at": "2026-10-25T12:00:00Z",
+    "comments_data": []
+  }
+]
