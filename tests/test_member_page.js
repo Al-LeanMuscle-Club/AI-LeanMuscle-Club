@@ -304,6 +304,30 @@ test("page renders backend ranking and selected-week timestamp, then prepares a 
   } finally {page.restore();}
 });
 
+test("mobile form accepts a pasted plan link, resets the date and keeps publishing manual", async () => {
+  const page=await mountedPage({schema_version:2,weeks:[]});
+  try {
+    const get=page.doc.getElementById;
+    const today=get("log-date").value;
+    get("log-date").value="2026-10-21";
+    await get("log-today").fire("click");
+    assert.equal(get("log-date").value,today);
+    get("log-date").value="2026-10-21";
+    get("log-issue").value="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/123";
+    get("log-session").value="S2";
+    get("log-notes").value="周三晚上打了篮球。";
+    await get("log-form").fire("submit");
+    assert.equal(get("log-result").hidden,false);
+    assert.equal(get("log-link").href,get("log-issue").value);
+    assert.equal(get("log-output").value,"/done S2 2026-10-21\n周三晚上打了篮球。");
+    get("log-issue").value="https://github.com/other/club/issues/123";
+    await get("log-form").fire("submit");
+    assert.equal(get("log-result").hidden,true);
+    assert.match(get("log-message").textContent,/当前仓库/);
+    assert.deepEqual(page.calls,["../reports/index.json"],"drafting must not post or fetch member records");
+  } finally {page.restore();}
+});
+
 test("free-record review works without leaderboard data and follows repository and author changes", async () => {
   const page=await mountedPage(undefined);
   try {
