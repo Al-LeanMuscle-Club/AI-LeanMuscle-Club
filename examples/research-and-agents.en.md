@@ -4,7 +4,7 @@
 
 # Research and Agents
 
-Post in Discussions → **Research and Agents**. If the experience has clear value for others to reuse, it can be summarized in an Experience sharing Issue; it does not automatically earn contribution points.
+Post using the [research and Agents Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=research-and-agents.yml) with the `[Research / Agent]` title prefix. These community Issues do not automatically earn points. If the experience has clear value for others to reuse, summarize it in a separate [Experience sharing Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) and link the original post. Contribution credit still requires the `points-approved` label and a trusted approval ledger entry matching the body, author, and week, reviewed by a maintainer through the existing process.
 
 ## Example 1: Organizing public experiment results into a table
 
@@ -30,4 +30,4 @@ Fictional member Zhou tries using an Agent to assign topic labels to public pape
 Several papers receive unsuitable labels. The time spent checking and regrouping them offsets the initial savings.
 
 **Outcome and limits**
-There is no reliable figure for net time saved in this attempt. Next time, establish the category boundaries using a small sample before deciding whether to process the full set. Discussion of checking methods is welcome; model output should not be treated as a verified conclusion.
+There is no reliable figure for net time saved in this attempt. Next time, establish the category boundaries using a small sample before deciding whether to process the full set. Sharing checking methods is welcome; model output should not be treated as a verified conclusion.

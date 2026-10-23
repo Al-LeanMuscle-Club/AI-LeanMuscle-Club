@@ -12,14 +12,16 @@ Every file contains two short fictional scenarios. They are reference material, 
 
 | Topic | English examples | Chinese examples | Where to participate |
 | --- | --- | --- | --- |
-| Newcomer introductions | [Beginners](beginners.en.md) | [中文](beginners.md) | Discussions → Beginners |
-| Training conversations and activity records | [Training and recovery](training-and-recovery.en.md) | [中文](training-and-recovery.md) | Discussion or Activity record Issue |
-| Food records and sharing | [Nutrition](nutrition.en.md) | [中文](nutrition.md) | Discussion or Meal record Issue |
-| Finding partners | [Buddies and events](buddies-and-events.en.md) | [中文](buddies-and-events.md) | Discussion |
-| Research and Agents | [Research and Agents](research-and-agents.en.md) | [中文](research-and-agents.md) | Discussion or Experience sharing Issue |
-| Participation rankings | [Ranking](ranking.en.md) | [中文](ranking.md) | Isolated offline examples; never `reports/` |
+| Newcomer introductions | [Beginners](beginners.en.md) | [中文](beginners.md) | [Newcomer introduction Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml) · `[Hello]` |
+| Training conversations and activity records | [Training and recovery](training-and-recovery.en.md) | [中文](training-and-recovery.md) | [Training Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=training-and-recovery.yml) / [Activity record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
+| Food records and sharing | [Nutrition](nutrition.en.md) | [中文](nutrition.md) | [Nutrition-sharing Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=nutrition.yml) / [Meal record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
+| Finding partners | [Buddies and events](buddies-and-events.en.md) | [中文](buddies-and-events.md) | [Buddies Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml) · `[Buddies]` |
+| Research and Agents | [Research and Agents](research-and-agents.en.md) | [中文](research-and-agents.md) | [Research and Agents Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=research-and-agents.yml) / [Experience sharing Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) |
+| Participation rankings | [Ranking](ranking.en.md) | [中文](ranking.md) | Isolated offline examples; never `reports/`. Use a [weekly-plan Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) for real scored records. |
 
-The named Discussion categories must be enabled and created by maintainers before their forms can be used. If those categories do not exist yet, use an appropriate existing category such as General or Show and tell. Templates do not create live posts or fake members. A published demonstration must remain clearly marked as fictional and must not be submitted for scoring.
+All community conversations use Issue forms. Topics are identified by title prefixes such as `[Hello]`, `[Training]`, `[Food]`, `[Buddies]`, and `[Research / Agent]`; no additional category setup or new community labels are required. Maintainers use the [announcement Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=announcements.yml) with `[Club]`.
+
+Templates do not create live posts or fake members. A published demonstration must remain clearly marked as fictional and must not be submitted for scoring. Research/Agent community Issues do not automatically earn points. Request contribution recognition through a separate experience Issue and the existing approval-label plus trusted-ledger review process.
 
 ## A mixed-sport week
 

@@ -6,6 +6,8 @@
 
 **This file is an offline demonstration, not a community weekly report.** The fictional names do not correspond to members or link to real Issues. Its data is not written to `reports/` or the homepage participation counts.
 
+For real scored records, use the [weekly-plan Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml); for casual records, use an [Activity record Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml). Do not post the fictional activities below as your own actual check-ins.
+
 The current weekly **participation score** has a maximum of 10: plan 1, execution 0–6, reflection 2, and approved contribution 0–1. Scores do not compare fitness, training difficulty, or body changes.
 
 ## Example 1: Displaying full and partial completion separately

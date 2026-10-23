@@ -8,7 +8,8 @@ body:
       value: |
         分享训练安排、饮食记录方法、找搭子或科研与 Agent 经验。所有内容公开。
         发帖本身不加分；贡献分需要维护者审核、points-approved 标签及匹配当前正文的仓库审批记录，每人每周最多 1 分。
-        随意交流也欢迎使用 Discussions；不要提交虚构经历作为真实活动。
+        随意交流也欢迎选择社区 Issue 表单，无需周计划且不计分；不要提交虚构经历作为真实活动。
+        For casual conversation, use a community Issue form; no weekly plan is needed and these posts earn no points. Do not submit fictional experiences as real activity.
   - type: input
     id: week-starting
     attributes:

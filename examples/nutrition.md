@@ -4,7 +4,7 @@
 
 # 饮食记录与分享 / Nutrition
 
-交流放 Discussions → **Nutrition**；记录用 **Meal record / 饮食记录** Issue，已有周计划也可以在该 Issue 下评论 `/meal`。
+交流使用 [饮食分享 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=nutrition.yml)，标题使用 `[Food]` 前缀。记录用 [Meal record / 饮食记录 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml)；已有周计划也可以在该 Issue 下评论 `/meal`。社区分享和独立饮食记录都不自动计分。
 
 ## 示例一：没有热量数字的午餐
 
@@ -40,5 +40,5 @@ Asia/Shanghai
 
 有效日期都是同一天，因此周报展示 **1 个饮食记录日**，总分不变。不要把吃得少、照片精美或发帖多作为竞赛目标。
 
-**讨论问题：** [Food] 大家忙碌时怎样准备第二天午餐？
+**社区 Issue 问题：** [Food] 大家忙碌时怎样准备第二天午餐？
 可以分享适合自己节奏的安排，不要求提供营养评级或统一食谱。

@@ -4,7 +4,7 @@
 
 # 新人报到 / Beginners
 
-发布位置：Discussions → **Beginners**。无需先建周计划或参加排名。
+发布位置：[新人报到 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml)，标题使用 `[Hello]` 前缀。无需先建周计划或参加排名；此类社区 Issue 不自动计分。
 
 ## 示例一：第一次开始记录
 

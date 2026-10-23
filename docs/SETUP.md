@@ -1,6 +1,6 @@
 # Maintainer setup
 
-This starter contains English and Chinese community documentation, the supplied poster, Issue and Discussion forms, a tested score calculator, member helpers, and GitHub Actions workflows. It does not contain real member records or a connected AI model. Committing it to GitHub and enabling the repository settings below is what activates the live workflow.
+This starter contains English and Chinese community documentation, the supplied poster, Issue forms for records and community conversations, a tested score calculator, member helpers, and GitHub Actions workflows. It does not contain real member records or a connected AI model. Committing it to GitHub and enabling the repository settings below is what activates the live workflow.
 
 ## 1. Put the files in the intended repository
 
@@ -76,7 +76,7 @@ Keep the chat available for members who do not want public tracking. Add nutriti
 
 ## 6. Configure the expanded community
 
-Follow [community organization](COMMUNITY.md) to enable Discussions and create the six categories, including newcomer introductions. Category forms do not create or enable categories. Free activity and meal Issues work without a scoring plan. Discussions and free records do not enter the points board automatically. The experience-Issue route needs both the approval label and a matching maintainer-reviewed ledger record.
+Keep Issues enabled and merge the six community forms in `.github/ISSUE_TEMPLATE/` into the default branch. [Community organization](COMMUNITY.md) lists the newcomer, training, food, research/Agent, partner/event, and notice forms. Members choose through **Issues → New issue** and continue in comments. Title prefixes organize topics without additional labels. Announcements are ordinary Issues that maintainers review and may pin; the form does not restrict who can submit one. Community posts and free activity/meal records need no scoring plan and earn no points. Experience contribution review still requires the approval label and a matching maintainer-reviewed ledger record.
 
 The plan form now collects independent goals and research-week context. Each training row can specify its own sport and fallback. Old three-column plans and `/done` comments still work. Detailed instructions are in the [member guide](MEMBER_GUIDE.md) and its [Chinese version](MEMBER_GUIDE.zh-CN.md).
 

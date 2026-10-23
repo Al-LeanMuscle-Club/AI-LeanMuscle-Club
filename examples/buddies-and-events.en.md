@@ -4,7 +4,7 @@
 
 # Buddies and events
 
-Post in Discussions → **Buddies and events**. Express interest in the thread first, then let the participants confirm the arrangements.
+Post using the [buddies and events Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml) with the `[Buddies]` title prefix. Express interest in the Issue comments first, then let the participants confirm the arrangements. These community Issues do not automatically earn points.
 
 ## Example 1: Starting to exercise together online
 
