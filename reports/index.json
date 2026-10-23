@@ -8,7 +8,7 @@
   "weeks": [
     {
       "week_start": "2026-10-19",
-      "generated_at": "2026-10-23T08:53:24.388627Z",
+      "generated_at": "2026-10-23T08:53:35.471818Z",
       "participants_count": 0,
       "recovery_count": 0,
       "schema_version": 2,
@@ -26,7 +26,7 @@
     },
     {
       "week_start": "2026-10-12",
-      "generated_at": "2026-10-23T08:53:24.388627Z",
+      "generated_at": "2026-10-23T08:53:35.471818Z",
       "participants_count": 0,
       "recovery_count": 0,
       "schema_version": 2,

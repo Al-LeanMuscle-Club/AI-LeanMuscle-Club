@@ -79,7 +79,7 @@ Scoring rules: v2. Full/fallback = 1, partial = 0.5; the confirmed plan fixes th
 
 [Full weekly report](reports/2026-10-19.md) · [Public data](reports/2026-10-19.json) · [Find my plan / browser helper](tools/index.html)
 
-Updated: 2026-10-23T08:53:24.388627Z
+Updated: 2026-10-23T08:53:35.471818Z
 
 ### Week starting 2026-10-12
 
@@ -93,7 +93,7 @@ Scoring rules: v2. Full/fallback = 1, partial = 0.5; the confirmed plan fixes th
 
 [Full weekly report](reports/2026-10-12.md) · [Public data](reports/2026-10-12.json) · [Find my plan / browser helper](tools/index.html)
 
-Updated: 2026-10-23T08:53:24.388627Z
+Updated: 2026-10-23T08:53:35.471818Z
 
 <!-- CLUB:END -->
 
