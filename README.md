@@ -2,7 +2,7 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-**Train models. Train your body.**
+**Train models and train your body. Just for fun and health.**
 
 A community for AI researchers to make room for exercise, recovery, and a life alongside research.
 
