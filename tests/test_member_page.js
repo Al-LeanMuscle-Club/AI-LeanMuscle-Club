@@ -35,6 +35,16 @@ test("invalid or injected repository, username, date and issue inputs are reject
   for (const value of ["0", "-1", "1?comment=2", "Infinity", "9007199254740993"]) assert.throws(() => tools.issueNumber(value));
 });
 
+test("mobile check-in accepts safe GitHub issue links and rejects wrong repositories", () => {
+  assert.equal(tools.issueUrl("example/club", "https://github.com/example/club/issues/123"), "https://github.com/example/club/issues/123");
+  assert.equal(tools.issueUrl("example/club", "123"), "https://github.com/example/club/issues/123");
+  for (const value of ["https://github.com/other/club/issues/123", "https://github.com/example/club/issues/123?x=1",
+    "https://github.com/example/club/issues/123#comment", "http://github.com/example/club/issues/123",
+    "https://github.com.evil.test/example/club/issues/123"]) {
+    assert.throws(() => tools.issueUrl("example/club", value));
+  }
+});
+
 test("comment generation preserves notes, validates sessions and cannot embed extra commands", () => {
   assert.equal(tools.buildComment({status:"done",session:"s2",date:"2026-10-27",notes:"Strength, 30 min.\r\nFelt good."}), "/done S2 2026-10-27\nStrength, 30 min.\nFelt good.");
   for (const status of ["fallback", "partial", "skip"]) assert.equal(tools.buildComment({status,session:"S1",date:"2026-10-27"}), "/" + status + " S1 2026-10-27");
