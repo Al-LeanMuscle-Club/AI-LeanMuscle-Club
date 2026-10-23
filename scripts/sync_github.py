@@ -284,12 +284,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ranking-state", type=Path, help="Trusted ledger; defaults to ROOT/data/ranking-state.json.")
     parser.add_argument("--no-cache", action="store_true", help="Read a complete live snapshot without caching.")
     parser.add_argument("--refresh", action="store_true", help="Rebuild the live cache with a full scan.")
+    parser.add_argument("--deleted-issue", type=int, help="Trusted issues.deleted webhook Issue number to evict from the incremental cache.")
     parser.add_argument("--dry-run", action="store_true", help="Print public report JSON without writing files.")
     args = parser.parse_args(argv)
     try:
         validate_repository(args.repository)
         if args.as_of and not args.fixture:
             raise ValueError("--as-of is only available with an offline fixture.")
+        if args.deleted_issue is not None and (args.deleted_issue < 1 or args.fixture):
+            raise ValueError("--deleted-issue requires a positive Issue number and live GitHub data.")
         as_of = datetime.fromisoformat(args.as_of.replace("Z", "+00:00")) if args.as_of else datetime.now(timezone.utc)
         if as_of.tzinfo is None or as_of.utcoffset() is None:
             raise ValueError("--as-of must include a time-zone offset.")
@@ -314,7 +317,9 @@ def main(argv: list[str] | None = None) -> int:
             archived = [path.stem for path in (args.root / "reports").glob("????-??-??.json")
                         if re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem)]
             read_weeks = sorted(set(weeks + archived))
-            issues = GitHubReader(args.repository, token).records(read_weeks, cache_path=cache, refresh=args.refresh)
+            issues = GitHubReader(args.repository, token).records(
+                read_weeks, cache_path=cache, refresh=args.refresh, deleted_issue=args.deleted_issue
+            )
         boards = [build_week(issues, week, as_of, ranking_state=ranking_state) for week in weeks]
         if args.dry_run:
             print(json.dumps(boards, indent=2, ensure_ascii=False))
