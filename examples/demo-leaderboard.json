@@ -1,0 +1,411 @@
+{
+  "synthetic": true,
+  "purpose": "Fictional offline examples, never live participation.",
+  "source_fixture": "examples/demo-training-records.json",
+  "week_start": "2026-10-12",
+  "as_of": "2026-10-19T12:00:00Z",
+  "board": {
+    "schema_version": 2,
+    "scoring_version": 2,
+    "summary": {
+      "public_members": 6,
+      "planned_sessions": 18,
+      "completed_sessions": 10,
+      "partial_sessions": 6,
+      "skipped_sessions": 1,
+      "reviewed_members": 5
+    },
+    "sports": [
+      {
+        "sport": "strength",
+        "planned": 3,
+        "completed": 2
+      },
+      {
+        "sport": "basketball",
+        "planned": 3,
+        "completed": 3
+      },
+      {
+        "sport": "running",
+        "planned": 2,
+        "completed": 1
+      },
+      {
+        "sport": "swimming",
+        "planned": 2,
+        "completed": 2
+      },
+      {
+        "sport": "cycling",
+        "planned": 2,
+        "completed": 1
+      },
+      {
+        "sport": "walking",
+        "planned": 3,
+        "completed": 1
+      },
+      {
+        "sport": "mobility",
+        "planned": 3,
+        "completed": 0
+      }
+    ],
+    "week_start": "2026-10-12",
+    "generated_at": "2026-10-19T12:00:00Z",
+    "participants_count": 7,
+    "recovery_count": 1,
+    "leaderboard": [
+      {
+        "rank": 1,
+        "handle": "demo-aurora",
+        "issue_number": 900001,
+        "issue_url": "https://github.com/example/fictional-club-demo/issues/900001",
+        "planned": 3,
+        "confirmed_planned": 3,
+        "current_planned": 3,
+        "plan_changed": false,
+        "completed": 3,
+        "completion_rate": 1.0,
+        "execution_rate": 1.0,
+        "meal_days": 3,
+        "recorded_training_days": 3,
+        "plan_points": 1,
+        "execution_points": 6.0,
+        "review_points": 2,
+        "contribution_points": 0,
+        "total_points": 9.0,
+        "goal": "habit",
+        "research_week": "regular",
+        "sports": [
+          "running",
+          "strength",
+          "swimming"
+        ],
+        "partial": 0,
+        "skipped": 0,
+        "sessions": [
+          {
+            "id": "S1",
+            "day": "Monday",
+            "sport": "strength",
+            "status": "completed",
+            "date": "2026-10-12",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S2",
+            "day": "Wednesday",
+            "sport": "running",
+            "status": "completed",
+            "date": "2026-10-14",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S3",
+            "day": "Saturday",
+            "sport": "swimming",
+            "status": "completed",
+            "date": "2026-10-17",
+            "used_fallback": false,
+            "confirmed": true
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "handle": "demo-birch",
+        "issue_number": 900002,
+        "issue_url": "https://github.com/example/fictional-club-demo/issues/900002",
+        "planned": 3,
+        "confirmed_planned": 3,
+        "current_planned": 3,
+        "plan_changed": false,
+        "completed": 2,
+        "completion_rate": 0.666667,
+        "execution_rate": 0.833333,
+        "meal_days": 2,
+        "recorded_training_days": 3,
+        "plan_points": 1,
+        "execution_points": 5.0,
+        "review_points": 2,
+        "contribution_points": 0,
+        "total_points": 8.0,
+        "goal": "skill",
+        "research_week": "regular",
+        "sports": [
+          "basketball",
+          "cycling",
+          "mobility"
+        ],
+        "partial": 1,
+        "skipped": 0,
+        "sessions": [
+          {
+            "id": "S1",
+            "day": "Tuesday",
+            "sport": "basketball",
+            "status": "completed",
+            "date": "2026-10-13",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S2",
+            "day": "Thursday",
+            "sport": "cycling",
+            "status": "completed",
+            "date": "2026-10-15",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S3",
+            "day": "Sunday",
+            "sport": "mobility",
+            "status": "partial",
+            "date": "2026-10-18",
+            "used_fallback": false,
+            "confirmed": true
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "handle": "demo-cedar",
+        "issue_number": 900003,
+        "issue_url": "https://github.com/example/fictional-club-demo/issues/900003",
+        "planned": 4,
+        "confirmed_planned": 4,
+        "current_planned": 4,
+        "plan_changed": false,
+        "completed": 2,
+        "completion_rate": 0.5,
+        "execution_rate": 0.75,
+        "meal_days": 1,
+        "recorded_training_days": 4,
+        "plan_points": 1,
+        "execution_points": 4.5,
+        "review_points": 2,
+        "contribution_points": 0,
+        "total_points": 7.5,
+        "goal": "habit",
+        "research_week": "deadline",
+        "sports": [
+          "basketball",
+          "cycling",
+          "running",
+          "strength"
+        ],
+        "partial": 2,
+        "skipped": 0,
+        "sessions": [
+          {
+            "id": "S1",
+            "day": "Monday",
+            "sport": "strength",
+            "status": "completed",
+            "date": "2026-10-12",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S2",
+            "day": "Wednesday",
+            "sport": "basketball",
+            "status": "fallback",
+            "date": "2026-10-14",
+            "used_fallback": true,
+            "confirmed": true
+          },
+          {
+            "id": "S3",
+            "day": "Friday",
+            "sport": "running",
+            "status": "partial",
+            "date": "2026-10-16",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S4",
+            "day": "Sunday",
+            "sport": "cycling",
+            "status": "partial",
+            "date": "2026-10-18",
+            "used_fallback": false,
+            "confirmed": true
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "handle": "demo-ember",
+        "issue_number": 900005,
+        "issue_url": "https://github.com/example/fictional-club-demo/issues/900005",
+        "planned": 3,
+        "confirmed_planned": 3,
+        "current_planned": 3,
+        "plan_changed": false,
+        "completed": 2,
+        "completion_rate": 0.666667,
+        "execution_rate": 0.833333,
+        "meal_days": 2,
+        "recorded_training_days": 3,
+        "plan_points": 1,
+        "execution_points": 5.0,
+        "review_points": 0,
+        "contribution_points": 0,
+        "total_points": 6.0,
+        "goal": "cardio",
+        "research_week": "regular",
+        "sports": [
+          "basketball",
+          "swimming",
+          "walking"
+        ],
+        "partial": 1,
+        "skipped": 0,
+        "sessions": [
+          {
+            "id": "S1",
+            "day": "Monday",
+            "sport": "swimming",
+            "status": "completed",
+            "date": "2026-10-12",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S2",
+            "day": "Thursday",
+            "sport": "basketball",
+            "status": "completed",
+            "date": "2026-10-15",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S3",
+            "day": "Saturday",
+            "sport": "walking",
+            "status": "partial",
+            "date": "2026-10-17",
+            "used_fallback": false,
+            "confirmed": true
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "handle": "demo-delta",
+        "issue_number": 900004,
+        "issue_url": "https://github.com/example/fictional-club-demo/issues/900004",
+        "planned": 2,
+        "confirmed_planned": 2,
+        "current_planned": 2,
+        "plan_changed": false,
+        "completed": 1,
+        "completion_rate": 0.5,
+        "execution_rate": 0.5,
+        "meal_days": 1,
+        "recorded_training_days": 1,
+        "plan_points": 1,
+        "execution_points": 3.0,
+        "review_points": 2,
+        "contribution_points": 0,
+        "total_points": 6.0,
+        "goal": "habit",
+        "research_week": "travel",
+        "sports": [
+          "mobility",
+          "walking"
+        ],
+        "partial": 0,
+        "skipped": 1,
+        "sessions": [
+          {
+            "id": "S1",
+            "day": "Tuesday",
+            "sport": "walking",
+            "status": "completed",
+            "date": "2026-10-13",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S2",
+            "day": "Friday",
+            "sport": "mobility",
+            "status": "skipped",
+            "date": "2026-10-16",
+            "used_fallback": false,
+            "confirmed": true
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "handle": "demo-finch",
+        "issue_number": 900006,
+        "issue_url": "https://github.com/example/fictional-club-demo/issues/900006",
+        "planned": 3,
+        "confirmed_planned": 3,
+        "current_planned": 3,
+        "plan_changed": false,
+        "completed": 0,
+        "completion_rate": 0.0,
+        "execution_rate": 0.333333,
+        "meal_days": 2,
+        "recorded_training_days": 2,
+        "plan_points": 1,
+        "execution_points": 2.0,
+        "review_points": 2,
+        "contribution_points": 0,
+        "total_points": 5.0,
+        "goal": "habit",
+        "research_week": "deadline",
+        "sports": [
+          "mobility",
+          "strength",
+          "walking"
+        ],
+        "partial": 2,
+        "skipped": 0,
+        "sessions": [
+          {
+            "id": "S1",
+            "day": "Tuesday",
+            "sport": "mobility",
+            "status": "partial",
+            "date": "2026-10-13",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S2",
+            "day": "Thursday",
+            "sport": "walking",
+            "status": "partial",
+            "date": "2026-10-15",
+            "used_fallback": false,
+            "confirmed": true
+          },
+          {
+            "id": "S3",
+            "day": "Sunday",
+            "sport": "strength",
+            "status": "planned",
+            "date": null,
+            "used_fallback": false,
+            "confirmed": true
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  }
+}
