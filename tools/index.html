@@ -49,12 +49,12 @@
       <section class="card" aria-labelledby="log-heading">
         <span class="step">02 / 记下今天</span>
         <h2 id="log-heading" tabindex="-1">已有周计划？准备一条评论</h2>
-        <p>已有周计划，可在此生成评论并发布到自己的计划中。没有计划也可以直接<a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml" target="_blank" rel="noopener noreferrer">自由记录运动 ↗</a>或<a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml" target="_blank" rel="noopener noreferrer">记录一餐 ↗</a>。</p>
+        <p>手机上可直接粘贴周计划的 GitHub Issue 链接，选择状态并复制评论；不需要记住 Issue 编号。已有周计划，可在此生成评论并发布到自己的计划中。没有计划也可以直接<a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml" target="_blank" rel="noopener noreferrer">自由记录运动 ↗</a>或<a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml" target="_blank" rel="noopener noreferrer">记录一餐 ↗</a>。</p>
         <div class="actions" aria-label="周计划评论类型"><button id="plan-workout" class="secondary" type="button">周计划 · 运动评论</button><button id="plan-meal" class="secondary" type="button">周计划 · 饮食评论</button></div>
         <form id="log-form">
           <div class="field-pair">
-            <div><label for="log-issue">周计划 Issue 编号</label><input id="log-issue" inputmode="numeric" placeholder="链接末尾的数字，如 123" required></div>
-            <div><label for="log-date">实际记录日期</label><input id="log-date" type="date" required></div>
+            <div><label for="log-issue">周计划 Issue 链接或编号</label><input id="log-issue" inputmode="url" placeholder="粘贴 GitHub Issue 链接或填写 123" autocomplete="off" spellcheck="false" required></div>
+            <div><label for="log-date">实际记录日期</label><input id="log-date" type="date" required><button id="log-today" type="button" class="secondary date-shortcut">今天</button></div>
           </div>
           <div class="field-pair">
             <div><label for="log-status">记录类型</label><select id="log-status"><option value="done">运动 · 整次完成</option><option value="fallback">运动 · 按预设替代方案完成</option><option value="partial">运动 · 部分完成（半次额度）</option><option value="skip">运动 · 跳过</option><option value="meal">饮食 · 记录一餐（不加分）</option></select></div>
