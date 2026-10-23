@@ -66,7 +66,31 @@ A member can lift, play basketball, and run in the same week. Goals and sports a
 ## Weekly community board
 
 <!-- CLUB:START -->
-The weekly overview has not been generated yet. After setup, the scheduled or manual workflow will show real participation counts and links to complete weekly reports. No synthetic members or scores are presented as real activity.
+
+### Week starting 2026-10-19
+
+Participants: **0** · Recovery/paused: **0**
+
+Opted-in active members: **0** · Recorded sessions: **0/0** · Weekly reflections: **0**
+
+Session totals describe opted-in active members' own plans; they are not health or athletic rankings.
+
+[Full weekly report](reports/2026-10-19.md) · [Public data](reports/2026-10-19.json) · [Find my plan / browser helper](tools/index.html)
+
+Updated: 2026-10-23T08:34:08.619316Z
+
+### Week starting 2026-10-12
+
+Participants: **0** · Recovery/paused: **0**
+
+Opted-in active members: **0** · Recorded sessions: **0/0** · Weekly reflections: **0**
+
+Session totals describe opted-in active members' own plans; they are not health or athletic rankings.
+
+[Full weekly report](reports/2026-10-12.md) · [Public data](reports/2026-10-12.json) · [Find my plan / browser helper](tools/index.html)
+
+Updated: 2026-10-23T08:34:08.619316Z
+
 <!-- CLUB:END -->
 
 The homepage stays short as participation grows. Full opt-in standings and session-status records live in [weekly reports](reports/README.md); free-text notes, meal contents, body measurements, and raw comments are not copied into generated reports. Selecting `No` hides your identity from generated standings and indexes, **not from your original public Issue**.

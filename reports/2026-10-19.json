@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "summary": {
+    "public_members": 0,
+    "planned_sessions": 0,
+    "completed_sessions": 0,
+    "partial_sessions": 0,
+    "skipped_sessions": 0,
+    "reviewed_members": 0
+  },
+  "sports": [],
+  "week_start": "2026-10-19",
+  "generated_at": "2026-10-23T08:34:08.619316Z",
+  "participants_count": 0,
+  "recovery_count": 0,
+  "leaderboard": [],
+  "warnings": []
+}

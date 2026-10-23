@@ -1,6 +1,44 @@
 {
   "schema_version": 2,
   "window_weeks": 12,
-  "available_weeks": [],
-  "weeks": []
+  "available_weeks": [
+    "2026-10-19",
+    "2026-10-12"
+  ],
+  "weeks": [
+    {
+      "week_start": "2026-10-19",
+      "generated_at": "2026-10-23T08:34:08.619316Z",
+      "participants_count": 0,
+      "recovery_count": 0,
+      "schema_version": 2,
+      "summary": {
+        "public_members": 0,
+        "planned_sessions": 0,
+        "completed_sessions": 0,
+        "partial_sessions": 0,
+        "skipped_sessions": 0,
+        "reviewed_members": 0
+      },
+      "sports": [],
+      "leaderboard": []
+    },
+    {
+      "week_start": "2026-10-12",
+      "generated_at": "2026-10-23T08:34:08.619316Z",
+      "participants_count": 0,
+      "recovery_count": 0,
+      "schema_version": 2,
+      "summary": {
+        "public_members": 0,
+        "planned_sessions": 0,
+        "completed_sessions": 0,
+        "partial_sessions": 0,
+        "skipped_sessions": 0,
+        "reviewed_members": 0
+      },
+      "sports": [],
+      "leaderboard": []
+    }
+  ]
 }
