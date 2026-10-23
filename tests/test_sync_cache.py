@@ -152,6 +152,15 @@ class CacheTests(unittest.TestCase):
             self.read(NOW + timedelta(hours=1), deleted_issue=0)
         self.assertEqual(original, self.cache.read_bytes())
 
+    def test_deleted_issue_is_not_resurrected_by_stale_incremental_metadata(self):
+        self.read()
+        self.updates = [issue()]
+        self.comment_updates = [comment()]
+        self.fail_thread = True
+        records = self.read(NOW + timedelta(hours=1), deleted_issue=1)
+        self.assertEqual([record["number"] for record in records], [2, 3])
+        self.assertNotIn("1", json.loads(self.cache.read_text())["issues"])
+
     def test_seven_day_full_reconciliation_drops_deleted_issues(self):
         self.read()
         self.calls.clear()
