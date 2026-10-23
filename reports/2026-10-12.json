@@ -1,5 +1,6 @@
 {
   "schema_version": 2,
+  "scoring_version": 2,
   "summary": {
     "public_members": 0,
     "planned_sessions": 0,
@@ -10,7 +11,7 @@
   },
   "sports": [],
   "week_start": "2026-10-12",
-  "generated_at": "2026-10-23T08:34:23.040020Z",
+  "generated_at": "2026-10-23T08:41:47.340084Z",
   "participants_count": 0,
   "recovery_count": 0,
   "leaderboard": [],

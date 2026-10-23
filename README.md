@@ -75,9 +75,11 @@ Opted-in active members: **0** · Recorded sessions: **0/0** · Weekly reflectio
 
 Session totals describe opted-in active members' own plans; they are not health or athletic rankings.
 
+Scoring rules: v2. Full/fallback = 1, partial = 0.5; the confirmed plan fixes the denominator.
+
 [Full weekly report](reports/2026-10-19.md) · [Public data](reports/2026-10-19.json) · [Find my plan / browser helper](tools/index.html)
 
-Updated: 2026-10-23T08:34:23.040020Z
+Updated: 2026-10-23T08:41:47.340084Z
 
 ### Week starting 2026-10-12
 
@@ -87,9 +89,11 @@ Opted-in active members: **0** · Recorded sessions: **0/0** · Weekly reflectio
 
 Session totals describe opted-in active members' own plans; they are not health or athletic rankings.
 
+Scoring rules: v2. Full/fallback = 1, partial = 0.5; the confirmed plan fixes the denominator.
+
 [Full weekly report](reports/2026-10-12.md) · [Public data](reports/2026-10-12.json) · [Find my plan / browser helper](tools/index.html)
 
-Updated: 2026-10-23T08:34:23.040020Z
+Updated: 2026-10-23T08:41:47.340084Z
 
 <!-- CLUB:END -->
 
