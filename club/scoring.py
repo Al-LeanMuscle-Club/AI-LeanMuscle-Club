@@ -17,7 +17,11 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from club.taxonomy import GOALS, RESEARCH_WEEKS, SPORTS
-from club.ranking_state import body_sha256, clean_state, new_state, plan_fingerprint
+from club.ranking_state import (body_sha256, clean_state, migrate_plan_confirmation,
+                                new_state, plan_fingerprint)
+
+
+SCORING_VERSION = 2
 
 
 _DATE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
@@ -51,6 +55,7 @@ class _Session:
 @dataclass(frozen=True)
 class _Plan:
     handle: str
+    user_id: int | None
     number: int
     url: str
     created_at: datetime
@@ -88,6 +93,12 @@ def _handle(record: Mapping[str, Any]) -> str | None:
     user = record.get("user")
     value = user.get("login") if isinstance(user, Mapping) else None
     return value if isinstance(value, str) and _HANDLE.fullmatch(value) else None
+
+
+def _user_id(record: Mapping[str, Any]) -> int | None:
+    user = record.get("user")
+    value = user.get("id") if isinstance(user, Mapping) else None
+    return value if isinstance(value, int) and not isinstance(value, bool) and value > 0 else None
 
 
 def _labels(issue: Mapping[str, Any]) -> set[str]:
@@ -227,7 +238,7 @@ def _parse_plan(issue: Mapping[str, Any], week: str, as_of: datetime) -> tuple[_
     raw_comments = issue.get("comments_data", [])
     comments = tuple(raw_comments) if isinstance(raw_comments, list) else ()
     return _Plan(
-        handle, number, url, created, zone, mode, visibility == "Yes", sessions,
+        handle, _user_id(issue), number, url, created, zone, mode, visibility == "Yes", sessions,
         comments, goal, research_week,
     ), []
 
@@ -373,8 +384,11 @@ def _confirmed_plan(plan: _Plan, week: str, as_of: datetime, state: dict[str, An
 
     Only structure is retained. Descriptions remain editable and honor based;
     a confirmation cannot reconstruct edits made before the first live sync.
+    A same-handle legacy confirmation migrates when its GitHub ID first appears.
+    If a legacy-only account renamed before that observation, its old hash
+    cannot be linked safely; never guess identity from other confirmations.
     """
-    key = plan_fingerprint(week, plan.handle)
+    key = plan_fingerprint(week, plan.handle, plan.user_id)
     current = [{"id": session.id, "day": session.day, "sport": session.sport,
                 "fallback": session.fallback} for session in plan.sessions]
     confirmation = state["confirmed_plans"].get(key)
@@ -480,6 +494,7 @@ def build_week(
     rows: list[dict[str, Any]] = []
     recovery_count = 0
     for key, plan in plans.items():
+        migrate_plan_confirmation(state, week_start, plan.handle, plan.user_id)
         # Check pause before confirming: opting out/recovery must not create a
         # named public ledger. Existing fingerprints survive later withdrawal.
         _, _, paused, _ = _activity(plan, start, as_of)
@@ -553,6 +568,7 @@ def build_week(
         ranking_state.update(state)
     return {
         "schema_version": 2,
+        "scoring_version": SCORING_VERSION,
         "summary": {
             "public_members": len(rows),
             "planned_sessions": sum(row["planned"] for row in rows),

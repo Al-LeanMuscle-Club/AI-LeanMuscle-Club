@@ -14,13 +14,25 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from club.scoring import build_week  # noqa: E402
+from club.scoring import SCORING_VERSION, build_week  # noqa: E402
 from club.ranking_state import load_state, new_state, save_state  # noqa: E402
 from scripts.github_api import GitHubReader, validate_repository  # noqa: E402
 
 START = "<!-- CLUB:START -->"
 END = "<!-- CLUB:END -->"
 INDEX_WEEKS = 12
+
+
+def scoring_rules_note(board: dict) -> str:
+    """Describe the saved rules without assigning today's formula to old data."""
+    version = board.get("scoring_version")
+    if type(version) is int and version == SCORING_VERSION:
+        return (f"Scoring rules: v{version}. Full/fallback = 1, partial = 0.5; "
+                "the confirmed plan fixes the denominator.")
+    if type(version) is int and version > 0:
+        return f"Scoring rules: v{version}. Scores retain the rules recorded for this snapshot."
+    return ("Scoring rules: not recorded. Snapshot scores are preserved; "
+            "do not apply the current formula retroactively.")
 
 
 def board_summary(board: dict) -> str:
@@ -36,6 +48,7 @@ def board_summary(board: dict) -> str:
         f"Participants: **{board['participants_count']}** · Recovery/paused: **{board['recovery_count']}**", "",
         f"Opted-in active members: **{len(rows)}** · Recorded sessions: **{completed}/{planned}** · Weekly reflections: **{reviewed}**", "",
         "Session totals describe opted-in active members' own plans; they are not health or athletic rankings.", "",
+        scoring_rules_note(board), "",
         f"[Full weekly report](reports/{week}.md) · [Public data](reports/{week}.json) · [Find my plan / browser helper](tools/index.html)", "",
         f"Updated: {board['generated_at']}",
     ]
@@ -62,15 +75,16 @@ def board_markdown(board: dict, report_links: bool = False) -> str:
         f"### Week starting {board['week_start']}", "",
         f"Updated: {board['generated_at']} · Valid weekly participants: {board['participants_count']} · "
         f"Recovery/paused: {board['recovery_count']}", "",
-        "Only opted-in Active participants are named. These are self-reported participation points. "
-        "Execution credit: full/fallback = 1, partial = 0.5; the confirmed plan fixes the denominator.", "",
+        "Only opted-in Active participants are named. These are self-reported participation points.", "",
+        scoring_rules_note(board), "",
     ]
     if board.get("counts_updated_at"):
         lines += [f"Participant/recovery counts refreshed: {board['counts_updated_at']}. "
                   "Remaining members' scores retain the original snapshot above.", ""]
     if board["leaderboard"]:
+        plan_heading = "confirmed" if board.get("scoring_version") == SCORING_VERSION else "planned"
         lines += [
-            "| Rank | Member | Full / confirmed | Plan | Execution | Review | Contribution | Total / 10 |",
+            f"| Rank | Member | Full / {plan_heading} | Plan | Execution | Review | Contribution | Total / 10 |",
             "| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
         for row in board["leaderboard"]:
@@ -92,9 +106,14 @@ def board_markdown(board: dict, report_links: bool = False) -> str:
         lines += ["", "#### Goals and weekly context", "", "| Member | Goal | Research week | Activities | Partial / skipped | Training days | Meal days | Current / confirmed plan |", "| --- | --- | --- | --- | ---: | ---: | ---: | ---: |"]
         for row in board["leaderboard"]:
             changed = " (adjusted)" if row.get("plan_changed") else ""
-            lines.append(f"| [@{row['handle']}]({row['issue_url']}) | {row.get('goal', 'habit')} | {row.get('research_week', 'regular')} | {', '.join(row.get('sports', []))} | {row.get('partial', 0)} / {row.get('skipped', 0)} | {row.get('recorded_training_days', 0)} | {row.get('meal_days', 0)} | {row.get('current_planned', row['planned'])} / {row.get('confirmed_planned', row['planned'])}{changed} |")
-        lines += ["", "Training/meal days count distinct recorded dates and add no points. "
-                  "Extra sessions remain visible in public data but do not change the confirmed denominator or execution score."]
+            counts = {key: row.get(key) if row.get(key) is not None else "—" for key in (
+                "partial", "skipped", "recorded_training_days", "meal_days", "current_planned", "confirmed_planned"
+            )}
+            lines.append(f"| [@{row['handle']}]({row['issue_url']}) | {row.get('goal', 'habit')} | {row.get('research_week', 'regular')} | {', '.join(row.get('sports', []))} | {counts['partial']} / {counts['skipped']} | {counts['recorded_training_days']} | {counts['meal_days']} | {counts['current_planned']} / {counts['confirmed_planned']}{changed} |")
+        lines += ["", "A dash means this snapshot did not record that field."]
+        if board.get("scoring_version") == SCORING_VERSION:
+            lines += ["Training/meal days count distinct recorded dates and add no points. "
+                      "Extra sessions remain visible in public data but do not change the confirmed denominator or execution score."]
     return "\n".join(lines) + "\n"
 
 
@@ -104,6 +123,9 @@ def public_index_snapshot(board: dict) -> dict:
         "week_start", "generated_at", "participants_count", "recovery_count"
     )}
     snapshot["schema_version"] = 2
+    version = board.get("scoring_version")
+    if type(version) is int and version > 0:
+        snapshot["scoring_version"] = version
     if "counts_updated_at" in board:
         snapshot["counts_updated_at"] = board["counts_updated_at"]
     snapshot["summary"] = {key: value for key, value in board.get("summary", {}).items()

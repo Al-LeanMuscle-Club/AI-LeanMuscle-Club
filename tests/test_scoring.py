@@ -58,6 +58,11 @@ def approved_state(*issues, now=AS_OF):
 
 
 class ScoringTests(unittest.TestCase):
+    def test_reports_identify_scoring_rules_separately_from_the_data_schema(self):
+        board = build_week([], WEEK, AS_OF)
+        self.assertEqual(board["schema_version"], 2)
+        self.assertEqual(board["scoring_version"], 2)
+
     def test_full_score_and_fractional_completion(self):
         p = plan()
         p["comments_data"] = [

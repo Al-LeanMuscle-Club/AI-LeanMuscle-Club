@@ -98,7 +98,7 @@ These commands never submit changes. Carry-over writes a local draft and resets 
 
 ## 8. Scale reporting without growing the homepage
 
-The README contains aggregate overviews and links. Full weekly Markdown and JSON reports remain in `reports/`. The index includes the latest **12 available report weeks**; the helper can load older public reports on demand. Raw notes, meal contents, calorie estimates, photos, and body measurements are not copied into outputs. Structured weekly rows display meal-record days and training days separately; free activity/meal Issues remain at their original sources and are outside these scoring counts. Live synchronization checks historical eligibility, including withdrawal, Recovery, pause, invalid plans, and removed labels, and updates participation/recovery counts when withdrawing rows. Deleted Issues disappear after full reconciliation, which can be forced with `--refresh`. Git history and previous Pages snapshots may retain older copies; republish Pages after withdrawal. Refresh an older week explicitly to recalculate its training scores or contribution approvals.
+The README contains aggregate overviews and links. Full weekly Markdown and JSON reports remain in `reports/`. The index includes the latest **12 available report weeks**; the helper can load older public reports on demand. Raw notes, meal contents, calorie estimates, photos, and body measurements are not copied into outputs. Structured weekly rows display meal-record days and training days separately; free activity/meal Issues remain at their original sources and are outside these scoring counts. Live synchronization checks historical eligibility, including withdrawal, Recovery, pause, invalid plans, and removed labels, and updates participation/recovery counts when withdrawing rows. Deleted Issues disappear after full reconciliation, which can be forced with `--refresh`. Git history and previous Pages snapshots may retain older copies. If automatic Pages publishing is enabled, a successful report refresh also updates the hosted snapshot; otherwise manually republish Pages after withdrawal. Refresh an older week explicitly to recalculate its training scores or contribution approvals.
 
 Live synchronization defaults to `.club-cache/issues.json`, an ignored local cache containing source Issue/comment data. It stores no token, is written atomically with restricted local permissions, and must never be committed or copied into a website. Scheduled jobs restore it using `actions/cache`, scoped by repository ID. Organizations that do not want source records in Actions caches can remove the restore-cache step and use `--no-cache`.
 
@@ -119,9 +119,20 @@ To run locally, start this command at the repository root and open `http://local
 python -m http.server 8000
 ```
 
-GitHub's source-code view does not run HTML. For a hosted page, choose **Settings → Pages → Build and deployment → Source: GitHub Actions**, allow `actions/upload-pages-artifact` and `actions/deploy-pages`, then manually run **Actions → Publish optional member helper** on the default branch. The workflow publishes only `tools/`, generated `reports/`, and clearly marked `examples/`, excluding source caches and the ranking ledger. Use the deployed URL shown in the successful workflow; repository ownership or custom-domain settings can change its address.
+GitHub's source-code view does not run HTML. To publish a hosted helper:
 
-Pages deployment is opt-in and manual. Re-run this publish workflow after reports change to refresh the hosted snapshot. Opening a README link to `tools/index.html` still opens GitHub's code viewer; add your actual deployed URL to the README once deployment succeeds. No Pages settings or repository features are changed by copying these files.
+1. Review the intended Pages audience and access settings. A private source repository does not by itself guarantee a private Pages site.
+2. Choose **Settings → Pages → Build and deployment → Source: GitHub Actions**. If your organization restricts Actions, allow `actions/configure-pages`, `actions/upload-pages-artifact`, and `actions/deploy-pages`, in addition to `actions/checkout`.
+3. Manually run **Actions → Publish optional member helper** on the **default branch**. This explicit manual action works without an automatic-publishing variable. The build job has `contents: read` and `pages: read`, including the permission needed to read private repository Pages settings; only the deploy job receives `pages: write` and `id-token: write`.
+4. Use the deployed URL shown in the successful workflow. Repository ownership or custom-domain settings can change its address. Opening a README link to `tools/index.html` still opens GitHub's code viewer; add your actual deployed URL to the README once deployment succeeds.
+
+The workflow publishes only `tools/`, generated `reports/`, and clearly marked `examples/`, excluding source caches and the ranking ledger. It does not enable Pages or change the site's visibility settings.
+
+For **automatic updates**, first complete the manual deployment above, then create a repository **Actions variable** under **Settings → Secrets and variables → Actions → Variables** named `PUBLISH_MEMBER_HELPER` with the value `true`. Without this variable, automatic publishing remains disabled, including in a new fork. Remove it or change its value to `false` to return to manual publishing; this does not remove an already published site.
+
+After opting in, a successful **Update weekly participation reports** run on this repository's default branch triggers publication through `workflow_run`. This covers scheduled, Issue/comment, and manual report runs: the report's `GITHUB_TOKEN` commit does not create another `push` workflow run. Human pushes that change `tools/`, `reports/`, `examples/`, or the publish workflow also refresh the site. Failed report runs, pull requests, runs from another repository, and non-default branches do not publish. Builds always check out the latest default branch, so a report commit made during the completed run is included rather than the older event SHA. Deployments are serialized.
+
+If automatic publishing is disabled, manually rerun the publish workflow after reports or helper files change. Merging these files alone does not configure Pages or opt a repository into automatic publication.
 
 ## 10. Confirmed plans and contribution approval
 
@@ -148,4 +159,7 @@ The example directory contains six separate topic guides and optional synthetic 
 - [GitHub Issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
 - [GitHub's built-in workflow token](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token)
 - [Workflow schedule syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onschedule)
+- [Workflow-run events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
+- [Triggering workflows with GITHUB_TOKEN](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#triggering-a-workflow-from-a-workflow)
+- [Reading Pages settings and required permissions](https://docs.github.com/en/rest/pages/pages#get-a-github-pages-site)
 - [Repository roles](https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/repository-roles-for-an-organization)

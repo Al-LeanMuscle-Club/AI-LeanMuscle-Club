@@ -13,6 +13,19 @@ test("find plan search includes author, week and both open/closed issues", () =>
   assert(!url.searchParams.get("q").includes("is:open"));
 });
 
+test("free record search targets an author's activity or meal issues, including closed records", () => {
+  for (const label of ["activity-record", "meal-record"]) {
+    const url = new URL(tools.freeRecordSearchUrl("example/club", "@Researcher-1", label));
+    assert.equal(url.origin, "https://github.com");
+    assert.equal(url.pathname, "/example/club/issues");
+    assert.equal(url.searchParams.get("q"), "is:issue label:" + label + " author:Researcher-1 sort:created-desc");
+    assert(!/is:(?:open|closed)|state:/.test(url.searchParams.get("q")));
+  }
+  assert.throws(() => tools.freeRecordSearchUrl("example/club", "Alice", "weekly-plan"));
+  assert.throws(() => tools.freeRecordSearchUrl("example/club", "Alice author:Bob", "meal-record"));
+  assert.throws(() => tools.freeRecordSearchUrl("example/club?token=x", "Alice", "activity-record"));
+});
+
 test("invalid or injected repository, username, date and issue inputs are rejected", () => {
   for (const value of ["https://github.com/a/b", "a/b?x=1", "../b", "a/..", "a/b/extra", "a/b\n&token=x"]) assert.throws(() => tools.repository(value));
   for (const value of ["a author:someone", "-invalid", "someone/else", "a\nlabel:x"]) assert.throws(() => tools.handle(value));
@@ -149,6 +162,24 @@ test("legacy and missing report fields stay unknown instead of inventing counts 
   assert.equal(tools.memberSummary([rows[1]],"Alice").meal_days,null);
 });
 
+test("scoring versions follow each report without guessing legacy rules or relabeling future rules", () => {
+  const rows = tools.publicRows({schema_version:2,scoring_version:2,weeks:[
+    {week_start:"2026-10-26",scoring_version:2,leaderboard:[publicPlan("Alice",1,6.75)]},
+    {week_start:"2026-10-19",leaderboard:[publicPlan("Alice",1,6)]},
+    {week_start:"2026-10-12",scoring_version:3,leaderboard:[publicPlan("Alice",1,6)]},
+    {week_start:"2026-10-05",scoring_version:"2",leaderboard:[publicPlan("Alice",1,6)]},
+  ]});
+  assert.deepEqual(rows.map(row=>row.scoring_version),[2,null,3,null]);
+  assert.equal(tools.memberSummary(rows,"Alice").rows[1].scoring_version,null);
+  assert.match(tools.scoringLabel(2),/评分规则 v2/);
+  assert.match(tools.scoringExplanation(2),/0\.5 × 部分完成/);
+  assert.match(tools.scoringLabel(null),/规则版本未记录.*保留原分数/);
+  assert.match(tools.scoringExplanation(undefined),/未按当前公式重算/);
+  assert.match(tools.scoringLabel(3),/评分规则 v3/);
+  assert.match(tools.scoringExplanation(3),/尚无该版本的公式说明/);
+  for (const value of [true,0,-1,2.5,"2",{},null]) assert.equal(tools.scoringVersion(value),null);
+});
+
 test("invalid archive weeks and injected details cannot enter the public record view", () => {
   const row = publicPlan("Alice",1,7,{notes:"PRIVATE_NOTES",meal_days:99,recorded_training_days:-1,
     sessions:[{id:"S1",day:"Monday",sport:"running",status:"completed",date:"2026-10-26",confirmed:false,notes:"PRIVATE_SESSION",calories:1234}]});
@@ -260,6 +291,74 @@ test("page renders backend ranking and selected-week timestamp, then prepares a 
     await get("plan-workout").fire("click");
     assert.equal(get("log-status").value,"done");
     assert.equal(get("log-session").disabled,false);
+  } finally {page.restore();}
+});
+
+test("free-record review works without leaderboard data and follows repository and author changes", async () => {
+  const page=await mountedPage(undefined);
+  try {
+    const get=page.doc.getElementById;
+    assert.equal(get("free-record-links").hidden,true);
+    get("history-handle").value="@ALICE";
+    await get("history-handle").fire("input");
+    assert.equal(get("free-record-links").hidden,false);
+    assert.equal(get("member-stats").hidden,true,"free records do not create scored participation");
+    for (const [id,label] of [["free-activity-link","activity-record"],["free-meal-link","meal-record"]]) {
+      const url=new URL(get(id).href);
+      assert.equal(url.pathname,"/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues");
+      assert.equal(url.searchParams.get("q"),"is:issue label:"+label+" author:ALICE sort:created-desc");
+    }
+    get("repository").value="my-org/my-club";
+    await get("repository").fire("input");
+    assert.equal(new URL(get("free-meal-link").href).pathname,"/my-org/my-club/issues");
+    get("history-handle").value="Alice author:Bob";
+    await get("history-handle").fire("input");
+    assert.equal(get("free-record-links").hidden,true);
+    assert.match(get("free-record-message").textContent,/有效的 GitHub 用户名/);
+    get("history-handle").value="Bob";
+    get("repository").value="../private";
+    await get("repository").fire("change");
+    assert.equal(get("free-record-links").hidden,true);
+    get("repository").value="example/club";
+    await get("repository").fire("change");
+    assert.equal(get("free-record-links").hidden,false);
+    assert.match(new URL(get("free-activity-link").href).searchParams.get("q"),/author:Bob/);
+    get("history-handle").value="";
+    await get("history-handle").fire("input");
+    assert.equal(get("free-record-links").hidden,true);
+    assert.equal(page.calls.length,1,"preparing links must not fetch member records or write to GitHub");
+  } finally {page.restore();}
+});
+
+test("page explains only the selected report's declared scoring version and preserves historical points", async () => {
+  const page=await mountedPage({schema_version:2,weeks:[
+    {week_start:"2026-10-26",scoring_version:2,leaderboard:[publicPlan("Alice",1,6.75)]},
+    {week_start:"2026-10-19",leaderboard:[publicPlan("Alice",1,6,{execution_points:3,execution_rate:null})]},
+    {week_start:"2026-10-12",scoring_version:3,leaderboard:[publicPlan("Alice",1,6)]},
+  ]});
+  try {
+    const get=page.doc.getElementById;
+    assert.match(get("report-rules").textContent,/评分规则 v2：执行分 =/);
+    assert.equal(get("score-guide").hidden,false);
+    get("filter-week").value="2026-10-19";
+    await get("filter-week").fire("change");
+    assert.match(get("report-rules").textContent,/规则版本未记录/);
+    assert(!get("report-rules").textContent.includes("执行分 ="));
+    assert.equal(get("score-guide").hidden,true);
+    assert.match(get("ranking-body").textContent,/6 分/);
+    assert.match(get("ranking-body").textContent,/执行 3 ·/);
+    get("filter-week").value="2026-10-12";
+    await get("filter-week").fire("change");
+    assert.match(get("report-rules").textContent,/评分规则 v3/);
+    assert.match(get("report-rules").textContent,/尚无该版本的公式说明/);
+    assert.equal(get("score-guide").hidden,true);
+    get("history-handle").value="Alice";
+    await get("history-handle").fire("input");
+    const history=get("history-body").children;
+    assert.match(history[0].textContent,/评分规则 v2/);
+    assert.match(history[1].textContent,/规则版本未记录.*保留原分数/);
+    assert.equal(history[1].children[3].textContent,"6");
+    assert.match(history[2].textContent,/评分规则 v3/);
   } finally {page.restore();}
 });
 

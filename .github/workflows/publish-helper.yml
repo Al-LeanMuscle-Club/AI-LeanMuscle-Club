@@ -1,6 +1,15 @@
 name: Publish optional member helper
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: [Update weekly participation reports]
+    types: [completed]
+  push:
+    paths:
+      - 'tools/**'
+      - 'reports/**'
+      - 'examples/**'
+      - '.github/workflows/publish-helper.yml'
 permissions:
   contents: read
 concurrency:
@@ -8,11 +17,37 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    # Manual publishing is explicit consent. Automatic publishing requires a
+    # repository setting and a trusted default-branch event; never use PR code
+    # or artifacts from the completed workflow.
+    if: >-
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      && (
+        github.event_name == 'workflow_dispatch'
+        || (
+          vars.PUBLISH_MEMBER_HELPER == 'true'
+          && (
+            github.event_name == 'push'
+            || (
+              github.event_name == 'workflow_run'
+              && github.event.workflow_run.conclusion == 'success'
+              && github.event.workflow_run.head_branch == github.event.repository.default_branch
+              && github.event.workflow_run.head_repository.full_name == github.repository
+              && contains(fromJSON('["schedule", "workflow_dispatch", "issues", "issue_comment", "push"]'), github.event.workflow_run.event)
+            )
+          )
+        )
+      )
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     steps:
       - uses: actions/checkout@v6
         with:
+          # The report job may have pushed a newer commit than the event SHA.
+          # Always publish the latest trusted reports and helper together.
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
       - uses: actions/configure-pages@v5
       - name: Stage only the member helper and public reports

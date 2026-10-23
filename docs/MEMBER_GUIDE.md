@@ -131,6 +131,10 @@ python3 -m http.server 8000
 
 Then open [the local helper](http://localhost:8000/tools/). A hosted copy becomes available only after maintainers configure Pages and enable its deployment workflow; see [setup](SETUP.md). Review generated text and paste it into GitHub yourself.
 
+In **My public records**, enter your full GitHub username to view the loaded public weekly-plan summaries. Below those summaries, **Review my free records** prepares separate links to your `activity-record` and `meal-record` Issues, including open and closed records, in the selected repository. These search links work even without a weekly plan or published reports. Open them on GitHub to read your records; free records do not add points or enter the weekly-plan day counts, and the helper does not download them or ask for a token.
+
+The selected weekly report and each personal-history row show their recorded scoring-rule version. **v2** uses half credit for partial sessions, a confirmed plan denominator, and content-bound contribution approvals. If a historical report has no version, the page says the version was not recorded and preserves its original scores; it does not guess an older version or recalculate it with today's formula. A declared version without a supported explanation retains its own version number and source scores. The website shows its latest published snapshot; see [setup](SETUP.md) for manual publication and optional automatic publication after report updates.
+
 ## Command-line tools
 
 Command-line tools are also available from the repository root. Global options go **before** `find`, `carry`, or `check`. For live reads, use the read credentials described in [setup](SETUP.md); do not paste tokens into an Issue or the browser helper.
