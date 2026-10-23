@@ -1,0 +1,28 @@
+title: "[Training] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎简短交流，无需先建计划或参加排名。此讨论公开，请只分享你愿意公开的信息。
+        发帖、点赞和回复不会自动增加积分；具体经验可整理为 Experience sharing Issue 申请审核。
+  - type: textarea
+    id: topic
+    attributes:
+      label: "Question or experience"
+      description: "想聊什么训练安排、运动记录或恢复体会？"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "Context and what I tried"
+      description: "可选经验背景、已尝试方法和时间限制。不要求身体或健康数据。"
+    validations:
+      required: false
+  - type: textarea
+    id: feedback
+    attributes:
+      label: "Feedback I would find useful"
+      description: "想听排期经验、动作记录方法或其他建议？"
+    validations:
+      required: false

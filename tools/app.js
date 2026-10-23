@@ -12,6 +12,8 @@
   const DEFAULT_REPOSITORY = "Al-LeanMuscle-Club/AI-LeanMuscle-Club";
   const SPORTS = ["strength", "basketball", "running", "swimming", "cycling", "walking", "mobility", "other"];
   const GOALS = ["fat-loss", "muscle-gain", "cardio", "skill", "habit"];
+  const SPORT_LABELS = {strength:"力量", basketball:"篮球", running:"跑步", swimming:"游泳", cycling:"骑行", walking:"步行", mobility:"活动恢复", other:"其他"};
+  const GOAL_LABELS = {"fat-loss":"减脂", "muscle-gain":"增肌", cardio:"心肺", skill:"运动技能", habit:"保持习惯"};
   const COMMANDS = ["done", "fallback", "partial", "skip", "meal"];
   const ALL_COMMAND_LINES = /^\s*\/(?:done|fallback|partial|skip|meal|review|pause)(?:\s|$)/im;
   const HANDLE = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$/;
@@ -19,34 +21,34 @@
   function repository(value) {
     const result = String(value || "").trim();
     if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(result) || result.length > 220 || result.split("/").some(part => part === "." || part === "..")) {
-      throw new Error("Enter a GitHub repository as owner/name.");
+      throw new Error("请填写 owner/name 格式的 GitHub 仓库。");
     }
     return result;
   }
 
   function handle(value) {
     const result = String(value || "").trim().replace(/^@/, "");
-    if (!HANDLE.test(result)) throw new Error("Enter a valid GitHub username.");
+    if (!HANDLE.test(result)) throw new Error("请填写有效的 GitHub 用户名。");
     return result;
   }
 
   function isoDate(value, requireMonday = false) {
-    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error("Choose a date in YYYY-MM-DD format.");
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error("请选择 YYYY-MM-DD 格式的日期。");
     const date = new Date(value + "T00:00:00.000Z");
-    if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() < 1 || date.toISOString().slice(0, 10) !== value) throw new Error("Choose a real calendar date.");
+    if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() < 1 || date.toISOString().slice(0, 10) !== value) throw new Error("请选择有效的日历日期。");
     if (requireMonday && date.getUTCDay() !== 1) throw new Error("Week starting must be a Monday / 请选择周一。");
     return value;
   }
 
   function issueNumber(value) {
     const text = String(value || "").trim();
-    if (!/^[1-9][0-9]*$/.test(text) || !Number.isSafeInteger(Number(text))) throw new Error("Enter a positive issue number, such as 123.");
+    if (!/^[1-9][0-9]*$/.test(text) || !Number.isSafeInteger(Number(text))) throw new Error("请填写正整数 Issue 编号，例如 123。");
     return text;
   }
 
   function sessionId(value) {
     const id = String(value || "").trim().toUpperCase();
-    if (!/^S[1-9][0-9]?$/.test(id)) throw new Error("Use a session ID from S1 to S99.");
+    if (!/^S[1-9][0-9]?$/.test(id)) throw new Error("训练编号应为 S1 至 S99。");
     return id;
   }
 
@@ -72,10 +74,10 @@
   }
 
   function buildComment({status, session, date, notes = ""}) {
-    if (!COMMANDS.includes(status)) throw new Error("Choose a supported record type.");
+    if (!COMMANDS.includes(status)) throw new Error("请选择支持的记录类型。");
     const day = isoDate(date);
     const text = String(notes).replace(/\r\n?/g, "\n").trim();
-    if (ALL_COMMAND_LINES.test(text)) throw new Error("Use one command per comment. Remove command lines from the notes.");
+    if (ALL_COMMAND_LINES.test(text)) throw new Error("每条评论只放一个命令，请删除记录里的其他命令行。");
     const command = status === "meal" ? "/meal " + day : "/" + status + " " + sessionId(session) + " " + day;
     return command + (text ? "\n" + text : "");
   }
@@ -87,12 +89,12 @@
     const seen = new Set();
     for (let i = 0; i < matches.length; i++) {
       const heading = matches[i][1];
-      if (seen.has(heading)) throw new Error("The pasted plan has duplicate field headings. Use the raw issue body.");
+      if (seen.has(heading)) throw new Error("计划字段标题有重复，请使用原 Issue 的 Markdown 正文。");
       seen.add(heading);
       sections.push({heading, value: normalized.slice(matches[i].index + matches[i][0].length, i + 1 < matches.length ? matches[i + 1].index : normalized.length).trim()});
     }
     for (const heading of ["Week starting", "Time zone", "Participation mode", "Public leaderboard", "Planned sessions"]) {
-      if (!seen.has(heading)) throw new Error("Paste the raw Markdown of a weekly-plan issue, including its ### field headings.");
+      if (!seen.has(heading)) throw new Error("请粘贴周计划 Issue 的 Markdown 正文，保留 ### 字段标题。");
     }
     return sections;
   }
@@ -114,30 +116,96 @@
     return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max ? value : null;
   }
 
+  function count(value, max = Infinity) {
+    return Number.isSafeInteger(value) && displayNumber(value, max) !== null ? value : null;
+  }
+
+  function timestamp(value) {
+    return typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) ? value : null;
+  }
+
+  function reportWeeks(data) {
+    if (!data || data.schema_version !== 2 || !Array.isArray(data.weeks)) throw new Error("公开报告暂不支持当前格式，请稍后再试。");
+    const seen = new Set();
+    return data.weeks.filter(week => {
+      if (!week || typeof week !== "object") return false;
+      try { isoDate(week.week_start, true); } catch (_) { return false; }
+      if (seen.has(week.week_start) || !Array.isArray(week.leaderboard)) return false;
+      seen.add(week.week_start);
+      return true;
+    }).sort((a, b) => b.week_start.localeCompare(a.week_start));
+  }
+
   function publicRows(data) {
-    if (!data || data.schema_version !== 2 || !Array.isArray(data.weeks)) throw new Error("Public reports are not available in the current format yet.");
     const rows = [];
-    for (const week of data.weeks) {
-      try { isoDate(week.week_start, true); } catch (_) { continue; }
-      if (!Array.isArray(week.leaderboard)) continue;
+    const seen = new Set();
+    for (const week of reportWeeks(data)) {
       for (const row of week.leaderboard) {
         if (!row || typeof row !== "object" || !HANDLE.test(row.handle || "")) continue;
         const url = safeIssueUrl(row.issue_url);
-        if (!url || !Number.isSafeInteger(row.planned) || !Number.isSafeInteger(row.completed) || displayNumber(row.planned) === null || displayNumber(row.completed) === null || row.completed > row.planned || displayNumber(row.total_points, 10) === null) continue;
+        const planned = count(row.planned, 14);
+        const completed = count(row.completed, 14);
+        const confirmed = count(row.confirmed_planned, 14) ?? planned;
+        const current = count(row.current_planned, 14) ?? planned;
+        if (!url || planned === null || confirmed === null || confirmed < 1 || current === null || completed === null || completed > confirmed || displayNumber(row.total_points, 10) === null) continue;
+        const key = week.week_start + "/" + row.handle.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const sessions = [];
+        for (const session of Array.isArray(row.sessions) ? row.sessions : []) {
+          if (!session || !/^S[1-9][0-9]?$/.test(session.id || "") || !SPORTS.includes(session.sport) || !["planned", "completed", "fallback", "partial", "skipped"].includes(session.status)) continue;
+          let day = null;
+          try { if (session.date !== null && session.date !== undefined) day = isoDate(session.date); } catch (_) { continue; }
+          sessions.push({id:session.id, day:["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].includes(session.day) ? session.day : "", sport:session.sport,
+            status:session.status, date:day, used_fallback:session.used_fallback === true,
+            confirmed:typeof session.confirmed === "boolean" ? session.confirmed : null});
+        }
         rows.push({
           week: week.week_start, handle: row.handle, issue_url: url,
+          rank: count(row.rank) > 0 ? row.rank : null,
+          generated_at: timestamp(week.generated_at),
           goal: GOALS.includes(row.goal) ? row.goal : "habit",
+          research_week: ["regular", "deadline", "travel"].includes(row.research_week) ? row.research_week : "regular",
           sports: Array.isArray(row.sports) ? [...new Set(row.sports.filter(sport => SPORTS.includes(sport)))] : [],
-          completed: row.completed, planned: row.planned, points: row.total_points,
+          completed, planned, confirmed_planned:confirmed, current_planned:current,
+          has_confirmed_plan:count(row.confirmed_planned, 14) !== null,
+          plan_changed:row.plan_changed === true,
+          completion_rate:displayNumber(row.completion_rate, 1),
+          execution_rate:displayNumber(row.execution_rate, 1),
+          partial:count(row.partial, 14) ?? 0, skipped:count(row.skipped, 14) ?? 0,
+          points:row.total_points, total_points:row.total_points,
+          plan_points:displayNumber(row.plan_points, 1), execution_points:displayNumber(row.execution_points, 6),
+          review_points:displayNumber(row.review_points, 2), contribution_points:displayNumber(row.contribution_points, 1),
+          recorded_training_days:count(row.recorded_training_days, 7), meal_days:count(row.meal_days, 7),
+          sessions,
         });
       }
     }
-    return rows.sort((a, b) => b.week.localeCompare(a.week) || a.handle.toLowerCase().localeCompare(b.handle.toLowerCase()));
+    return rows.sort((a, b) => b.week.localeCompare(a.week) || b.points - a.points ||
+      (a.rank ?? Infinity) - (b.rank ?? Infinity) || a.handle.toLowerCase().localeCompare(b.handle.toLowerCase()));
   }
 
   function filterRows(rows, filters) {
     const member = String(filters.handle || "").trim().replace(/^@/, "").toLowerCase();
-    return rows.filter(row => (!member || row.handle.toLowerCase().includes(member)) && (!filters.sport || row.sports.includes(filters.sport)) && (!filters.goal || row.goal === filters.goal));
+    return rows.filter(row => (!filters.week || row.week === filters.week) && (!member || row.handle.toLowerCase().includes(member)) && (!filters.sport || row.sports.includes(filters.sport)) && (!filters.goal || row.goal === filters.goal));
+  }
+
+  function memberSummary(rows, username) {
+    const member = String(username || "").trim().replace(/^@/, "").toLowerCase();
+    const selected = [];
+    const seen = new Set();
+    for (const row of rows) {
+      if (!member || row.handle.toLowerCase() !== member || seen.has(row.week)) continue;
+      seen.add(row.week);
+      selected.push(row);
+    }
+    selected.sort((a, b) => b.week.localeCompare(a.week));
+    const knownTraining = selected.filter(row => count(row.recorded_training_days, 7) !== null);
+    const knownMeals = selected.filter(row => count(row.meal_days, 7) !== null);
+    return {rows:selected, weeks:seen.size,
+      training_days:knownTraining.length ? knownTraining.reduce((sum, row) => sum + row.recorded_training_days, 0) : null,
+      meal_days:knownMeals.length ? knownMeals.reduce((sum, row) => sum + row.meal_days, 0) : null,
+      training_weeks_known:knownTraining.length, meal_weeks_known:knownMeals.length};
   }
 
   function localDate(date = new Date()) {
@@ -171,24 +239,32 @@
       try {
         get("find-link").href = searchUrl(value("repository"), value("find-handle"), value("find-week"));
         get("find-link").hidden = false;
-        setMessage("find-message", "Ready. Open the link to search GitHub.");
+        setMessage("find-message", "搜索链接已准备好，点击下方链接查看 GitHub 上的计划。");
       } catch (error) { setMessage("find-message", error.message, true); }
     });
 
     const statusHelp = {
-      done: "One session counts once. Optional training details may follow the command.",
-      fallback: "Counts as completed only if this session already has a declared fallback in the fifth plan column. Do not create a second session ID.",
-      partial: "Keeps an honest record; earns no execution points. The latest valid session status replaces the previous status.",
-      skip: "Keeps an honest record; earns no execution points. Missing a session creates no debt.",
-      meal: "Optional, with no extra points. Add food, portions, and estimate sources if known. Add a photo on GitHub if you wish; do not treat estimates as a health score.",
+      done: "整次完成按 1 次计入执行分。同一训练编号只计一次；可以附上内容、时长和感受。",
+      fallback: "该次训练已声明的替代方案按 1 次完成计分，仍使用原训练编号。未声明的替代方案不会计为完成。",
+      partial: "部分完成按 0.5 次计入执行分。最新有效状态覆盖旧状态，不会重复累加。",
+      skip: "跳过会保留记录，不计执行分，也没有欠账。以后可以重新开始。",
+      meal: "记录吃了什么、可选分量和感受，发布时可在 GitHub 添加照片。同一天多餐只算一个饮食记录日，不增加参与分。",
     };
-    get("log-status").addEventListener("change", () => {
+    function updateStatus() {
       const status = value("log-status");
       get("log-session").disabled = status === "meal";
       get("status-help").textContent = statusHelp[status];
       get("log-result").hidden = true;
       setMessage("log-message", "");
-    });
+    }
+    get("log-status").addEventListener("change", updateStatus);
+    updateStatus();
+    for (const [id, status] of [["plan-workout", "done"], ["plan-meal", "meal"]]) {
+      get(id).addEventListener("click", () => {
+        get("log-status").value = status;
+        updateStatus();
+      });
+    }
     get("log-form").addEventListener("submit", event => {
       event.preventDefault();
       get("log-result").hidden = true;
@@ -197,7 +273,7 @@
         get("log-output").value = buildComment({status: value("log-status"), session: value("log-session"), date: value("log-date"), notes: value("log-notes")});
         get("log-link").href = url;
         get("log-result").hidden = false;
-        setMessage("log-message", "Prepared locally. Check the date, session ID, and your plan before posting.");
+        setMessage("log-message", "文字已在浏览器中生成。检查日期和训练编号，复制后到自己的 GitHub 计划评论区发布。");
       } catch (error) { setMessage("log-message", error.message, true); }
     });
 
@@ -207,7 +283,7 @@
       try {
         get("carry-output").value = carryPlan(value("carry-source"), value("carry-week"));
         get("carry-result").hidden = false;
-        setMessage("carry-message", "Draft ready. Leaderboard consent is No. Review every field before using the new plan.");
+        setMessage("carry-message", "草稿已生成，公开排名选项已重置为 No。请检查每个字段，再创建下一周的计划。");
       } catch (error) { setMessage("carry-message", error.message, true); }
     });
 
@@ -216,63 +292,182 @@
       try {
         if (!globalThis.navigator.clipboard) throw new Error("Clipboard unavailable");
         await globalThis.navigator.clipboard.writeText(element.value);
-        setMessage(message, "Copied. Paste it into GitHub and review before submitting.");
+        setMessage(message, "已复制。请粘贴到 GitHub，检查后点击发布。");
       } catch (_) {
         element.focus();
         element.select();
-        setMessage(message, "Clipboard unavailable here. Text selected; copy it manually.");
+        setMessage(message, "当前环境无法自动复制，文字已选中，请手动复制。");
       }
     }
     get("copy-log").addEventListener("click", () => copy("log-output", "log-message"));
     get("copy-carry").addEventListener("click", () => copy("carry-output", "carry-message"));
 
     let rows = [];
+    let weeks = [];
+    let availableWeeks = [];
+    let olderError = "";
+    const shownNumber = value => value === null || value === undefined ? "未记录" : String(value);
+    const shownTime = value => timestamp(value) ? new Date(value).toLocaleString("zh-CN", {timeZone:"Asia/Shanghai", hour12:false}) + "（北京时间）" : "未提供生成时间";
+    const progress = row => row.completed + " 整次 + " + row.partial + " 部分 / " + row.confirmed_planned + " 已确认";
+    function cell(tr, label, text) {
+      const td = doc.createElement("td");
+      td.setAttribute("data-label", label);
+      if (text !== undefined) td.textContent = text;
+      tr.append(td);
+      return td;
+    }
+    function note(element, text) {
+      const small = doc.createElement("small");
+      small.textContent = text;
+      element.append(small);
+    }
+    function source(td, row) {
+      const a = doc.createElement("a");
+      a.textContent = "查看计划 ↗";
+      a.href = row.issue_url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      td.append(a);
+    }
     function renderReports() {
-      const matching = filterRows(rows, {handle: value("filter-handle"), sport: value("filter-sport"), goal: value("filter-goal")});
-      get("history-body").replaceChildren();
-      get("history-table").hidden = !matching.length;
+      const selectedWeek = value("filter-week");
+      const matching = selectedWeek ? filterRows(rows, {week:selectedWeek, handle:value("filter-handle"), sport:value("filter-sport"), goal:value("filter-goal")}) : [];
+      get("ranking-body").replaceChildren();
+      get("ranking-table").hidden = !matching.length;
       for (const row of matching.slice(0, 100)) {
         const tr = doc.createElement("tr");
-        for (const content of [row.week, "@" + row.handle, row.goal, row.sports.join(", ") || "—", row.completed + " / " + row.planned, String(row.points)]) {
-          const td = doc.createElement("td");
-          td.textContent = content;
-          tr.append(td);
-        }
-        const td = doc.createElement("td");
-        const a = doc.createElement("a");
-        a.textContent = "Plan ↗";
-        a.href = row.issue_url;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        td.append(a);
-        tr.append(td);
-        get("history-body").append(tr);
+        cell(tr, "原周榜名次", row.rank === null ? "未提供" : "#" + row.rank);
+        const member = cell(tr, "成员", "@" + row.handle);
+        note(member, GOAL_LABELS[row.goal] + " · " + (row.sports.map(sport => SPORT_LABELS[sport]).join(" / ") || "未分类"));
+        const execution = cell(tr, "计划完成情况", progress(row));
+        const rate = row.execution_rate ?? row.completion_rate;
+        if (rate !== null) note(execution, "计分完成比例 " + Math.round(rate * 10000) / 100 + "%");
+        const score = cell(tr, "参与分 / 10");
+        const total = doc.createElement("strong");
+        total.textContent = row.points + " 分";
+        score.append(total);
+        note(score, "计划 " + shownNumber(row.plan_points) + " · 执行 " + shownNumber(row.execution_points) + " · 复盘 " + shownNumber(row.review_points) + " · 分享 " + shownNumber(row.contribution_points));
+        const plan = cell(tr, "计划状态", !row.has_confirmed_plan ? "旧报告 · 原计划" : row.plan_changed ? "计划已调整" : "按已确认计划");
+        note(plan, row.has_confirmed_plan ? "当前 " + row.current_planned + " 次 · 计分分母 " + row.confirmed_planned + " 次" : "原报告计划 " + row.planned + " 次");
+        const pending = row.sessions.filter(session => session.confirmed === false).length;
+        if (pending) note(plan, pending + " 项尚未确认，不进入执行分");
+        source(cell(tr, "来源"), row);
+        get("ranking-body").append(tr);
       }
-      setMessage("report-message", matching.length ? matching.length + " matching weekly record(s), newest first." + (matching.length > 100 ? " Showing 100; refine your filters to see others." : "") : "No matching public records yet. You can still find your issue using the plan-search tool above.");
+      const week = weeks.find(item => item.week_start === selectedWeek);
+      get("report-snapshot").textContent = week ? "所选周 " + selectedWeek + " · 快照生成于 " + shownTime(week.generated_at) + "。更早周的补录、暂停或分数更正需单独重算，并重新发布网页。" : "报告发布后，这里会显示所选周的快照生成时间。";
+      const message = !weeks.length ? "还没有可展示的公开周报。你仍可用上方工具创建计划、找计划和准备打卡。" : matching.length ? "所选周找到 " + matching.length + " 位公开成员，按整周参与分排列，相同总分并列。" + (matching.length > 100 ? " 当前显示前 100 位，请缩小筛选范围查看其他成员。" : "") : rows.some(row => row.week === selectedWeek) ? "当前筛选没有匹配成员，可以清空用户名、运动或目标筛选。" : "本周暂时没有同意公开且处于 Active 状态的记录。";
+      setMessage("report-message", message);
     }
-    for (const id of ["filter-handle", "filter-sport", "filter-goal"]) get(id).addEventListener(id === "filter-handle" ? "input" : "change", renderReports);
-
-    async function loadReports() {
-      if (globalThis.location && globalThis.location.protocol === "file:") {
-        setMessage("report-message", "Open this page on GitHub Pages or a local web server to load reports. Search links and text helpers still work locally.");
-        return;
+    function renderHistory() {
+      const username = value("history-handle").trim();
+      const summary = memberSummary(rows, username);
+      get("member-stats").replaceChildren();
+      get("member-stats").hidden = !summary.weeks;
+      get("history-body").replaceChildren();
+      get("history-table").hidden = !summary.weeks;
+      if (summary.weeks) {
+        for (const [label, number, detail] of [
+          ["公开参与周", summary.weeks, "已加载报告中的周数"],
+          ["训练记录日", summary.training_days, "有天数数据 " + summary.training_weeks_known + " / " + summary.weeks + " 周"],
+          ["饮食记录日", summary.meal_days, "有天数数据 " + summary.meal_weeks_known + " / " + summary.weeks + " 周 · 不加分"],
+        ]) {
+          const stat = doc.createElement("div");
+          const strong = doc.createElement("strong");
+          strong.textContent = shownNumber(number);
+          const title = doc.createElement("span");
+          title.textContent = label;
+          stat.append(strong, title);
+          note(stat, detail);
+          get("member-stats").append(stat);
+        }
+        for (const row of summary.rows) {
+          const tr = doc.createElement("tr");
+          cell(tr, "报告周", row.week);
+          cell(tr, "当周名次", row.rank === null ? "未提供" : "#" + row.rank);
+          cell(tr, "计划完成情况", progress(row));
+          cell(tr, "参与分 / 10", String(row.points));
+          cell(tr, "训练日", shownNumber(row.recorded_training_days));
+          cell(tr, "饮食日", shownNumber(row.meal_days));
+          const td = cell(tr, "来源与快照");
+          source(td, row);
+          note(td, shownTime(row.generated_at));
+          get("history-body").append(tr);
+        }
       }
+      setMessage("history-message", !username ? "输入完整 GitHub 用户名查看自己的记录。仅统计已加载的公开周计划报告，自由记录不在此汇总。" : summary.weeks ? "@" + summary.rows[0].handle + " · 已找到 " + summary.weeks + " 个公开参与周。中断、未公开或尚未加载的周不会补成 0。" : "已加载报告中没有该用户名的公开记录。请检查完整用户名，也可以载入更早周报或用上方工具找计划。");
+    }
+    function updateData() {
+      rows = publicRows({schema_version:2, weeks});
+      const selected = value("filter-week");
+      get("filter-week").replaceChildren();
+      for (const week of weeks) {
+        const option = doc.createElement("option");
+        option.value = week.week_start;
+        option.textContent = week.week_start + " 开始的一周";
+        get("filter-week").append(option);
+      }
+      get("filter-week").value = weeks.some(week => week.week_start === selected) ? selected : weeks[0]?.week_start || "";
+      const loaded = new Set(weeks.map(week => week.week_start));
+      const remaining = availableWeeks.filter(week => !loaded.has(week));
+      get("load-older").hidden = !remaining.length;
+      get("load-older").textContent = "载入更早的 " + Math.min(12, remaining.length) + " 周";
+      get("history-window").textContent = "已加载 " + weeks.length + " / " + availableWeeks.length + " 个报告周" + (weeks.length ? "（" + weeks[weeks.length - 1].week_start + " 至 " + weeks[0].week_start + "）" : "") + "。仅统计同意公开的 Active 周计划记录，自由记录不在此汇总；旧报告缺少的天数显示“未记录”。" + olderError;
+      renderReports();
+      renderHistory();
+    }
+    for (const id of ["filter-week", "filter-handle", "filter-sport", "filter-goal"]) get(id).addEventListener(id === "filter-handle" ? "input" : "change", renderReports);
+    get("history-handle").addEventListener("input", renderHistory);
+
+    async function fetchReport(path) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
       try {
-        const response = await fetch("../reports/index.json", {signal: controller.signal, credentials: "omit"});
-        if (!response.ok) throw new Error("No published index");
-        const index = await response.json();
-        rows = publicRows(index);
-        const timestamps = index.weeks.map(week => week.generated_at).filter(value => typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value))).sort();
-        if (timestamps.length) get("report-snapshot").textContent = "Latest report refresh: " + timestamps[timestamps.length - 1] + ". This is a deployed snapshot; maintainers must republish Pages after reports change. 网页数据以最近一次发布为准。";
-        renderReports();
-      } catch (_) {
-        setMessage("report-message", "Public reports are not available yet. Run the report workflow and deploy this repository's Pages site. The tools above work without reports.");
+        const response = await fetch(path, {signal:controller.signal, credentials:"omit"});
+        if (!response.ok) throw new Error("报告暂不可读");
+        return await response.json();
       } finally { clearTimeout(timeout); }
+    }
+    get("load-older").addEventListener("click", async () => {
+      get("load-older").disabled = true;
+      get("load-older").textContent = "正在读取较早的公开周报…";
+      const loaded = new Set(weeks.map(week => week.week_start));
+      const batch = availableWeeks.filter(week => !loaded.has(week)).slice(0, 12);
+      const results = await Promise.allSettled(batch.map(async week => {
+        const board = await fetchReport("../reports/" + isoDate(week, true) + ".json");
+        if (board.week_start !== week || !reportWeeks({schema_version:2, weeks:[board]}).length) throw new Error("报告周不匹配");
+        return board;
+      }));
+      let failed = 0;
+      for (const result of results) {
+        if (result.status === "fulfilled") weeks.push(result.value);
+        else failed++;
+      }
+      weeks = reportWeeks({schema_version:2, weeks});
+      olderError = failed ? " 有 " + failed + " 个较早周报读取失败，可以再次点击重试；现有记录已保留。" : "";
+      get("load-older").disabled = false;
+      updateData();
+    });
+    async function loadReports() {
+      if (globalThis.location && globalThis.location.protocol === "file:") {
+        setMessage("report-message", "直接打开本地 HTML 无法读取报告，请使用 GitHub Pages 或本地网页服务器。上方找计划和文字工具仍可使用。");
+        return;
+      }
+      try {
+        const index = await fetchReport("../reports/index.json");
+        weeks = reportWeeks(index);
+        const validAvailable = [];
+        for (const week of Array.isArray(index.available_weeks) ? index.available_weeks : []) {
+          try { validAvailable.push(isoDate(week, true)); } catch (_) { /* Ignore invalid archive filenames. */ }
+        }
+        availableWeeks = [...new Set([...weeks.map(week => week.week_start), ...validAvailable])].sort().reverse();
+        updateData();
+      } catch (_) {
+        setMessage("report-message", "暂时无法读取公开报告。报告可能尚未生成或部署，也可能是网络问题；可以稍后刷新。上方找计划和文字工具仍可使用。", true);
+      }
     }
     loadReports();
   }
 
-  return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, publicRows, filterRows, localDate, weekDates, mount};
+  return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, reportWeeks, publicRows, filterRows, memberSummary, localDate, weekDates, mount};
 });

@@ -1,0 +1,50 @@
+name: Activity record / 自由运动记录
+description: 随手记录一次运动，无需周计划，不参加排名。
+title: "[Activity] YYYY-MM-DD · "
+labels: ["activity-record"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        无需先制定计划，也不用记命令。自由记录独立保存，不加入周计划积分或排名。
+        此 Issue 全部公开。时长、距离、体重、照片均为自愿选填。
+        若希望记录到计分周计划，请在自己的周计划 Issue 下使用 /done、/fallback 或 /partial。
+  - type: input
+    id: activity-date
+    attributes:
+      label: Activity date
+      description: 这次活动的实际本地日期，格式 YYYY-MM-DD；可以补记过去的活动。
+      placeholder: "2026-10-26"
+    validations:
+      required: true
+  - type: input
+    id: time-zone
+    attributes:
+      label: Time zone
+      description: 记录日期使用的 IANA 时区，例如 Asia/Shanghai。
+      placeholder: Asia/Shanghai
+    validations:
+      required: true
+  - type: dropdown
+    id: sport
+    attributes:
+      label: Sport
+      description: 选择主要运动项目；混合内容可写在记录中。
+      options: ["strength", "basketball", "running", "swimming", "cycling", "walking", "mobility", "other"]
+    validations:
+      required: true
+  - type: textarea
+    id: activity
+    attributes:
+      label: What I did
+      description: 一句话也可以。记录做了什么、感受或想和大家聊的事情。
+      placeholder: 实验结束后出去走了一会，顺便和同学聊了聊。
+    validations:
+      required: true
+  - type: textarea
+    id: optional-details
+    attributes:
+      label: Optional details
+      description: 自选时长、距离、动作、照片或其他信息，不要求任何身体指标。
+    validations:
+      required: false

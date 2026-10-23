@@ -6,7 +6,20 @@
 
 A community for AI researchers to make room for exercise, recovery, and a life alongside research.
 
-[Plan your week](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [Browse weekly plans](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=label%3Aweekly-plan) · [Share an experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [Scoring rules](docs/SCORING.md) · [Maintainer setup](docs/SETUP.md)
+[Log a workout](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [Share a meal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [Meet the community](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [Weekly participation board](reports/README.md)
+
+## Choose how to join today
+
+| I want to… | Start here |
+| --- | --- |
+| Record today's movement without making a plan | [Quick workout record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
+| Save a meal, a photo, or a food-preparation idea | [Food record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
+| Introduce myself, ask a question, or find a partner | [Community conversations](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [Examples](examples/README.md) |
+| Make a weekly plan and optionally join the board | [Weekly plan](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [Participation rules](docs/SCORING.md) |
+
+A photo or one sentence is welcome. Free workout and food records do not require a weekly plan and do not enter the ranking. All records posted here are public. Structured weekly records can also show training days, meal-record days, and partial completions without awarding points for food quantities or body metrics.
+
+[Member helper and weekly standings](tools/index.html) · [Newcomer, training, food, partner, Agent, and ranking examples](examples/README.md). The helper runs locally or after [Pages setup](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment); GitHub's source viewer displays its HTML. Discussion categories and forms become available after maintainer setup on the default branch.
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI Lean Muscle Club: For AI Researchers to Keep Healthy. Train models. Train your body. Includes a WeChat group invitation QR code." width="1000"></a>
@@ -16,7 +29,7 @@ The supplied WeChat invitation is marked valid **before October 29, 2026**. If i
 
 Read about [why this club exists](docs/ABOUT.md#why-this-club-exists) and [who this is for](docs/ABOUT.md#who-this-is-for).
 
-## Start in three small steps
+## Optional weekly plan in three small steps
 
 1. [Open one weekly plan](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml). Choose your time zone, current goal, research-week rhythm, and a realistic set of sessions. Public standings are **off by default**.
 2. Comment on that Issue after a session. A short command is enough; photos and exercise details are optional.
@@ -36,7 +49,7 @@ Use full English weekdays and stable IDs `S1`–`S99`. The optional fifth column
 /done S1 2026-10-27 | Kept the session short.
 ```
 
-Use `/fallback S1 YYYY-MM-DD` when completing S1's declared fallback; `/partial` and `/skip` record an incomplete session without execution points. Each session counts once, using its latest valid status. Put each command in a separate comment. [Full instructions, meal logs, and examples →](docs/MEMBER_GUIDE.md)
+Use `/fallback S1 YYYY-MM-DD` when completing S1's confirmed fallback; `/partial` earns half of that session's execution credit and `/skip` earns none. Each session counts once, using its latest valid status. The first successful report confirms the scored sessions; later edits are shown separately and deleting unfinished sessions cannot raise the score. Put each command in a separate comment. [Full instructions, meal logs, and examples →](docs/MEMBER_GUIDE.md)
 
 **Quick tools:** [Find my plan / prepare a check-in](tools/index.html) ([open locally or configure hosting](docs/MEMBER_GUIDE.md#browser-helper)) · [Reuse last week's plan](docs/MEMBER_GUIDE.md#command-line-tools) · [Browse opt-in report data](reports/index.json)
 
@@ -63,12 +76,12 @@ The homepage stays short as participation grows. Full opt-in standings and sessi
 | Component | Maximum points |
 | --- | ---: |
 | One valid Active weekly plan | 1 |
-| Personal plan execution: `6 × completed / planned`, rounded to two decimals | 6 |
+| Personal plan execution: `6 × (completed + 0.5 × partial) / confirmed planned`, rounded to two decimals | 6 |
 | A nonempty weekly `/review`, including an incomplete week | 2 |
 | A useful experience Issue approved by a maintainer | 1 |
 | **Weekly maximum** | **10** |
 
-A declared fallback counts as completion of the same session; partial and skipped sessions remain visible without execution points. More training, calorie burn, weight loss, photographs, or posts cannot raise the cap. Scores reset weekly; participation is voluntary and equal totals share a rank. Recovery mode or an author `/pause` removes the week from standings without a penalty. [Scoring and correction rules →](docs/SCORING.md)
+A confirmed fallback counts as completion of the same session; partial completion receives half credit and skipping receives none. The participation board shows each component separately and recognizes each person's declared commitment. More training, calorie burn, weight loss, photographs, or posts cannot raise the cap. Scores reset weekly; participation is voluntary and equal totals share a rank. Recovery mode or an author `/pause` removes the week from standings without a penalty. Contribution approval is bound to its author, week, and exact content in a maintainer-reviewed ledger; a label alone cannot grant a point. [Scoring and correction rules →](docs/SCORING.md)
 
 ## Keep conversations useful
 
@@ -82,6 +95,6 @@ For agent workflows, share **the task → agent's role → checking/rework → n
 
 Be honest, kind, and respectful of different bodies and schedules. Recovery and restarting belong here. Do not pressure others to train, demand photographs, post private research, share someone else's information without permission, or advertise. Public Issues, comments, images, and committed history may be copied and retained. Opting out of standings does not make records private.
 
-The reporting workflow refreshes the current and previous Asia/Shanghai reporting weeks at **09:15 Asia/Shanghai daily**, once enabled on the default branch. Session dates use each member's declared time zone. Reports are revisable snapshots, and scheduled runs may be delayed. Repository settings, labels, and Discussion categories require [maintainer setup](docs/SETUP.md); the files alone do not enable them. There is no connected external AI model or WeChat collector.
+The reporting workflow refreshes the current and previous Asia/Shanghai reporting weeks on relevant Issue/comment changes and at **09:15 Asia/Shanghai daily**, once enabled on the default branch. Session dates use each member's declared time zone. Reports are revisable snapshots, and scheduled runs may be delayed. Repository settings, labels, and Discussion categories require [maintainer setup](docs/SETUP.md); the files alone do not enable them. There is no connected external AI model or WeChat collector.
 
 [Member guide](docs/MEMBER_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)

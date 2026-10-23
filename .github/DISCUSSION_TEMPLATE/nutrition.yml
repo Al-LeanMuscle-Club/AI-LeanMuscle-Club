@@ -1,0 +1,28 @@
+title: "[Food] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎简短交流，无需先建计划或参加排名。此讨论公开，请只分享你愿意公开的信息。
+        发帖、点赞和回复不会自动增加积分；具体经验可整理为 Experience sharing Issue 申请审核。
+  - type: textarea
+    id: food-topic
+    attributes:
+      label: "Meal or question"
+      description: "分享一顿饭、准备食物的办法，或一个想交流的问题。"
+    validations:
+      required: true
+  - type: textarea
+    id: food-context
+    attributes:
+      label: "Optional food context"
+      description: "可选食材、分量和准备方式。照片和热量都不是必需。"
+    validations:
+      required: false
+  - type: textarea
+    id: food-source
+    attributes:
+      label: "Optional estimate and source"
+      description: "填写营养数值时请注明来源、假设与未知信息；模型估算不是测量结果。"
+    validations:
+      required: false

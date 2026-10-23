@@ -4,6 +4,12 @@ We are a community of AI researchers learning to make room for exercise, recover
 
 Joining a conversation does not commit you to a training plan or a leaderboard. Choose the parts that help you.
 
+## Record freely or join a conversation
+
+Use the **Activity record / 自由运动记录** or **Meal record / 饮食记录** Issue form for a quick standalone record. These do not require a weekly plan or enter rankings. A short description is enough; measurements, calories, and photos are optional. Food Issues also stay outside weekly-plan meal-day counts.
+
+Use **Beginners** in Discussions to introduce yourself, whether you are starting, returning, or just looking around. [Six fictional example files](examples/README.md) show how to take part without inventing real members or activity. Maintainers must enable Discussions and its categories before the forms appear.
+
 ## Plan and check in without a pull request
 
 1. Open the **Weekly plan** issue form for the coming Monday–Sunday week.
@@ -21,21 +27,21 @@ You do not need to train or post every day. Notes, photos, and detailed exercise
 
 The [browser helper](tools/index.html) prepares comments and plan drafts without credentials or automatic posting; [member instructions](docs/MEMBER_GUIDE.md) explain local use and the command-line alternatives. You can find your weekly plan or carry one forward into a new draft; review every draft and explicitly choose whether to opt in again.
 
-Use `/fallback` for that session's declared alternative, `/partial` for a partly completed session, or `/skip` to record a missed session. Only `/done` and a valid `/fallback` count as execution. The latest valid status replaces earlier records of the same session. The old three-column plan format still works.
+Use `/fallback` for that session's declared alternative, `/partial` for a partly completed session, or `/skip` to record a missed session. `/done` and a valid `/fallback` each count as one session of execution credit; `/partial` counts as half, without becoming a full completion. The latest valid status replaces earlier records of the same session. The old three-column plan format still works.
 
-Keep one weekly issue per person. If a plan needs to change, edit it and leave a short explanation in a comment. Preserve the IDs of completed activities. See [the scoring rules](docs/SCORING.md) for accepted formats, duplicate handling, and examples.
+Keep one weekly issue per person. If a plan needs to change, edit it and leave a short explanation in a comment. Preserve the IDs of completed activities. The first successful report sync confirms scoring sessions: later deletion does not reduce the scoring denominator, and added sessions can be recorded without adding execution points. The current plan remains editable and is shown separately. See [the scoring rules](docs/SCORING.md) for accepted formats, duplicate handling, and examples.
 
 ## Share experience and help others
 
-Use [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions), once enabled, for questions, open conversations, partner matching, and events. Its five broad categories keep content separate from the sports and goals stored in weekly plans. [Community organization](docs/COMMUNITY.md) explains the categories and required setup.
+Use [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions), once enabled, for questions, open conversations, partner matching, and events. Its six broad categories keep content separate from the sports and goals stored in weekly plans. [Community organization](docs/COMMUNITY.md) explains the categories and required setup.
 
 Use the **Experience sharing** issue form for an idea that other members may find useful and that you would like a maintainer to consider for contribution points. Include enough context for someone to understand when it worked and when it might not.
 
 Useful topics include training around deadlines, restarting after a break, finding exercise partners, food preparation, and Agent workflows that leave more time for movement. For Agent workflows, describe the original task, what the Agent did, the checking or rework required, and the actual time saved. Share only material that you are free to disclose.
 
-Responding thoughtfully to another person's record is also welcome. Ask before giving detailed personal advice. A maintainer may recognize a contribution with the `points-approved` label; posting more frequently does not increase the weekly contribution-point limit.
+Responding thoughtfully to another person's record is also welcome. Ask before giving detailed personal advice. Contribution credit requires both the `points-approved` label and a trusted repository approval entry bound to the Issue’s current body, author, and week. A maintainer prepares the entry for review using the approval command documented in [setup](docs/SETUP.md); a label alone does not add points. Editing an approved body needs renewed review. Posting more frequently does not increase the one-point weekly contribution limit.
 
-Optional food photographs should include brief ingredient, portion, or preparation context when possible. Agent feedback is a discussion aid, with uncertainty stated clearly; it is not a diagnosis or an authoritative nutrition rating. The pilot has no separate food-health score. You may put `/meal YYYY-MM-DD` in its own weekly-Issue comment. Any calorie figures should include their source, portion assumptions, and uncertainty. Logging food is optional, has no extra point bonus, and does not require detailed nutrition tracking.
+Optional food photographs should include brief ingredient, portion, or preparation context when possible. Agent feedback is a discussion aid, with uncertainty stated clearly; it is not a diagnosis or an authoritative nutrition rating. The pilot has no separate food-health score. You may put `/meal YYYY-MM-DD` in its own weekly-Issue comment. Any calorie figures should include their source, portion assumptions, and uncertainty. Logging food is optional, has no extra point bonus, and does not require detailed nutrition tracking. Weekly-plan reports may show distinct valid `/meal` dates, with several meals on one day counted as one record day; free Meal record Issues stay independent.
 
 ## Use pull requests for lasting improvements
 
