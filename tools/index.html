@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Member tools · AI Lean Muscle Club</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="page-header wrap">
+    <a class="brand" href="../">AI Lean Muscle Club <span>MEMBER TOOLS</span></a>
+    <p class="eyebrow">Train models. Train your body.</p>
+    <h1>Make room for your next session.</h1>
+    <p class="intro">Find your plan, prepare a check-in, and look back at your own weeks. 简单记录，持续回来。</p>
+    <div class="notice">These tools prepare text and links. Review and submit it yourself on GitHub. All issues, comments, and photos in a public repository are public.</div>
+  </header>
+
+  <main class="wrap">
+    <section class="settings" aria-label="Repository setting">
+      <label for="repository">GitHub repository / 仓库</label>
+      <input id="repository" value="Al-LeanMuscle-Club/AI-LeanMuscle-Club" autocomplete="off" spellcheck="false">
+      <p class="hint">Used for the plan-search and comment links. Public reports below come from this deployed site's repository.</p>
+    </section>
+
+    <div class="tool-grid">
+      <section class="card" aria-labelledby="find-heading">
+        <span class="step">01 / FIND</span>
+        <h2 id="find-heading">Your weekly plan / 找计划</h2>
+        <p>Search includes both open and closed issues, whether or not you joined the leaderboard.</p>
+        <form id="find-form">
+          <label for="find-handle">GitHub username</label>
+          <input id="find-handle" placeholder="your-username" autocomplete="off" spellcheck="false" required>
+          <label for="find-week">Week starting / 周一日期</label>
+          <input id="find-week" type="date" required>
+          <button type="submit">Prepare search link</button>
+        </form>
+        <p id="find-message" class="message" role="status"></p>
+        <a id="find-link" class="action-link" hidden target="_blank" rel="noopener noreferrer">Open my weekly plans ↗</a>
+      </section>
+
+      <section class="card" aria-labelledby="log-heading">
+        <span class="step">02 / CHECK IN</span>
+        <h2 id="log-heading">Prepare a comment / 打卡</h2>
+        <form id="log-form">
+          <div class="field-pair">
+            <div><label for="log-issue">Your plan issue number</label><input id="log-issue" inputmode="numeric" placeholder="123" required></div>
+            <div><label for="log-date">Actual date / 实际日期</label><input id="log-date" type="date" required></div>
+          </div>
+          <div class="field-pair">
+            <div><label for="log-status">Record type</label><select id="log-status"><option value="done">Completed / 完成</option><option value="fallback">Declared fallback / 替代完成</option><option value="partial">Partly completed / 部分完成</option><option value="skip">Skipped / 跳过</option><option value="meal">Optional meal / 饮食记录</option></select></div>
+            <div><label for="log-session">Session ID</label><input id="log-session" value="S1" autocomplete="off" spellcheck="false"></div>
+          </div>
+          <p id="status-help" class="hint">One session counts once. Optional training details may follow the command.</p>
+          <label for="log-notes">Optional notes / 可选记录</label>
+          <textarea id="log-notes" rows="3" placeholder="What did you do? How did it fit your research day?"></textarea>
+          <button type="submit">Prepare comment</button>
+        </form>
+        <p id="log-message" class="message" role="status"></p>
+        <div id="log-result" hidden>
+          <label for="log-output">Review, then copy into your own issue</label>
+          <textarea id="log-output" rows="4" readonly></textarea>
+          <div class="actions"><button id="copy-log" class="secondary" type="button">Copy comment</button><a id="log-link" class="action-link" target="_blank" rel="noopener noreferrer">Open plan ↗</a></div>
+        </div>
+      </section>
+
+      <section class="card wide" aria-labelledby="carry-heading">
+        <span class="step">03 / NEXT WEEK</span>
+        <h2 id="carry-heading">Reuse a plan / 沿用上周计划</h2>
+        <p>Paste the <strong>raw Markdown body</strong> of a previous weekly-plan issue. This creates a local draft, resets leaderboard consent to <strong>No</strong>, and removes session check marks. Review the schedule and any old personal details before posting.</p>
+        <form id="carry-form">
+          <label for="carry-source">Previous plan Markdown</label>
+          <textarea id="carry-source" rows="5" spellcheck="false" placeholder="### Week starting&#10;&#10;2026-10-26&#10;&#10;### Time zone&#10;&#10;Asia/Shanghai&#10;&#10;..." required></textarea>
+          <label for="carry-week">New week starting / 新一周的周一</label>
+          <input id="carry-week" type="date" required>
+          <button type="submit">Prepare next week's draft</button>
+        </form>
+        <p id="carry-message" class="message" role="status"></p>
+        <div id="carry-result" hidden>
+          <label for="carry-output">Local draft — not submitted</label>
+          <textarea id="carry-output" rows="8" readonly></textarea>
+          <button id="copy-carry" class="secondary" type="button">Copy draft</button>
+          <p class="hint">Use the weekly-plan form on GitHub and copy the reviewed fields. Existing comments and completions are never carried over.</p>
+        </div>
+        <details><summary>Command-line alternative</summary><p>From the repository, prepare a draft without submitting it:</p><pre><code>python scripts/member_tools.py carry --issue 123 --week 2026-11-02 --output draft.md</code></pre></details>
+      </section>
+
+      <section class="card wide" aria-labelledby="history-heading">
+        <span class="step">04 / LOOK BACK</span>
+        <h2 id="history-heading">Public weekly records / 周记录</h2>
+        <p>Browse the recent 12 report weeks for members who opted into the public board. Scores describe each person's own plan; they do not compare fitness, health, or research output. Meal details and free-text notes are not shown here. <a href="../reports/README.md">Older weekly reports / 历史归档</a></p>
+        <div class="filters">
+          <div><label for="filter-handle">Member / 用户名</label><input id="filter-handle" placeholder="Filter by username" autocomplete="off" spellcheck="false"></div>
+          <div><label for="filter-sport">Sport / 运动</label><select id="filter-sport"><option value="">All sports</option><option value="strength">Strength</option><option value="basketball">Basketball</option><option value="running">Running</option><option value="swimming">Swimming</option><option value="cycling">Cycling</option><option value="walking">Walking</option><option value="mobility">Mobility</option><option value="other">Other / legacy plan</option></select></div>
+          <div><label for="filter-goal">Goal / 目标</label><select id="filter-goal"><option value="">All goals</option><option value="fat-loss">Fat loss</option><option value="muscle-gain">Muscle gain</option><option value="cardio">Cardio</option><option value="skill">Sport skill</option><option value="habit">Maintain a habit</option></select></div>
+        </div>
+        <p id="report-message" class="message" role="status">Loading public reports…</p>
+        <p id="report-snapshot" class="hint">This is a deployed snapshot. Maintainers must republish Pages after reports change. 网页数据以最近一次发布为准。</p>
+        <div class="table-scroll"><table id="history-table" hidden><thead><tr><th>Week</th><th>Member</th><th>Goal</th><th>Sports</th><th>Completed / planned</th><th>Points / 10</th><th>Source</th></tr></thead><tbody id="history-body"></tbody></table></div>
+        <p class="hint">Not appearing here does not mean someone did not exercise. Use “Your weekly plan” above to find opt-out, paused, or recovery plans.</p>
+      </section>
+    </div>
+
+    <section class="help" aria-labelledby="help-heading">
+      <h2 id="help-heading">Keep it simple.</h2>
+      <p>Fallback completion needs an alternative already declared for that session. Partial and skipped sessions earn no execution points. Meal records are optional and earn no extra points; model estimates are estimates, not a health score.</p>
+      <p>This page runs on GitHub Pages or a local web server. GitHub's code viewer does not execute HTML; use the deployed Pages URL, or download the repository and run <code>python -m http.server 8000</code>, then open <code>http://localhost:8000/tools/</code>.</p>
+      <p>There is no sign-in, saved credential, automatic submission, or connected food-analysis model here. Clipboard actions and drafts stay in your browser. The report view fetches this site's generated public report.</p>
+    </section>
+  </main>
+  <footer class="wrap"><p>AI Lean Muscle Club · Make a realistic plan. Return when you can.</p></footer>
+</body>
+</html>

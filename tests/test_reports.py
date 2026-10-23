@@ -96,7 +96,56 @@ class ReportingTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             data = json.loads((root / "reports/2026-10-26.json").read_text())
             self.assertEqual(data["leaderboard"][0]["total_points"], 7)
-            self.assertIn("member-one", (root / "README.md").read_text())
+            self.assertNotIn("member-one", (root / "README.md").read_text())
+            self.assertIn("member-one", (root / "reports/2026-10-26.md").read_text())
+            self.assertEqual(json.loads((root / "reports/index.json").read_text())["schema_version"], 2)
+
+    def test_homepage_stays_short_and_browser_index_excludes_unapproved_fields(self):
+        records = [plan(number=i, handle=f"member-{i}") for i in range(1, 251)]
+        board = build_week(records, "2026-10-26", AS_OF)
+        board["leaderboard"][0]["food_notes"] = "DO_NOT_REPUBLISH"
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text("# Club\n<!-- CLUB:START -->\n<!-- CLUB:END -->\n")
+            write_reports(root, [board])
+            home = (root / "README.md").read_text()
+            self.assertLess(len(home), 2000)
+            self.assertIn("250", home)
+            self.assertNotIn("member-1", home)
+            index = (root / "reports/index.json").read_text()
+            self.assertNotIn("DO_NOT_REPUBLISH", index)
+            self.assertEqual(len(json.loads(index)["weeks"][0]["leaderboard"]), 250)
+
+    def test_browser_index_window_keeps_older_reports_available(self):
+        from datetime import timedelta, date
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text("# Club\n<!-- CLUB:START -->\n<!-- CLUB:END -->\n")
+            for offset in range(14):
+                week = (date(2026, 10, 26) - timedelta(weeks=offset)).isoformat()
+                write_reports(root, [build_week([], week, AS_OF)])
+            data = json.loads((root / "reports/index.json").read_text())
+            self.assertEqual(len(data["weeks"]), 12)
+            self.assertEqual(len(data["available_weeks"]), 14)
+            self.assertTrue((root / "reports" / (data["available_weeks"][-1] + ".md")).exists())
+            self.assertIn(data["available_weeks"][-1], (root / "reports/README.md").read_text())
+
+    def test_historical_withdrawal_removes_names_from_report_and_new_index(self):
+        for reason in ("consent", "label", "deleted"):
+            with self.subTest(reason=reason), TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "README.md").write_text("# Club\n<!-- CLUB:START -->\n<!-- CLUB:END -->\n")
+                original = plan()
+                write_reports(root, [build_week([original], "2026-10-26", AS_OF)])
+                if reason == "consent":
+                    original["body"] = original["body"].replace("### Public leaderboard\n\nYes", "### Public leaderboard\n\nNo")
+                elif reason == "label":
+                    original["labels"] = []
+                records = [] if reason == "deleted" else [original]
+                write_reports(root, [build_week([], "2026-11-02", AS_OF)], source_records=records, as_of=AS_OF)
+                self.assertNotIn("member-one", (root / "reports/index.json").read_text())
+                self.assertNotIn("member-one", (root / "reports/2026-10-26.md").read_text())
+                self.assertEqual(json.loads((root / "reports/2026-10-26.json").read_text())["leaderboard"], [])
 
 
 class ApiBoundaryTests(unittest.TestCase):
@@ -122,7 +171,7 @@ class ApiBoundaryTests(unittest.TestCase):
         self.assertTrue(any(path == "issues" and params["page"] == 2 for path, params in calls))
 
     def test_repository_validation_prevents_url_or_path_injection(self):
-        self.assertEqual(validate_repository("Al-LeanMuscle-Club/AI-Lean-Muscle-Club"), "Al-LeanMuscle-Club/AI-Lean-Muscle-Club")
+        self.assertEqual(validate_repository("Al-LeanMuscle-Club/AI-LeanMuscle-Club"), "Al-LeanMuscle-Club/AI-LeanMuscle-Club")
         for invalid in ("https://example.com/repo", "../repo/other", "a/b?token=oops", "a/b\ncommand", "a/b/c"):
             with self.assertRaises(ValueError):
                 validate_repository(invalid)

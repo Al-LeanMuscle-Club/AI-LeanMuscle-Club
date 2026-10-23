@@ -40,121 +40,70 @@ AI researchers in universities, research institutes, and industry, including stu
 
 ## Start in three small steps
 
-### 1. Propose next week's plan
+1. [Open one weekly plan](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml). Choose your time zone, current goal, research-week rhythm, and a realistic set of sessions. Public standings are **off by default**.
+2. Comment on that Issue after a session. A short command is enough; photos and exercise details are optional.
+3. At the weekend, add `/review` followed by a few sentences about what worked, what changed, and how you will adjust.
 
-On the weekend, open **one weekly-plan Issue** using the link above. Enter the Monday that starts the week, your IANA time zone, and a few planned sessions with stable IDs:
-
-```text
-Week starting: 2026-10-26
-Time zone: Asia/Shanghai
-Participation mode: Active
-Public leaderboard: No
-
-S1 | Tuesday | Strength training, about 30 minutes
-S2 | Thursday | Basketball or a brisk walk
-S3 | Saturday | Strength training, about 30 minutes
-
-Busy-week fallback: One short session; adjust the remaining plan if needed.
-```
-
-Use the Issue form; the example above illustrates its fields. `S1`, `S2`, and `S3` identify your own planned sessions, not prescribed exercises. An Active plan accepts 1–14 unique IDs from `S1` through `S99`. Use full English weekday names, `Monday` through `Sunday`. Write rest days in Notes instead of counting them as training sessions.
-
-Make commitments that fit your week. A lighter deadline-week plan is welcome. Choose **Recovery** if you want to step back from scoring while keeping a place to reflect.
-
-### 2. Leave a short check-in after a planned session
-
-Comment on your own weekly Issue:
+An illustrative plan, not an exercise prescription:
 
 ```text
-/done S1 2026-10-27 | Strength, 30 minutes. Felt tired, so I kept it easy.
+S1 | Tuesday | strength | Gym session | Short home session
+S2 | Thursday | basketball | Shooting practice
+S3 | Saturday | running | Easy run
 ```
 
-That is enough. Photos, exercise details, weights, and durations are optional and may follow the command on additional lines. Put one command in each comment. Each planned session counts at most once. Use the session's actual date in your declared time zone; backfilled records are welcome. Future dates and dates outside that plan's week do not count.
-
-No daily PRs, proof photos, or daily workouts are required. A missing check-in means **unrecorded**, not proof that someone did not exercise. You can still share unplanned activity in a normal comment; it does not add extra execution points.
-
-### 3. Reflect on the weekend
-
-Add one comment beginning with `/review`, followed by a short reflection:
+Use full English weekdays and stable IDs `S1`–`S99`. The optional fifth column declares that session's busy-week fallback. Old three-column plans still work. Descriptions, comments, and reflections may be in any language.
 
 ```text
-/review
-What worked: Two short sessions were easier to protect than one long session.
-What got in the way: An experiment ran late on Thursday.
-Next week: Move that session earlier and keep the fallback realistic.
+/done S1 2026-10-27 | Kept the session short.
 ```
 
-Reflection earns the same credit whether the week went to plan or not. You can optionally note energy, fatigue, sleep, or an agent workflow that freed time. We do not score research output or personal health outcomes.
+Use `/fallback S1 YYYY-MM-DD` when completing S1's declared fallback; `/partial` and `/skip` record an incomplete session without execution points. Each session counts once, using its latest valid status. Put each command in a separate comment. [Full instructions, meal logs, and examples →](docs/MEMBER_GUIDE.md)
 
-## Weekly points: a small encouragement
+**Quick tools:** [Find my plan / prepare a check-in](tools/index.html) ([open locally or configure hosting](docs/MEMBER_GUIDE.md#browser-helper)) · [Reuse last week's plan](docs/MEMBER_GUIDE.md#command-line-tools) · [Browse opt-in report data](reports/index.json)
 
-Scores describe **recorded participation and follow-through on a personal plan**. They are not a fitness assessment, a health score, or a comparison of training ability.
+## Find your people
 
-| Component | Weekly points | Rule |
-| --- | ---: | --- |
-| Valid Active plan | 1 | One valid weekly Issue per person |
-| Recorded plan execution | 0–6 | `6 × completed planned sessions / planned sessions`, rounded to two decimals |
-| Weekly reflection | 2 | One nonempty author `/review` comment, independent of success |
-| Helpful contribution | 0–1 | One eligible experience Issue approved by a maintainer |
-| **Maximum** | **10** | No extra credit for more training or more posts |
-
-**Example:** Plan three sessions, record two, and write a reflection: `1 + 6 × 2/3 + 2 = 7` points. An approved contribution makes it `8`.
-
-Weights lifted, distance, workout duration, calories burned, weight loss, appearance, photos, likes, and citation counts do not earn points. Different personal commitments can receive the same score. An easy plan can earn full completion credit, so the board should be read with that context.
-
-Scores reset every week. Leaderboard participation is **opt-in**; select `Yes` in the form to display your GitHub handle. Equal totals share a rank. The earliest valid weekly Issue is used if someone submits duplicates. Recovery mode or an author `/pause` comment removes that week's score from the leaderboard. To resume after `/pause`, edit or remove that pause comment; it is not a toggle command.
-
-Plans may change. Explain changes in a comment, keep completed session IDs stable, and avoid rewriting past commitments simply to increase a score. This first version evaluates the **current declared plan**, not a frozen historical snapshot. It is an honor-based community with no monetary prizes. See the [full scoring and edge-case rules](docs/SCORING.md).
-
-## Experiences, food, and research workflows
-
-Share something specific that other members can use: a realistic training plan, an inexpensive meal idea, a return-to-training experience, or an agent-assisted research workflow. Include what you tried, what changed, and the limits of the experience.
-
-For an agent workflow, a useful format is:
-
-> Task before automation → agent's role → checking/rework needed → time actually saved → whether that made room for exercise or life.
-
-An experience Issue is eligible for at most one contribution point in its stated week when a maintainer adds `points-approved`. Multiple posts and approval labels cannot exceed the weekly cap. Ordinary peer encouragement is welcome without requiring points.
-
-Food sharing is optional. A photo plus a little context about ingredients, portions, and preparation can start a useful conversation. In this version, there is **no automatic meal health score or separate food-point system**. An agent may describe visible food, ask clarifying questions, and suggest an optional improvement; it should acknowledge what it cannot infer. A single meal image does not establish someone's overall diet quality, and image-based estimates can be inaccurate. See [WHO's healthy-diet principles](https://www.who.int/news-room/fact-sheets/detail/healthy-diet) and [a meal-photo evaluation study](https://doi.org/10.3390/nu17040607).
-
-## What automation does
-
-| Function | First version |
+| Filter | Available values |
 | --- | --- |
-| Weekly plan and check-in collection | GitHub Issue forms and author comments |
-| Completion and score arithmetic | Deterministic Python rules, no LLM or paid API required |
-| Public weekly board | GitHub Actions updates this README and `reports/` |
-| Useful-experience approval | Human maintainer assigns `points-approved` |
-| AI-written summaries and workflow suggestions | Optional, human-reviewed process described in [Agent guide](docs/AGENT_GUIDE.md) |
-| Automatic medical advice or meal-health ranking | Not included |
+| Activity, per session | `strength`, `basketball`, `running`, `swimming`, `cycling`, `walking`, `mobility`, `other` |
+| Primary goal, per week | `fat-loss`, `muscle-gain`, `cardio`, `skill`, `habit` |
+| Research week | `regular`, `deadline`, `travel` |
 
-The included workflow is scheduled for **09:15 Asia/Shanghai daily** and can also be run manually. It refreshes the current and previous reporting weeks, which allows recent backfills; a manual run with a specific week date displays and refreshes that week instead. The next normal run restores the current-and-previous-week view. Reporting-week selection uses Asia/Shanghai, while check-in dates are interpreted in each participant's declared time zone. Reports remain editable snapshots rather than irreversible settlements. Scheduled runs can be delayed by GitHub.
-
-Automation starts only after the files are in the repository's default branch and the [setup steps](docs/SETUP.md) are completed. This repository does not contain a configured external AI agent or credentials.
+A member can lift, play basketball, and run in the same week. Goals and sports are independent; beginners and mixed plans are welcome. Weight, sets, pace, distance, energy, and fatigue are optional notes, never points multipliers. [Example templates →](examples/README.md)
 
 ## Weekly community board
 
 <!-- CLUB:START -->
-The weekly board has not been generated yet. After setup, the scheduled or manual workflow will replace this section with real participation data. No example members or scores are presented as real activity.
+The weekly overview has not been generated yet. After setup, the scheduled or manual workflow will show real participation counts and links to complete weekly reports. No synthetic members or scores are presented as real activity.
 <!-- CLUB:END -->
 
-## Community rules
+The homepage stays short as participation grows. Full opt-in standings and session-status records live in [weekly reports](reports/README.md); free-text notes, meal contents, body measurements, and raw comments are not copied into generated reports. Selecting `No` hides your identity from generated standings and indexes, **not from your original public Issue**.
 
-1. **Keep participation voluntary.** Joining the chat does not commit anyone to public logging or ranking. Recovery and restarting are welcome.
-2. **Support realistic plans.** Respect different starting points, activities, work schedules, and recovery needs. Avoid pressure to train through pain or illness.
-3. **Record honestly and briefly.** Log your own sessions, use actual dates, and explain plan adjustments. No photo verification or elaborate anti-cheating system.
-4. **Help without judging bodies.** No appearance shaming, unsolicited physique ratings, credential competitions, or claims that one routine fits everyone.
-5. **Keep shared material yours to share.** Do not post someone else's private information, identifiable photos, or confidential research material without permission. No advertising or spam.
-6. **Treat public participation as public.** Issues, comments, images, and committed history may be visible and retained. Opting out of ranking does not make an Issue private. Photos, weight, body-fat measurements, and health history are never required.
-7. **Use agents with clear limits.** Suggestions and summaries are references, not diagnoses. Exact score arithmetic follows public rules. Keep human judgment for disputes and contribution approval.
+## A small encouragement: 10 points per week
 
-See [Code of Conduct](CODE_OF_CONDUCT.md), [Contributing](CONTRIBUTING.md), and [Scoring](docs/SCORING.md) for details and corrections.
+| Component | Maximum points |
+| --- | ---: |
+| One valid Active weekly plan | 1 |
+| Personal plan execution: `6 × completed / planned`, rounded to two decimals | 6 |
+| A nonempty weekly `/review`, including an incomplete week | 2 |
+| A useful experience Issue approved by a maintainer | 1 |
+| **Weekly maximum** | **10** |
 
-## How we will improve it
+A declared fallback counts as completion of the same session; partial and skipped sessions remain visible without execution points. More training, calorie burn, weight loss, photographs, or posts cannot raise the cap. Scores reset weekly; participation is voluntary and equal totals share a rank. Recovery mode or an author `/pause` removes the week from standings without a penalty. [Scoring and correction rules →](docs/SCORING.md)
 
-Start with a two-week pilot of willing participants. Keep the chat useful for everyone, including people who do not use GitHub for check-ins. Review whether people return, whether logging stays quick, and whether they actually find time for exercise and recovery.
+## Keep conversations useful
 
-Small voluntary training-partner groups can provide encouragement that a scoreboard cannot. With participants' consent, reusable lessons can be curated into training resources and agent workflow examples. New features should earn their place by reducing effort or improving support.
+Use [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) for training and recovery, nutrition, research and agents, partners and events, and announcements **after maintainers enable the categories**. Keep weekly records in Issues and lasting resources in documentation or PRs. Discussions do not automatically earn contribution points; use an [experience Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) for the existing approval process. [Community organization →](docs/COMMUNITY.md)
 
-Feature proposals, corrections, and code contributions are welcome. Daily training records belong in weekly Issue comments; reusable documentation and tooling improvements belong in PRs.
+Optional `/meal YYYY-MM-DD` comments can contain food descriptions, photographs, portions, and calorie estimates with their source and uncertainty. No food-photo bonus, calorie target, automatic model estimate, or meal-health score is configured. Detailed food and body records are always optional. [Food-log examples →](docs/MEMBER_GUIDE.md#3-add-food-records-only-if-they-help-you)
+
+For agent workflows, share **the task → agent's role → checking/rework → net time saved → whether it made room for exercise or rest**. The included Python tools calculate scores; optional AI summaries need human review. [Agent guide →](docs/AGENT_GUIDE.md)
+
+## Participation and setup
+
+Be honest, kind, and respectful of different bodies and schedules. Recovery and restarting belong here. Do not pressure others to train, demand photographs, post private research, share someone else's information without permission, or advertise. Public Issues, comments, images, and committed history may be copied and retained. Opting out of standings does not make records private.
+
+The reporting workflow refreshes the current and previous Asia/Shanghai reporting weeks at **09:15 Asia/Shanghai daily**, once enabled on the default branch. Session dates use each member's declared time zone. Reports are revisable snapshots, and scheduled runs may be delayed. Repository settings, labels, and Discussion categories require [maintainer setup](docs/SETUP.md); the files alone do not enable them. There is no connected external AI model or WeChat collector.
+
+[Member guide](docs/MEMBER_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)

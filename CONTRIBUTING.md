@@ -8,7 +8,7 @@ Joining a conversation does not commit you to a training plan or a leaderboard. 
 
 1. Open the **Weekly plan** issue form for the coming Monday–Sunday week.
 2. Choose your time zone, active or recovery mode, and whether to appear in public standings.
-3. Give planned activities stable IDs, such as `S1`, `S2`, and `S3`, and include a busy-week fallback.
+3. Choose a primary goal and research-week rhythm if useful. Give each activity a stable ID and a sport, for example `S1 | Monday | basketball | Shooting practice`. To declare a fallback for that session, add a fifth column: `| Short ball-handling practice`.
 4. After a session, add a short comment to that same issue:
 
    ```text
@@ -19,17 +19,23 @@ Joining a conversation does not commit you to a training plan or a leaderboard. 
 
 You do not need to train or post every day. Notes, photos, and detailed exercise data are optional. Backfill an honest past session date if you forgot to log it. Use `/pause` when you need a break; a recovery week is also welcome.
 
+The [browser helper](tools/index.html) prepares comments and plan drafts without credentials or automatic posting; [member instructions](docs/MEMBER_GUIDE.md) explain local use and the command-line alternatives. You can find your weekly plan or carry one forward into a new draft; review every draft and explicitly choose whether to opt in again.
+
+Use `/fallback` for that session's declared alternative, `/partial` for a partly completed session, or `/skip` to record a missed session. Only `/done` and a valid `/fallback` count as execution. The latest valid status replaces earlier records of the same session. The old three-column plan format still works.
+
 Keep one weekly issue per person. If a plan needs to change, edit it and leave a short explanation in a comment. Preserve the IDs of completed activities. See [the scoring rules](docs/SCORING.md) for accepted formats, duplicate handling, and examples.
 
 ## Share experience and help others
 
-Use the **Experience sharing** issue form for an idea that other members may find useful. Include enough context for someone to understand when it worked and when it might not.
+Use [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions), once enabled, for questions, open conversations, partner matching, and events. Its five broad categories keep content separate from the sports and goals stored in weekly plans. [Community organization](docs/COMMUNITY.md) explains the categories and required setup.
+
+Use the **Experience sharing** issue form for an idea that other members may find useful and that you would like a maintainer to consider for contribution points. Include enough context for someone to understand when it worked and when it might not.
 
 Useful topics include training around deadlines, restarting after a break, finding exercise partners, food preparation, and Agent workflows that leave more time for movement. For Agent workflows, describe the original task, what the Agent did, the checking or rework required, and the actual time saved. Share only material that you are free to disclose.
 
 Responding thoughtfully to another person's record is also welcome. Ask before giving detailed personal advice. A maintainer may recognize a contribution with the `points-approved` label; posting more frequently does not increase the weekly contribution-point limit.
 
-Optional food photographs should include brief ingredient, portion, or preparation context when possible. Agent feedback is a discussion aid, with uncertainty stated clearly; it is not a diagnosis or an authoritative nutrition rating. The pilot has no separate food-health score.
+Optional food photographs should include brief ingredient, portion, or preparation context when possible. Agent feedback is a discussion aid, with uncertainty stated clearly; it is not a diagnosis or an authoritative nutrition rating. The pilot has no separate food-health score. You may put `/meal YYYY-MM-DD` in its own weekly-Issue comment. Any calorie figures should include their source, portion assumptions, and uncertainty. Logging food is optional, has no extra point bonus, and does not require detailed nutrition tracking.
 
 ## Use pull requests for lasting improvements
 
@@ -47,7 +53,7 @@ Maintainers should:
 - Recognize honest reflection and useful support, including incomplete weeks.
 - Review contribution approvals without rewarding popularity or posting volume.
 - Let members correct records, adjust future plans, and leave standings without stigma.
-- Keep the first two weeks focused on the plan → record → reflection cycle before adding features.
+- Keep the plan → record → reflection cycle easy to use; evaluate new features through a small voluntary pilot.
 - Summarize a few useful lessons instead of requiring members to read every log.
 
 See [the setup guide](docs/SETUP.md) for automation, [the Agent guide](docs/AGENT_GUIDE.md) for optional Agent assistance, and [the code of conduct](CODE_OF_CONDUCT.md) for community expectations.

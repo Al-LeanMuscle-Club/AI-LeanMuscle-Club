@@ -27,7 +27,9 @@ Create one issue using the weekly-plan form. Its fields are:
 | Week starting | An ISO date, `YYYY-MM-DD`, that is a Monday. |
 | Time zone | An IANA name such as `Asia/Shanghai`, `America/New_York`, or `Europe/Zurich`. |
 | Participation mode | `Active` or `Recovery`. |
-| Public leaderboard | `Yes` or `No`. |
+| Public leaderboard | `Yes` or `No`; `No` is the form default. |
+| Primary goal | Optional: `fat-loss`, `muscle-gain`, `cardio`, `skill`, `habit`; omitted or unanswered defaults to `habit`. |
+| Research week | Optional: `regular`, `deadline`, `travel`; omitted or unanswered defaults to `regular`. |
 | Planned sessions | For an active week, 1–14 activities with unique IDs from `S1` to `S99`. |
 | Busy-week fallback | A practical alternative if research or life changes the week. |
 | Notes | Optional context that you are comfortable sharing publicly. |
@@ -35,10 +37,12 @@ Create one issue using the weekly-plan form. Its fields are:
 Write one activity per line, for example:
 
 ```text
-S1 | Monday | Strength, 30 min
-S2 | Thursday | Basketball, 45 min
-S3 | Saturday | Walk or run, 25 min
+S1 | Monday | strength | Gym session | Short home session
+S2 | Thursday | basketball | Shooting practice
+S3 | Saturday | running | Easy run
 ```
+
+Use four columns: `ID | day | sport | description`. An optional fifth column declares the fallback for that same session. Recognized sports are `strength`, `basketball`, `running`, `swimming`, `cycling`, `walking`, `mobility`, and `other`. Descriptions and fallbacks can be in any language but cannot contain extra pipe (`|`) characters. The old three-column format `ID | day | description` remains valid and uses `other` in generated classifications; no activity is guessed from prose.
 
 Use full English weekday names, Monday through Sunday; abbreviations such as Mon are not accepted. These are examples, not exercise prescriptions. Choose activities and a schedule appropriate for your circumstances. Plan rest days too, but do not add rest days as completed training sessions to increase the score.
 
@@ -52,9 +56,22 @@ Comment on your own weekly issue:
 /done S1 2026-10-26 | Strength, 30 min. Shortened the final set.
 ```
 
-The note after `|` is optional. Put the command on the first nonempty line; extra notes and image attachments may follow on later lines. Use one command per comment. Comments with additional `/done`, `/review`, or `/pause` command lines are ignored as ambiguous. The session ID must exist in the plan. The date must fall in the declared Monday–Sunday week and must not be later than either the comment's local creation date or the report's current local date.
+The note after `|` is optional. Put the command on the first nonempty line; extra notes, exercise details, and image attachments may follow on later lines. Use one command per comment. Comments with additional `/done`, `/fallback`, `/partial`, `/skip`, `/meal`, `/review`, or `/pause` command lines are ignored as ambiguous.
 
-Only comments written by the issue's author count toward their execution and reflection points. Each session ID counts once, regardless of repeated comments. A friend can encourage you in the thread, but cannot submit a completion on your behalf. Future-dated comments and malformed completion commands are ignored by the scorer.
+| Command | Meaning | Execution credit |
+| --- | --- | --- |
+| `/done S1 YYYY-MM-DD` | Completed the planned session | Counts once |
+| `/fallback S1 YYYY-MM-DD` | Completed S1's declared fifth-column alternative | Counts once as the same S1 |
+| `/partial S1 YYYY-MM-DD` | Partly completed the session | No execution credit |
+| `/skip S1 YYYY-MM-DD` | Chose not to complete the session | No execution credit |
+
+The session ID must exist in the plan. A `/fallback` is valid only when that session has a nonempty fifth-column alternative. Text in the general `Busy-week fallback` field is planning context and does not automatically give every session a fallback.
+
+Only the plan author's comments count. The latest valid status for each session replaces its previous status, using `updated_at` when present and otherwise `created_at`; equal timestamps are resolved deterministically. A later `/partial` or `/skip` can therefore correct an earlier completion. A session never counts twice, even if both the full session and its alternative were recorded. Delete, edit, or supersede a mistaken status instead of opening a duplicate plan.
+
+The actual session date must fall in the plan's Monday–Sunday week and must not be later than the effective comment timestamp's local date or the report's current local date. All such dates use the participant's declared IANA time zone. An edit dated after the report's `as_of` instant is ignored rather than reconstructed as a historical comment; an edit cannot precede its creation timestamp. Reports evaluate the data supplied at generation time, not an immutable event history. Honest backfilling is welcome.
+
+A friend's encouragement cannot submit a completion for you. Unsupported commands, unknown session IDs, malformed dates, unrecognized sports in new-format rows, and future-dated records do not grant execution points. The member checker can explain format problems before submission.
 
 An unreported session receives no execution points yet; this is not a statement that the person did not exercise. Honest backfilling with the actual session date is welcome. Missing a day of logging never resets a streak or creates negative points.
 
@@ -69,7 +86,7 @@ The short session was easier to keep than expected.
 Next week I will reserve two shorter windows earlier in the day.
 ```
 
-Reflection points do not depend on having a successful week. Returning after an interruption is welcome.
+Reflection points do not depend on having a successful week. Returning after an interruption is welcome. Optional prompts include the week's research pressure, which scheduling adjustment helped, and an Agent workflow's net time saved after setup, checking, and rework. Neither time savings nor reported health or research outcomes change points.
 
 You may edit a plan when circumstances change. Add a comment explaining the adjustment, keep completed session IDs stable, and make changes to future activities where possible. The scorer uses the **current declared sessions**, not a frozen original plan. This is deliberately an honor-based system: adjusted completion rates are not suitable for comparing how much work different people did. Do not rewrite a past plan simply to manufacture full completion.
 
@@ -87,11 +104,19 @@ Use the experience-sharing issue form and specify the same `Week starting` date.
 
 A maintainer can add the `points-approved` label when an experience is relevant, specific, and useful to the community. This approval is not a medical endorsement. Likes, post length, polished photographs, and posting frequency do not determine points. Any number of approved contributions earns at most **one contribution point per author per week**. A contribution can still be valuable without earning points or having an active plan.
 
-Food logging is optional. There is no separate food-photo bonus or Agent-generated health score in this version.
+## Optional food records
+
+A separate comment may begin with `/meal YYYY-MM-DD`, followed by text, optional photographs, and any context the member wants public. A meal record has the same author and week/date checks as other dated records, adds no execution or contribution points by itself, and never substitutes for a training session or weekly reflection.
+
+Calorie numbers and nutritional details are optional. If included, label the source (packaging, weighed recipe, personal estimate, or model estimate), portion assumptions, unknown ingredients, and any estimated range. Missing or uncertain quantities should stay unknown. There is no configured automatic nutrient-estimation service, shared calorie target, body-weight reward, or meal-health grade. A helpful food-planning reflection can be considered under the ordinary experience-Issue approval process; it does not raise the contribution cap.
+
+Raw meal contents, calorie figures, body measurements, check-in prose, and photographs are not copied into the generated report or personal index. They remain visible in their original public Issue. Members who want private food or body records should keep them outside this public repository.
 
 ## Standings, corrections, and automation
 
-- Public standings include only active members who selected `Yes` for the public leaderboard. Recovery and paused members are excluded.
+- Public standings and named indexes include only active members who selected `Yes` for the public leaderboard. Recovery and paused members are excluded.
+- The README contains a compact overview and links; full records and rankings are in weekly reports. Structured per-sport counts, goal filters, and session statuses describe these same opted-in active members, not the whole group. Anonymous overall participant/recovery counts can include other valid plans.
+- Optional exercise metrics and primary goals support personal observation. They never multiply the score, define a health outcome, or create a cross-sport calories/distance/weight leaderboard.
 - Scores reset for each week. They are not lifetime totals. Equal total scores receive the same rank.
 - Completion rates describe each member's own current plan; they are not comparable measures of health or fitness.
 - The Python scorer applies the published rules. An optional Agent may summarize experiences and draft a weekly report, but does not invent completions, approve its own contributions, or change scoring rules.

@@ -16,23 +16,35 @@ from typing import Any
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from club.taxonomy import GOALS, RESEARCH_WEEKS, SPORTS
+
 
 _DATE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 _HANDLE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?\Z")
 _HEADING = re.compile(r"^###[ \t]+(.+?)[ \t]*$", re.MULTILINE)
-_SESSION = re.compile(
-    r"(?:-[ \t]+(?:\[[ xX]\][ \t]+)?)?"
-    r"(S[1-9][0-9]?)[ \t]*\|[ \t]*([A-Za-z]+)[ \t]*\|[ \t]*(.+)\Z",
-    re.IGNORECASE,
-)
-_DONE = re.compile(
-    r"/done[ \t]+(S[1-9][0-9]?)[ \t]+(\d{4}-\d{2}-\d{2})"
+_SESSION_PREFIX = re.compile(r"^(?:-[ \t]+(?:\[[ xX]\][ \t]+)?)?")
+_SESSION_ID = re.compile(r"S[1-9][0-9]?\Z", re.IGNORECASE)
+_CHECK_IN = re.compile(
+    r"/(done|fallback|partial|skip)[ \t]+(S[1-9][0-9]?)[ \t]+(\d{4}-\d{2}-\d{2})"
     r"(?:[ \t]*\|[^\r\n]*)?[ \t]*\Z",
     re.IGNORECASE,
 )
+_MEAL = re.compile(
+    r"/meal[ \t]+(\d{4}-\d{2}-\d{2})(?:[ \t]*\|[^\r\n]*)?[ \t]*\Z",
+    re.IGNORECASE,
+)
+_COMMAND = re.compile(r"/(?:done|fallback|partial|skip|meal|review|pause)(?:\s|$)", re.IGNORECASE)
 _WEEKDAYS = {
     "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
 }
+
+
+@dataclass(frozen=True)
+class _Session:
+    id: str
+    day: str
+    sport: str
+    fallback: bool
 
 
 @dataclass(frozen=True)
@@ -44,8 +56,10 @@ class _Plan:
     time_zone: ZoneInfo
     mode: str
     public: bool
-    sessions: frozenset[str]
+    sessions: tuple[_Session, ...]
     comments: tuple[Any, ...]
+    goal: str
+    research_week: str
 
 
 def _iso_date(value: Any) -> date | None:
@@ -122,10 +136,44 @@ def _issue_url(value: Any, number: int) -> str | None:
     return value
 
 
-def _plan(issue: Mapping[str, Any], week: str, as_of: datetime) -> _Plan | None:
-    sections = _sections(issue.get("body"))
-    if sections is None or sections.get("Week starting") != week:
+def _session_rows(raw: str) -> tuple[_Session, ...] | None:
+    """Parse legacy three-column rows or explicit sport/fallback rows.
+
+    Free-form descriptions and fallback text never leave the input record.
+    The stored fallback boolean confirms only a declared alternative exists;
+    this honor-based pilot does not freeze historical edits to a plan.
+    """
+    sessions: list[_Session] = []
+    seen: set[str] = set()
+    for line in raw.splitlines():
+        if not line.strip():
+            continue
+        columns = [part.strip() for part in _SESSION_PREFIX.sub("", line.strip(), count=1).split("|")]
+        if len(columns) not in {3, 4, 5}:
+            return None
+        session_id, day = columns[:2]
+        if not _SESSION_ID.fullmatch(session_id) or day.casefold() not in _WEEKDAYS:
+            return None
+        session_id = session_id.upper()
+        if session_id in seen:
+            return None
+        sport, description = ("other", columns[2]) if len(columns) == 3 else (columns[2].casefold(), columns[3])
+        if sport not in SPORTS or not description:
+            return None
+        fallback = len(columns) == 5 and bool(columns[4]) and columns[4] != "_No response_"
+        seen.add(session_id)
+        sessions.append(_Session(session_id, day.title(), sport, fallback))
+    if not 1 <= len(sessions) <= 14:
         return None
+    return tuple(sessions)
+
+
+def _parse_plan(issue: Mapping[str, Any], week: str, as_of: datetime) -> tuple[_Plan | None, list[str]]:
+    sections = _sections(issue.get("body"))
+    if sections is None:
+        return None, ["Use unique Issue form headings; duplicate headings are ambiguous."]
+    if sections.get("Week starting") != week:
+        return None, ["Week starting must match the selected Monday in YYYY-MM-DD format."]
     handle = _handle(issue)
     number = issue.get("number")
     created = _timestamp(issue.get("created_at"))
@@ -136,96 +184,184 @@ def _plan(issue: Mapping[str, Any], week: str, as_of: datetime) -> _Plan | None:
         or number < 1
         or created is None
         or created > as_of
+        or "pull_request" in issue
     ):
-        return None
+        return None, ["A plan needs valid GitHub Issue metadata and a creation time no later than now."]
     url = _issue_url(issue.get("html_url"), number)
     if url is None:
-        return None
+        return None, ["The plan must have a valid HTTPS GitHub Issue URL."]
     zone_name = sections.get("Time zone", "")
     if not zone_name or len(zone_name) > 100:
-        return None
+        return None, ["Time zone must be an IANA name, such as Asia/Shanghai."]
     try:
         zone = ZoneInfo(zone_name)
     except (ZoneInfoNotFoundError, ValueError):
-        return None
+        return None, ["Time zone must be an IANA name, such as Asia/Shanghai."]
     mode = sections.get("Participation mode")
     visibility = sections.get("Public leaderboard")
-    if mode not in {"Active", "Recovery"} or visibility not in {"Yes", "No"}:
-        return None
-    sessions: set[str] = set()
+    if mode not in {"Active", "Recovery"}:
+        return None, ["Participation mode must be Active or Recovery."]
+    if visibility not in {"Yes", "No"}:
+        return None, ["Public leaderboard must be Yes or No; all Issue content remains public."]
+    goal = sections.get("Primary goal", "habit").casefold()
+    research_week = sections.get("Research week", "regular").casefold()
+    if goal in {"", "_no response_"}:
+        goal = "habit"
+    if research_week in {"", "_no response_"}:
+        research_week = "regular"
+    if goal not in GOALS:
+        return None, ["Primary goal must be fat-loss, muscle-gain, cardio, skill, or habit."]
+    if research_week not in RESEARCH_WEEKS:
+        return None, ["Research week must be regular, deadline, or travel."]
+    sessions: tuple[_Session, ...] = ()
     if mode == "Active":
-        raw_sessions = sections.get("Planned sessions", "")
-        for line in raw_sessions.splitlines():
-            if not line.strip():
-                continue
-            match = _SESSION.fullmatch(line.strip())
-            if not match or match.group(2).casefold() not in _WEEKDAYS:
-                return None
-            session_id = match.group(1).upper()
-            if session_id in sessions or not match.group(3).strip():
-                return None
-            sessions.add(session_id)
-        if not 1 <= len(sessions) <= 14:
-            return None
+        parsed = _session_rows(sections.get("Planned sessions", ""))
+        if parsed is None:
+            return None, [
+                "Use 1–14 unique sessions: S1 | Monday | sport | description | optional fallback. "
+                "Sport must be strength, basketball, running, swimming, cycling, walking, mobility, or other. "
+                "Legacy S1 | Monday | description rows are also accepted."
+            ]
+        sessions = parsed
     raw_comments = issue.get("comments_data", [])
     comments = tuple(raw_comments) if isinstance(raw_comments, list) else ()
     return _Plan(
-        handle, number, url, created, zone, mode, visibility == "Yes",
-        frozenset(sessions), comments,
-    )
+        handle, number, url, created, zone, mode, visibility == "Yes", sessions,
+        comments, goal, research_week,
+    ), []
 
 
-def _activity(plan: _Plan, start: date, as_of: datetime) -> tuple[set[str], bool, bool]:
-    completed: set[str] = set()
+def _plan(issue: Mapping[str, Any], week: str, as_of: datetime) -> _Plan | None:
+    return _parse_plan(issue, week, as_of)[0]
+
+
+def _parse_comment(
+    plan: _Plan, comment: Mapping[str, Any], start: date, as_of: datetime,
+) -> tuple[dict[str, Any] | None, list[str]]:
+    author = _handle(comment)
+    created = _timestamp(comment.get("created_at"))
+    effective = _timestamp(comment.get("updated_at")) if "updated_at" in comment else created
+    body = comment.get("body")
+    if author is None or author.casefold() != plan.handle.casefold():
+        return None, ["Only the plan author can record its training, meals, reflection, or pause."]
+    if (
+        created is None or effective is None or created < plan.created_at
+        or effective < created or created > as_of or effective > as_of
+    ):
+        return None, ["The comment creation and edit times must be valid and no later than now."]
+    if not isinstance(body, str):
+        return None, ["Write one command on the first nonempty line of the comment."]
+    body = body.replace("\r\n", "\n").replace("\r", "\n").strip()
+    lines = body.splitlines()
+    if not lines or any(_COMMAND.match(line.strip()) for line in lines[1:]):
+        return None, ["Write exactly one command per comment, on its first nonempty line."]
+    first = lines[0].strip()
+    event: dict[str, Any] = {"effective_at": effective, "id": comment.get("id")}
+    if re.fullmatch(r"/pause(?:[ \t]+.*)?", first, re.IGNORECASE):
+        return {**event, "kind": "pause"}, []
+    if re.fullmatch(r"/review[ \t]*", first, re.IGNORECASE):
+        reflection = "\n".join(lines[1:]).strip()
+        if not reflection or reflection == "_No response_":
+            return None, ["Add a short reflection on a new line after /review."]
+        return {**event, "kind": "review"}, []
+    check_in = _CHECK_IN.fullmatch(first)
+    meal = _MEAL.fullmatch(first)
+    if check_in is None and meal is None:
+        return None, [
+            "Use /done, /fallback, /partial, or /skip followed by a session ID and YYYY-MM-DD; "
+            "or /meal YYYY-MM-DD, /review, or /pause."
+        ]
+    kind = check_in.group(1).casefold() if check_in else "meal"
+    logged_day = _iso_date(check_in.group(3) if check_in else meal.group(1))
+    if (
+        logged_day is None or not start <= logged_day < start + timedelta(days=7)
+        or logged_day > as_of.astimezone(plan.time_zone).date()
+        or logged_day > effective.astimezone(plan.time_zone).date()
+    ):
+        return None, ["The actual date must be within the plan week and not in the future in the plan's time zone."]
+    if check_in:
+        session_id = check_in.group(2).upper()
+        session = next((s for s in plan.sessions if s.id == session_id), None)
+        if session is None:
+            return None, ["Use a session ID that exists in your current plan."]
+        if kind == "fallback" and not session.fallback:
+            return None, ["Declare that session's fallback in the fifth plan column before using /fallback."]
+        event["session_id"] = session_id
+    return {**event, "kind": kind, "date": logged_day.isoformat()}, []
+
+
+def validate_submission(
+    issue: Mapping[str, Any], comment_body: str | Mapping[str, Any] | None = None,
+    *, now: datetime | None = None,
+) -> list[str]:
+    """Validate a plan and optionally a proposed or actual comment.
+
+    A string comment is a preview, attributed to the plan author at ``now``.
+    Pass the actual GitHub comment Mapping to validate ownership and its true
+    timestamps. Messages are fixed text and never echo member-provided content.
+    Existing comments and leaderboard consent do not restrict this preflight.
+    """
+    if now is None:
+        now = datetime.now(timezone.utc)
+    if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() != timedelta(0):
+        return ["Validation needs a timezone-aware UTC time."]
+    if not isinstance(issue, Mapping):
+        return ["A valid GitHub weekly-plan Issue is required."]
+    sections = _sections(issue.get("body"))
+    week = sections.get("Week starting") if sections else None
+    start = _iso_date(week)
+    if start is None or start.weekday() != 0:
+        return ["Week starting must be a Monday in YYYY-MM-DD format."]
+    plan, errors = _parse_plan(issue, week, now)
+    if errors or plan is None:
+        return errors
+    if comment_body is None:
+        return []
+    if isinstance(comment_body, str):
+        comment: Mapping[str, Any] = {
+            "body": comment_body, "user": {"login": plan.handle},
+            "created_at": now.isoformat(),
+        }
+    elif isinstance(comment_body, Mapping):
+        comment = comment_body
+    else:
+        return ["A comment must be text or a GitHub comment record."]
+    return _parse_comment(plan, comment, start, now)[1]
+
+
+def _activity(
+    plan: _Plan, start: date, as_of: datetime,
+) -> tuple[list[dict[str, Any]], bool, bool]:
+    states: dict[str, dict[str, Any]] = {}
+    latest: dict[str, tuple[datetime, int]] = {}
     reviewed = False
     paused = False
-    local_today = as_of.astimezone(plan.time_zone).date()
-    for comment in plan.comments:
+    for index, comment in enumerate(plan.comments):
         if not isinstance(comment, Mapping):
             continue
-        author = _handle(comment)
-        created = _timestamp(comment.get("created_at"))
-        body = comment.get("body")
-        if (
-            author is None
-            or author.casefold() != plan.handle.casefold()
-            or created is None
-            or created > as_of
-            or created < plan.created_at
-            or not isinstance(body, str)
-        ):
+        event, _ = _parse_comment(plan, comment, start, as_of)
+        if event is None:
             continue
-        body = body.replace("\r\n", "\n").replace("\r", "\n").strip()
-        lines = body.splitlines()
-        if not lines:
-            continue
-        # One command per comment. Ordinary trailing notes and photo Markdown
-        # are welcome, but a second command line makes the whole comment
-        # ambiguous and must not grant extra points or pause participation.
-        if any(
-            re.match(r"/(?:done|review|pause)(?:\s|$)", line.strip(), re.IGNORECASE)
-            for line in lines[1:]
-        ):
-            continue
-        if re.match(r"/pause(?:\s|$)", body):
+        if event["kind"] == "pause":
             paused = True
-        if re.fullmatch(r"/review[ \t]*\n[\s\S]+", body):
-            reflection = body.split("\n", 1)[1].strip()
-            if reflection and reflection != "_No response_":
-                reviewed = True
-        done = _DONE.fullmatch(lines[0].strip())
-        if done:
-            session_id = done.group(1).upper()
-            logged_day = _iso_date(done.group(2))
-            if (
-                session_id in plan.sessions
-                and logged_day is not None
-                and start <= logged_day < start + timedelta(days=7)
-                and logged_day <= local_today
-                and logged_day <= created.astimezone(plan.time_zone).date()
-            ):
-                completed.add(session_id)
-    return completed, reviewed, paused
+        elif event["kind"] == "review":
+            reviewed = True
+        elif event["kind"] != "meal":
+            session_id = event["session_id"]
+            identifier = event.get("id")
+            order = (event["effective_at"], identifier if isinstance(identifier, int) and not isinstance(identifier, bool) else index)
+            if session_id not in latest or order > latest[session_id]:
+                latest[session_id] = order
+                states[session_id] = {
+                    "status": {"done": "completed", "fallback": "fallback", "partial": "partial", "skip": "skipped"}[event["kind"]],
+                    "date": event["date"],
+                    "used_fallback": event["kind"] == "fallback",
+                }
+    return [
+        {"id": session.id, "day": session.day, "sport": session.sport,
+         **states.get(session.id, {"status": "planned", "date": None, "used_fallback": False})}
+        for session in plan.sessions
+    ], reviewed, paused
 
 
 def build_week(
@@ -237,7 +373,9 @@ def build_week(
     selected Monday are considered. A member's earliest valid plan wins; later
     duplicates never add points. All dates in check-ins are interpreted in the
     participant's declared IANA time zone. Future-dated declarations are ignored
-    both relative to ``as_of`` and to the comment's actual creation date.
+    both relative to ``as_of`` and to the comment's effective date (its edit
+    timestamp when provided, otherwise its creation timestamp). A current body
+    edited after ``as_of`` is ignored because its past text is unavailable.
     A command must be on the first nonempty comment line; trailing notes and
     image Markdown are allowed. Comments with additional command lines are
     ignored rather than interpreting multiple actions from one comment.
@@ -245,8 +383,10 @@ def build_week(
     ``completion_rate`` is a fraction in [0, 1]. ``participants_count`` includes
     valid opt-outs and recovery/paused participants; ``recovery_count`` includes
     both Recovery mode and an author-issued ``/pause``. Only explicitly opted-in
-    active participants appear in ``leaderboard``. Warnings contain no names,
-    issue numbers, URLs, or member-provided text.
+    active participants appear in ``leaderboard`` and category summaries. Raw
+    descriptions, food logs, and training metrics are never republished. Warnings
+    contain no names, issue numbers, URLs, or member-provided text. The latest
+    valid session status wins; full and fallback completions share one cap.
     """
     start = _iso_date(week_start)
     if start is None or start.weekday() != 0:
@@ -302,13 +442,13 @@ def build_week(
     rows: list[dict[str, Any]] = []
     recovery_count = 0
     for key, plan in plans.items():
-        completed, reviewed, paused = _activity(plan, start, as_of)
+        sessions, reviewed, paused = _activity(plan, start, as_of)
         if plan.mode == "Recovery" or paused:
             recovery_count += 1
             continue
         if not plan.public:
             continue
-        count = len(completed)
+        count = sum(s["status"] in {"completed", "fallback"} for s in sessions)
         planned = len(plan.sessions)
         execution = (Decimal(6) * count / planned).quantize(
             Decimal("0.01"), rounding=ROUND_HALF_UP
@@ -329,6 +469,12 @@ def build_week(
             "review_points": review,
             "contribution_points": contribution,
             "total_points": float(total),
+            "goal": plan.goal,
+            "research_week": plan.research_week,
+            "sports": sorted({s.sport for s in plan.sessions}),
+            "partial": sum(s["status"] == "partial" for s in sessions),
+            "skipped": sum(s["status"] == "skipped" for s in sessions),
+            "sessions": sessions,
         })
     rows.sort(key=lambda row: (
         -row["total_points"], -row["completion_rate"], row["handle"].casefold()
@@ -340,7 +486,23 @@ def build_week(
             rank = position
         row["rank"] = rank
         previous_score = row["total_points"]
+    sports = []
+    for sport in SPORTS:
+        selected = [session for row in rows for session in row["sessions"] if session["sport"] == sport]
+        if selected:
+            sports.append({"sport": sport, "planned": len(selected),
+                           "completed": sum(session["status"] in {"completed", "fallback"} for session in selected)})
     return {
+        "schema_version": 2,
+        "summary": {
+            "public_members": len(rows),
+            "planned_sessions": sum(row["planned"] for row in rows),
+            "completed_sessions": sum(row["completed"] for row in rows),
+            "partial_sessions": sum(row["partial"] for row in rows),
+            "skipped_sessions": sum(row["skipped"] for row in rows),
+            "reviewed_members": sum(bool(row["review_points"]) for row in rows),
+        },
+        "sports": sports,
         "week_start": week_start,
         "generated_at": as_of.isoformat().replace("+00:00", "Z"),
         "participants_count": len(plans),
