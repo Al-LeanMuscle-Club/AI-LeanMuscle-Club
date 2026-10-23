@@ -24,6 +24,19 @@ jobs:
       github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
       && github.event.sender.type != 'Bot'
       && !github.event.issue.pull_request
+      # Skip the entire workflow (not just a step) for unrelated discussions.
+      && (
+        github.event_name != 'issue_comment'
+        || contains(github.event.issue.labels.*.name, 'weekly-plan')
+      )
+      && (
+        github.event_name != 'issues'
+        || github.event.action == 'deleted'
+        || contains(github.event.issue.labels.*.name, 'weekly-plan')
+        || contains(github.event.issue.labels.*.name, 'experience')
+        || contains(github.event.issue.labels.*.name, 'points-approved')
+        || contains(fromJSON('["weekly-plan","experience","points-approved"]'), github.event.label.name)
+      )
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
