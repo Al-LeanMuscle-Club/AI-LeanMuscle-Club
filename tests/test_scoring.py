@@ -6,6 +6,7 @@ import json
 import unittest
 
 from club.scoring import build_week
+from club.ranking_state import approve_contribution, new_state
 
 
 WEEK = "2026-10-26"
@@ -49,6 +50,13 @@ def contribution(handle="alice", number=100, approved=True):
     }
 
 
+def approved_state(*issues, now=AS_OF):
+    state = new_state()
+    for issue in issues:
+        approve_contribution(issue, state, now)
+    return state
+
+
 class ScoringTests(unittest.TestCase):
     def test_full_score_and_fractional_completion(self):
         p = plan()
@@ -57,7 +65,8 @@ class ScoringTests(unittest.TestCase):
             comment("/done S2 2026-10-28"),
             comment("/review\nMissed one session; next week I will move it earlier."),
         ]
-        board = build_week([p, contribution()], WEEK, AS_OF)
+        state = approved_state(contribution())
+        board = build_week([p, contribution()], WEEK, AS_OF, ranking_state=state)
         row = board["leaderboard"][0]
         self.assertEqual(row["completed"], 2)
         self.assertEqual(row["planned"], 3)
@@ -65,7 +74,7 @@ class ScoringTests(unittest.TestCase):
         self.assertEqual(row["execution_points"], 4)
         self.assertEqual(row["total_points"], 8)
         p["comments_data"].append(comment("/done S3 2026-10-31"))
-        self.assertEqual(build_week([p, contribution()], WEEK, AS_OF)["leaderboard"][0]["total_points"], 10)
+        self.assertEqual(build_week([p, contribution()], WEEK, AS_OF, ranking_state=state)["leaderboard"][0]["total_points"], 10)
 
     def test_crlf_issue_form_and_multiline_review_are_parsed(self):
         p = plan()
@@ -158,7 +167,8 @@ class ScoringTests(unittest.TestCase):
             comment("/review\nFirst reflection."),
             comment("/review\nAnother reflection."),
         ]
-        board = build_week([p, contribution(), contribution(number=101)], WEEK, AS_OF)
+        board = build_week([p, contribution(), contribution(number=101)], WEEK, AS_OF,
+                           ranking_state=approved_state(contribution(), contribution(number=101)))
         row = board["leaderboard"][0]
         self.assertEqual(row["completed"], 1)
         self.assertEqual(row["contribution_points"], 1)
@@ -239,9 +249,11 @@ class ScoringTests(unittest.TestCase):
         future = contribution(number=103)
         future["created_at"] = "2026-11-03T00:00:00Z"
         other_author = contribution(handle="bob", number=104)
+        state = approved_state(wrong, other_author)
+        approve_contribution(future, state, AS_OF + timedelta(days=2))
         row = build_week([
             plan(), contribution(approved=False), wrong, future, other_author,
-        ], WEEK, AS_OF)["leaderboard"][0]
+        ], WEEK, AS_OF, ranking_state=state)["leaderboard"][0]
         self.assertEqual(row["contribution_points"], 0)
 
     def test_malformed_data_is_skipped_safely(self):

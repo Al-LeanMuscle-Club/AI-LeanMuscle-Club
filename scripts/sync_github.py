@@ -14,7 +14,8 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from club.scoring import _sections, build_week, validate_submission  # noqa: E402
+from club.scoring import build_week  # noqa: E402
+from club.ranking_state import load_state, new_state, save_state  # noqa: E402
 from scripts.github_api import GitHubReader, validate_repository  # noqa: E402
 
 START = "<!-- CLUB:START -->"
@@ -61,11 +62,15 @@ def board_markdown(board: dict, report_links: bool = False) -> str:
         f"### Week starting {board['week_start']}", "",
         f"Updated: {board['generated_at']} · Valid weekly participants: {board['participants_count']} · "
         f"Recovery/paused: {board['recovery_count']}", "",
-        "Only opted-in Active participants are named. Completion means recorded sessions, not verified exercise or health outcomes.", "",
+        "Only opted-in Active participants are named. These are self-reported participation points. "
+        "Execution credit: full/fallback = 1, partial = 0.5; the confirmed plan fixes the denominator.", "",
     ]
+    if board.get("counts_updated_at"):
+        lines += [f"Participant/recovery counts refreshed: {board['counts_updated_at']}. "
+                  "Remaining members' scores retain the original snapshot above.", ""]
     if board["leaderboard"]:
         lines += [
-            "| Rank | Member | Recorded / planned | Plan | Execution | Review | Contribution | Total / 10 |",
+            "| Rank | Member | Full / confirmed | Plan | Execution | Review | Contribution | Total / 10 |",
             "| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
         for row in board["leaderboard"]:
@@ -84,9 +89,12 @@ def board_markdown(board: dict, report_links: bool = False) -> str:
         for item in board["sports"]:
             lines.append(f"| {item['sport']} | {item['planned']} | {item['completed']} |")
     if board["leaderboard"]:
-        lines += ["", "#### Goals and weekly context", "", "| Member | Goal | Research week | Activities | Partial / skipped |", "| --- | --- | --- | --- | ---: |"]
+        lines += ["", "#### Goals and weekly context", "", "| Member | Goal | Research week | Activities | Partial / skipped | Training days | Meal days | Current / confirmed plan |", "| --- | --- | --- | --- | ---: | ---: | ---: | ---: |"]
         for row in board["leaderboard"]:
-            lines.append(f"| [@{row['handle']}]({row['issue_url']}) | {row.get('goal', 'habit')} | {row.get('research_week', 'regular')} | {', '.join(row.get('sports', []))} | {row.get('partial', 0)} / {row.get('skipped', 0)} |")
+            changed = " (adjusted)" if row.get("plan_changed") else ""
+            lines.append(f"| [@{row['handle']}]({row['issue_url']}) | {row.get('goal', 'habit')} | {row.get('research_week', 'regular')} | {', '.join(row.get('sports', []))} | {row.get('partial', 0)} / {row.get('skipped', 0)} | {row.get('recorded_training_days', 0)} | {row.get('meal_days', 0)} | {row.get('current_planned', row['planned'])} / {row.get('confirmed_planned', row['planned'])}{changed} |")
+        lines += ["", "Training/meal days count distinct recorded dates and add no points. "
+                  "Extra sessions remain visible in public data but do not change the confirmed denominator or execution score."]
     return "\n".join(lines) + "\n"
 
 
@@ -96,18 +104,21 @@ def public_index_snapshot(board: dict) -> dict:
         "week_start", "generated_at", "participants_count", "recovery_count"
     )}
     snapshot["schema_version"] = 2
+    if "counts_updated_at" in board:
+        snapshot["counts_updated_at"] = board["counts_updated_at"]
     snapshot["summary"] = {key: value for key, value in board.get("summary", {}).items()
                            if key in {"public_members", "planned_sessions", "completed_sessions", "partial_sessions", "skipped_sessions", "reviewed_members"}}
     snapshot["sports"] = [{key: row[key] for key in ("sport", "planned", "completed")}
                           for row in board.get("sports", [])]
     keys = {"rank", "handle", "issue_number", "issue_url", "planned", "completed", "completion_rate",
             "plan_points", "execution_points", "review_points", "contribution_points", "total_points",
-            "goal", "research_week", "sports", "partial", "skipped"}
+            "goal", "research_week", "sports", "partial", "skipped", "confirmed_planned", "current_planned",
+            "plan_changed", "execution_rate", "meal_days", "recorded_training_days"}
     snapshot["leaderboard"] = []
     for row in board["leaderboard"]:
         clean = {key: value for key, value in row.items() if key in keys}
         clean["sessions"] = [{key: value for key, value in session.items()
-                              if key in {"id", "day", "sport", "status", "date", "used_fallback"}}
+                              if key in {"id", "day", "sport", "status", "date", "used_fallback", "confirmed"}}
                              for session in row.get("sessions", [])]
         snapshot["leaderboard"].append(clean)
     return snapshot
@@ -122,12 +133,20 @@ def replace_readme(text: str, boards: list[dict]) -> str:
     return text[:start] + block + text[end:]
 
 
-def _withdraw_history(board: dict, eligible: set[tuple[int, str, str]]) -> bool:
+def _withdraw_history(board: dict, eligible: set[tuple[int, str, str]], *, current: dict | None = None) -> bool:
     """Remove withdrawn historical rows without republishing old source text."""
     original = board["leaderboard"]
     rows = [row for row in original if (row.get("issue_number"), row.get("handle", "").casefold(), board["week_start"]) in eligible]
-    if len(rows) == len(original):
+    counts_changed = current is not None and any(board.get(key) != current[key]
+                                                for key in ("participants_count", "recovery_count"))
+    if len(rows) == len(original) and not counts_changed:
         return False
+    if current is not None:
+        for key in ("participants_count", "recovery_count"):
+            board[key] = current[key]
+        # Scores and their generation time remain the archived snapshot. Counts
+        # are explicitly a newer view of currently valid plans and withdrawals.
+        board["counts_updated_at"] = current["generated_at"]
     board["leaderboard"] = rows
     rows.sort(key=lambda row: (-row["total_points"], -row["completion_rate"], row["handle"].casefold()))
     previous = None
@@ -147,6 +166,8 @@ def _withdraw_history(board: dict, eligible: set[tuple[int, str, str]]) -> bool:
     sports: dict[str, dict] = {}
     for row in rows:
         for session in row.get("sessions", []):
+            if not session.get("confirmed", True):
+                continue
             sport = session["sport"]
             item = sports.setdefault(sport, {"sport": sport, "planned": 0, "completed": 0})
             item["planned"] += 1
@@ -156,33 +177,29 @@ def _withdraw_history(board: dict, eligible: set[tuple[int, str, str]]) -> bool:
 
 
 def write_reports(root: Path, boards: list[dict], *, source_records: list | None = None,
-                  as_of: datetime | None = None) -> None:
+                  as_of: datetime | None = None, ranking_state: dict | None = None) -> None:
     """Validate the README before writing anything; never save raw issue bodies."""
     readme = root / "README.md"
     updated_readme = replace_readme(readme.read_text(encoding="utf-8"), boards)
     reports = root / "reports"
     snapshots = {}
     rewritten = {}
-    eligible = None
-    if source_records is not None:
-        eligible = set()
-        for issue in source_records:
-            if not isinstance(issue, dict):
-                continue
-            labels = {item.get("name") for item in issue.get("labels", []) if isinstance(item, dict)}
-            fields = _sections(issue.get("body"))
-            if ("weekly-plan" in labels and fields and fields.get("Public leaderboard") == "Yes"
-                    and fields.get("Participation mode") == "Active"
-                    and not validate_submission(issue, now=as_of)):
-                eligible.add((issue["number"], issue["user"]["login"].casefold(), fields["Week starting"]))
+    current_by_week = {board["week_start"]: board for board in boards}
     for path in reports.glob("????-??-??.json"):
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
             continue
         old = json.loads(path.read_text(encoding="utf-8"))
         if old.get("week_start") != path.stem:
             raise ValueError("An archived report has an inconsistent week; no reports were changed.")
-        if eligible is not None and _withdraw_history(old, eligible):
-            rewritten[path.stem] = old
+        if source_records is not None:
+            current = current_by_week.get(path.stem)
+            if current is None:
+                current = build_week(source_records, path.stem, as_of or datetime.now(timezone.utc),
+                                     ranking_state=ranking_state)
+            eligible = {(row["issue_number"], row["handle"].casefold(), path.stem)
+                        for row in current["leaderboard"]}
+            if _withdraw_history(old, eligible, current=current):
+                rewritten[path.stem] = old
         snapshots[path.stem] = public_index_snapshot(old)
     rewritten.update({board["week_start"]: board for board in boards})
     for board in rewritten.values():
@@ -213,6 +230,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--as-of", help="ISO-8601 instant for reproducible offline tests; live runs use current UTC.")
     parser.add_argument("--root", type=Path, default=ROOT, help="Repository root containing README markers.")
     parser.add_argument("--cache", type=Path, help="Private local sync cache; defaults to ROOT/.club-cache/issues.json.")
+    parser.add_argument("--ranking-state", type=Path, help="Trusted ledger; defaults to ROOT/data/ranking-state.json.")
     parser.add_argument("--no-cache", action="store_true", help="Read a complete live snapshot without caching.")
     parser.add_argument("--refresh", action="store_true", help="Rebuild the live cache with a full scan.")
     parser.add_argument("--dry-run", action="store_true", help="Print public report JSON without writing files.")
@@ -226,19 +244,36 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError("--as-of must include a time-zone offset.")
         as_of = as_of.astimezone(timezone.utc)
         weeks = reporting_weeks(as_of, args.week)
+        live_state = args.root / "data" / "ranking-state.json"
+        state_path = args.ranking_state or live_state
+        if args.fixture and args.ranking_state and state_path.resolve() in {
+            live_state.resolve(), (ROOT / "data" / "ranking-state.json").resolve()
+        }:
+            raise ValueError("A fixture --ranking-state must be separate from the live ranking ledger.")
+        # A damaged or incompatible ledger must fail before any API/cache/report
+        # writes. A missing ledger is a deliberate first-time confirmation.
+        ranking_state = new_state() if args.fixture and not args.ranking_state else load_state(state_path)
         if args.fixture:
             issues = json.loads(args.fixture.read_text(encoding="utf-8"))
             if not isinstance(issues, list):
                 raise ValueError("Fixture must contain a JSON list of GitHub issue records.")
         else:
             token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
-            cache = None if args.no_cache else (args.cache or args.root / ".club-cache" / "issues.json")
-            issues = GitHubReader(args.repository, token).records(weeks, cache_path=cache, refresh=args.refresh)
-        boards = [build_week(issues, week, as_of) for week in weeks]
+            cache = None if args.no_cache or args.dry_run else (args.cache or args.root / ".club-cache" / "issues.json")
+            archived = [path.stem for path in (args.root / "reports").glob("????-??-??.json")
+                        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem)]
+            read_weeks = sorted(set(weeks + archived))
+            issues = GitHubReader(args.repository, token).records(read_weeks, cache_path=cache, refresh=args.refresh)
+        boards = [build_week(issues, week, as_of, ranking_state=ranking_state) for week in weeks]
         if args.dry_run:
             print(json.dumps(boards, indent=2, ensure_ascii=False))
         else:
-            write_reports(args.root, boards, source_records=None if args.fixture else issues, as_of=as_of)
+            write_reports(args.root, boards, source_records=None if args.fixture else issues,
+                          as_of=as_of, ranking_state=ranking_state)
+            # Fixture runs remain isolated unless a ledger path is explicitly
+            # selected. A dry-run never confirms or persists a live baseline.
+            if not args.fixture or args.ranking_state:
+                save_state(state_path, ranking_state)
             print(f"Updated {len(boards)} weekly snapshot(s); public rows: " + str(sum(len(b['leaderboard']) for b in boards)))
         return 0
     except (OSError, ValueError, RuntimeError) as error:

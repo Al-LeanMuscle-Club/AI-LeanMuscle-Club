@@ -39,7 +39,8 @@ class MixedRecordTests(unittest.TestCase):
         self.assertEqual([s["status"] for s in row["sessions"]], ["fallback", "partial", "skipped"])
         self.assertEqual(row["sessions"][0]["used_fallback"], True)
         self.assertEqual(row["completed"], 1)
-        self.assertEqual(row["total_points"], 5)
+        self.assertEqual(row["total_points"], 6)
+        self.assertEqual(row["execution_rate"], 0.5)
         self.assertEqual(board["summary"], {
             "public_members": 1, "planned_sessions": 3, "completed_sessions": 1,
             "partial_sessions": 1, "skipped_sessions": 1, "reviewed_members": 1,
@@ -58,7 +59,7 @@ class MixedRecordTests(unittest.TestCase):
         self.assertEqual(row["research_week"], "regular")
         self.assertEqual(row["sessions"], [{
             "id": "S1", "day": "Monday", "sport": "other", "status": "planned",
-            "date": None, "used_fallback": False,
+            "date": None, "used_fallback": False, "confirmed": True,
         }])
 
     def test_optional_blank_form_fields_use_defaults(self):
@@ -150,6 +151,7 @@ class MixedRecordTests(unittest.TestCase):
         issue["comments_data"] = [comment(body)]
         board = build_week([issue], WEEK, AS_OF)
         self.assertEqual(board["leaderboard"][0]["total_points"], 1)
+        self.assertEqual(board["leaderboard"][0]["meal_days"], 1)
         for text in ("PRIVATE_MEAL_DETAILS", "632", "packaging", "Calories"):
             self.assertNotIn(text, json.dumps(board))
 

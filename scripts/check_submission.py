@@ -47,7 +47,7 @@ def feedback_body(issue: dict, comment: dict | None = None, now: datetime | None
         lines += ["Format valid. Your latest record passed the format checks."]
     lines += ["", "This checks format, ownership, and dates. It does not verify exercise or assess health.",
               "Weekly scores refresh in the scheduled report; they are not updated by this check.",
-              "All Issue content is public. Meals earn no extra points; partial/skipped sessions earn no execution points.",
+              "All Issue content is public. Meals earn no extra points; partial sessions receive half execution credit and skipped sessions receive none.",
               "", "格式检查只确认记录是否可识别，不代表训练或健康评价。积分由定时报告更新。"]
     return "\n".join(lines) + "\n"
 
