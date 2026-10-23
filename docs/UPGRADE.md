@@ -10,6 +10,7 @@ This update expands the original weekly-plan pilot while keeping its 10-point ca
 - A short README overview, full weekly reports, and a recent-12-week public index.
 - Read-only member CLI tools, a mobile-friendly browser helper, and editable format feedback.
 - Six community Issue forms, detailed English/Chinese instructions, and reusable examples.
+- A Simplified Chinese default README, an English companion, and Chinese live-overview updates; older Chinese README links remain usable.
 - Optional private sync caching with incremental reads and weekly reconciliation.
 - Stable GitHub user-ID confirmations that survive username changes, with migration of matching legacy username entries.
 - Explicit scoring-rule versions in reports, indexes, and member history, without relabeling unversioned snapshots.

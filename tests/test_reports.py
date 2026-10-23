@@ -1,5 +1,6 @@
 """Integration tests for public report generation and its live API boundary."""
 
+from copy import deepcopy
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -68,6 +69,87 @@ class ReportingTests(unittest.TestCase):
             self.assertNotIn("private-member", public_text)
             self.assertNotIn("PRIVATE_DETAIL_NOT_FOR_REPORTS", public_text)
             self.assertNotIn("Felt good", public_text)
+
+    def test_chinese_readme_marker_localizes_counts_rules_links_and_warnings(self):
+        recovery = plan(3, "recovery-member")
+        recovery["body"] = recovery["body"].replace("### Participation mode\n\nActive", "### Participation mode\n\nRecovery")
+        invalid = plan(5, "invalid-member")
+        invalid["body"] = invalid["body"].replace("Asia/Shanghai", "Invalid/Zone")
+        board = build_week([plan(), plan(2, "private-member", "No"), recovery,
+                            plan(4), invalid], "2026-10-26", AS_OF)
+        saved = deepcopy(board)
+        text = replace_readme("<!-- README:LANG=zh-CN -->\n<!-- CLUB:START -->\nold\n<!-- CLUB:END -->\n", [board])
+        self.assertIn("### 周次：2026-10-26 起", text)
+        self.assertIn("参与人数：**3** · 恢复/暂停人数：**1**", text)
+        self.assertIn("公开参与人数：**1** · 已记录完成：**2/3** · 周复盘：**1**", text)
+        self.assertIn("计分规则：v2", text)
+        self.assertIn("部分完成计 0.5 次", text)
+        self.assertIn("[完整周报](reports/2026-10-26.md)", text)
+        self.assertIn("[公开数据](reports/2026-10-26.json)", text)
+        self.assertIn("[查找计划与打卡助手](tools/index.html)", text)
+        self.assertIn("更新时间：2026-11-02T12:00:00Z", text)
+        self.assertIn("发现重复周计划，仅统计最早的有效计划。", text)
+        self.assertIn("有周计划因必填字段无效而被跳过。", text)
+        self.assertNotIn("Some records need attention", text)
+        self.assertNotIn("private-member", text)
+        self.assertEqual(board, saved)
+
+    def test_chinese_readme_preserves_unknown_and_legacy_rules_without_current_formula(self):
+        original = build_week([plan()], "2026-10-26", AS_OF)
+        for version in (None, 1, 3, True, "2"):
+            with self.subTest(version=version):
+                board = deepcopy(original)
+                if version is None:
+                    board.pop("scoring_version")
+                else:
+                    board["scoring_version"] = version
+                saved = deepcopy(board)
+                text = replace_readme("<!-- README:LANG=zh-CN -->\n<!-- CLUB:START --><!-- CLUB:END -->", [board])
+                if type(version) is int:
+                    self.assertIn(f"计分规则：v{version}", text)
+                    self.assertIn("保留该快照所记录规则下的分数", text)
+                else:
+                    self.assertIn("计分规则：未记录", text)
+                    self.assertIn("不将当前公式追溯用于旧记录", text)
+                self.assertNotIn("0.5", text)
+                self.assertNotIn("已确认计划固定计分分母", text)
+                self.assertEqual(board, saved)
+
+    def test_live_report_write_preserves_prose_demo_english_readme_and_navigation_stub(self):
+        record = plan()
+        board = build_week([record], "2026-10-26", AS_OF)
+        prefix = "<!-- README:LANG=zh-CN -->\n# 中文首页\n\n正文保留：中文、English 与 `code`。\n\n"
+        suffix = ("\n\n正文尾部保持原样。\n<!-- DEMO:START -->\n"
+                  "### 虚构示例 / Fictional demo\n\n| 成员 | 分数 |\n| --- | ---: |\n| Demo | 7.5 |\n"
+                  "<!-- DEMO:END -->\n")
+        english = b"# English home\n\n[Live overview](README.md)\n<!-- DEMO:START -->\nFictional demo\n<!-- DEMO:END -->\n"
+        stub = "# 导航\n\n[中文主页](README.md) · [English](README.en.md)\n".encode("utf-8")
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text(prefix + "<!-- CLUB:START -->\nold\n<!-- CLUB:END -->" + suffix, encoding="utf-8")
+            (root / "README.en.md").write_bytes(english)
+            (root / "README.zh-CN.md").write_bytes(stub)
+            write_reports(root, [board], source_records=[record], as_of=AS_OF)
+            changed = (root / "README.md").read_text(encoding="utf-8")
+            self.assertEqual(changed.split("<!-- CLUB:START -->", 1)[0], prefix)
+            self.assertEqual(changed.split("<!-- CLUB:END -->", 1)[1], suffix)
+            self.assertEqual(changed.count("<!-- CLUB:START -->"), 1)
+            self.assertEqual(changed.count("<!-- CLUB:END -->"), 1)
+            self.assertIn("公开参与人数：**1**", changed)
+            self.assertEqual((root / "README.en.md").read_bytes(), english)
+            self.assertEqual((root / "README.zh-CN.md").read_bytes(), stub)
+            weekly = (root / "reports/2026-10-26.md").read_text(encoding="utf-8")
+            self.assertIn("### Week starting 2026-10-26", weekly)
+            self.assertIn("Scoring rules: v2", weekly)
+            self.assertNotIn("计分规则", weekly)
+            self.assertEqual(json.loads((root / "reports/2026-10-26.json").read_text()), board)
+
+    def test_readme_without_explicit_language_marker_keeps_english_overview(self):
+        board = build_week([], "2026-10-26", AS_OF)
+        text = replace_readme("# 中文介绍也不自动改变语言\n<!-- CLUB:START --><!-- CLUB:END -->", [board])
+        self.assertIn("### Week starting 2026-10-26", text)
+        self.assertIn("Scoring rules: v2", text)
+        self.assertNotIn("计分规则", text)
 
     def test_rule_versions_preserve_legacy_scores_during_historical_count_refresh(self):
         visible = plan()

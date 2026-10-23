@@ -4,9 +4,11 @@ This starter contains English and Chinese community documentation, the supplied 
 
 ## 1. Put the files in the intended repository
 
+`README.md` is the Simplified Chinese homepage; `README.en.md` is the English version. The old `README.zh-CN.md` URL remains a short navigation page. Keep the homepage's `README:LANG=zh-CN` marker and its `CLUB` markers so report updates continue to render the live overview in Chinese. Both languages show the same independently generated fictional demo, while the English page links to the Chinese homepage for the live overview.
+
 Use the existing `Al-LeanMuscle-Club/AI-LeanMuscle-Club` repository if that is still the club's home. Clone it, copy this starter's files into the checkout, inspect the diff, and commit through your usual workflow. Preserve existing content you want to keep.
 
-If you choose a different repository, replace the `Al-LeanMuscle-Club/AI-LeanMuscle-Club` links in README.md. The live script and workflow take their repository name from `GITHUB_REPOSITORY`, so scoring itself works after a rename or transfer. Use an Organization if you want the Maintain repository role.
+If you choose a different repository, replace the `Al-LeanMuscle-Club/AI-LeanMuscle-Club` links in both README.md and README.en.md. The live script and workflow take their repository name from `GITHUB_REPOSITORY`, so scoring itself works after a rename or transfer. Use an Organization if you want the Maintain repository role.
 
 The poster is already stored at `assets/club-poster.png`, with the supplied QR pattern preserved. Its invitation is marked valid before October 29, 2026; replace the asset and the date note when the invitation changes.
 
