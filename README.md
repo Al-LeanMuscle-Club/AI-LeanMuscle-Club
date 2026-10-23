@@ -14,12 +14,12 @@ A community for AI researchers to make room for exercise, recovery, and a life a
 | --- | --- |
 | Record today's movement without making a plan | [Quick workout record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) |
 | Save a meal, a photo, or a food-preparation idea | [Food record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) |
-| Introduce myself, ask a question, or find a partner | [Community conversations](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [Examples](examples/README.md) |
+| Introduce myself, ask a question, or find a partner | [Community conversations](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions) · [Examples](examples/README.en.md) |
 | Make a weekly plan and optionally join the board | [Weekly plan](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml) · [Participation rules](docs/SCORING.md) |
 
 A photo or one sentence is welcome. Free workout and food records do not require a weekly plan and do not enter the ranking. All records posted here are public. Structured weekly records can also show training days, meal-record days, and partial completions without awarding points for food quantities or body metrics.
 
-[Member helper and weekly standings](tools/index.html) · [Newcomer, training, food, partner, Agent, and ranking examples](examples/README.md). The helper runs locally or after [Pages setup](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment); GitHub's source viewer displays its HTML. Discussion categories and forms become available after maintainer setup on the default branch.
+[Member helper and weekly standings](tools/index.html) · [Newcomer, training, food, partner, Agent, and ranking examples](examples/README.en.md). The helper runs locally or after [Pages setup](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment); GitHub's source viewer displays its HTML. Discussion categories and forms become available after maintainer setup on the default branch.
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI Lean Muscle Club: For AI Researchers to Keep Healthy. Train models. Train your body. Includes a WeChat group invitation QR code." width="1000"></a>
@@ -61,7 +61,7 @@ Use `/fallback S1 YYYY-MM-DD` when completing S1's confirmed fallback; `/partial
 | Primary goal, per week | `fat-loss`, `muscle-gain`, `cardio`, `skill`, `habit` |
 | Research week | `regular`, `deadline`, `travel` |
 
-A member can lift, play basketball, and run in the same week. Goals and sports are independent; beginners and mixed plans are welcome. Weight, sets, pace, distance, energy, and fatigue are optional notes, never points multipliers. [Example templates →](examples/README.md)
+A member can lift, play basketball, and run in the same week. Goals and sports are independent; beginners and mixed plans are welcome. Weight, sets, pace, distance, energy, and fatigue are optional notes, never points multipliers. [Example templates →](examples/README.en.md)
 
 ## Weekly community board
 

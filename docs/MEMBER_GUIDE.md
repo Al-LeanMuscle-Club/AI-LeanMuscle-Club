@@ -13,7 +13,7 @@ All examples below are fictional templates, not prescribed training plans or act
 - [Discussions](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/discussions): introduce yourself, ask questions, share, or find a partner once maintainers enable the categories.
 - **Weekly training plan**: choose the structured plan below if you want to follow your own commitments and optionally join the weekly participation board.
 
-See [six short sets of fictional examples](../examples/README.md). Original Issues and Discussions are public whichever route you choose.
+See [six short sets of fictional examples](../examples/README.en.md). Original Issues and Discussions are public whichever route you choose.
 
 ## 1. Make a plan that fits this research week
 
@@ -115,7 +115,7 @@ and whether I actually used that time for movement or rest.
 
 Reflection receives the same two points after an incomplete week. Research output, citation counts, body measurements, and health outcomes are not scored.
 
-The weekly maximum stays **10**: plan 1, execution 0–6, reflection 2, and an approved experience contribution 0–1. Execution uses full/fallback = 1 and partial = 0.5 against confirmed sessions. The full-completion percentage still counts only full/fallback sessions. Scores measure participation, not athletic ability. See [the full scoring rules](SCORING.md) and [fictional ranking examples](../examples/ranking.md).
+The weekly maximum stays **10**: plan 1, execution 0–6, reflection 2, and an approved experience contribution 0–1. Execution uses full/fallback = 1 and partial = 0.5 against confirmed sessions. The full-completion percentage still counts only full/fallback sessions. Scores measure participation, not athletic ability. See [the full scoring rules](SCORING.md) and [fictional ranking examples](../examples/ranking.en.md).
 
 Discussion replies do not automatically grant contribution points. An experience Issue needs both `points-approved` and a trusted repository approval entry matching its current body, author, and week. Editing an approved body requires review again; labels alone do not grant credit. Maintainers prepare approval records for review using the process in [setup](SETUP.md).
 
@@ -162,4 +162,4 @@ For offline work, use the global `--fixture /path/to/synthetic-issues.json` opti
 
 All Issues, comments, and attached photos in this public repository are public, including posts by people who select **No** for the leaderboard. The generated index and report rows include only consenting Active participants; this does not change the visibility of the original posts. Opted-in rows can include goal and research-week classifications, sports, session status/dates, completion counts, execution credit, confirmed/current plan summaries, meal-record day counts, and points. They exclude free-text descriptions, calorie numbers, and personal notes.
 
-Body photos, exact weight, health history, precise location, and confidential research information are never required. Keep any information you want private outside the public repository. For reusable resources and examples, see [the examples directory](../examples/README.md); for questions and finding partners, see [community discussions](COMMUNITY.md).
+Body photos, exact weight, health history, precise location, and confidential research information are never required. Keep any information you want private outside the public repository. For reusable resources and examples, see [the examples directory](../examples/README.en.md); for questions and finding partners, see [community discussions](COMMUNITY.md).
