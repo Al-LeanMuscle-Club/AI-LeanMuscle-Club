@@ -27,6 +27,19 @@ Community conversations use Issue forms and title prefixes; no additional catego
 
 公开演示帖须明确标注虚构，不作为真实参与或计分记录。社区分享不会自动计分；科研与 Agent 经验需要另建经验 Issue，并沿用审批标签及可信 ledger 流程申请贡献认可。
 
+## 虚拟用户训练记录与演示榜 / Fictional training-record demo
+
+首页的虚拟榜单展示 6 位虚拟用户的参与积分，另有 1 位恢复成员的记录。演示周固定为 **2026-10-12 至 2026-10-18**，所有人物和活动均为虚构。
+
+[完整训练记录与复盘](demo-training-records.md) · [虚拟输入数据](demo-training-records.json) · [演示榜单数据](demo-leaderboard.json)
+
+演示文件保存在 `examples/`，README 演示表使用独立的 `DEMO` 区块；真实社区概况由原有 `CLUB` 区块自动更新。修改虚拟记录后，在仓库目录重新生成两种语言的榜单：
+
+```bash
+python scripts/render_demo_board.py
+python scripts/render_demo_board.py --check
+```
+
 ## A mixed-sport week / 混合运动周
 
 Enter these lines in the **Planned sessions** field, after choosing your own activities and schedule:

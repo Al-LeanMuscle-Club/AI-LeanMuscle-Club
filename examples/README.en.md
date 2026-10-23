@@ -23,6 +23,19 @@ All community conversations use Issue forms. Topics are identified by title pref
 
 Templates do not create live posts or fake members. A published demonstration must remain clearly marked as fictional and must not be submitted for scoring. Research/Agent community Issues do not automatically earn points. Request contribution recognition through a separate experience Issue and the existing approval-label plus trusted-ledger review process.
 
+## Fictional training-record demo
+
+The README demo shows participation points for 6 fictional users, plus a separate recovery record. Its fixed demonstration week is **October 12–18, 2026**. All people and activities are fictional.
+
+[Full training records and reflections](demo-training-records.md) · [Synthetic input](demo-training-records.json) · [Demo standings data](demo-leaderboard.json)
+
+Demo files live in `examples/` and use a separate `DEMO` block in each README. The existing `CLUB` block continues to refresh the real community overview. After editing the fictional records, regenerate both language versions from the repository root:
+
+```bash
+python scripts/render_demo_board.py
+python scripts/render_demo_board.py --check
+```
+
 ## A mixed-sport week
 
 Enter these lines in the **Planned sessions** field, after choosing your own activities and schedule:
