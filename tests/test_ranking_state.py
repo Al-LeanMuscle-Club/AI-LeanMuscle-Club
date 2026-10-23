@@ -101,6 +101,101 @@ class ApprovalTests(unittest.TestCase):
 
 
 class ConfirmedPlanTests(unittest.TestCase):
+    def test_renaming_the_same_github_account_cannot_shrink_a_saved_baseline(self):
+        state = new_state()
+        issue = plan(sessions=2)
+        issue["user"]["id"] = 123456
+        issue["comments_data"] = [comment("/done S1 2026-10-26")]
+        self.assertEqual(result([issue], state)["execution_points"], 3)
+        key = plan_fingerprint(WEEK, "alice", 123456)
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "ranking-state.json"
+            save_state(path, state)
+            self.assertNotIn("123456", path.read_text())
+            state = load_state(path)
+        issue["user"]["login"] = "alice-renamed"
+        issue["body"] = issue["body"].replace("\nS2 | Monday | Session 2", "")
+        issue["comments_data"] = [comment("/done S1 2026-10-26", "alice-renamed")]
+        row = result([issue], state)
+        self.assertEqual(row["handle"], "alice-renamed")
+        self.assertEqual((row["confirmed_planned"], row["current_planned"]), (2, 1))
+        self.assertEqual(row["execution_points"], 3)
+        self.assertEqual(set(state["confirmed_plans"]), {key})
+
+    def test_same_handle_legacy_confirmation_migrates_before_a_later_rename(self):
+        state = new_state()
+        issue = plan(sessions=3)
+        result([issue], state)
+        legacy_key = plan_fingerprint(WEEK, "alice")
+        original = deepcopy(state["confirmed_plans"][legacy_key])
+        issue["user"] = {"login": "ALICE", "id": 123456}
+        issue["body"] = issue["body"].replace("\nS2 | Monday | Session 2", "").replace("\nS3 | Monday | Session 3", "")
+        issue["comments_data"] = [comment("/done S1 2026-10-26", "ALICE")]
+        self.assertEqual(result([issue], state)["execution_points"], 2)
+        stable_key = plan_fingerprint(WEEK, "ALICE", 123456)
+        self.assertEqual(state["confirmed_plans"], {stable_key: original})
+        issue["user"]["login"] = "alice-renamed"
+        issue["comments_data"] = [comment("/done S1 2026-10-26", "alice-renamed")]
+        self.assertEqual(result([issue], state)["execution_points"], 2)
+        self.assertEqual(state["confirmed_plans"], {stable_key: original})
+
+    def test_withdrawal_recovery_or_pause_then_rename_preserves_stable_baseline(self):
+        cases = ((reason, legacy) for reason in ("withdrawal", "recovery", "pause")
+                 for legacy in (False, True))
+        for reason, legacy in cases:
+            with self.subTest(reason=reason, legacy=legacy):
+                state = new_state()
+                issue = plan(sessions=3)
+                if not legacy:
+                    issue["user"]["id"] = 123456
+                result([issue], state)
+                original = deepcopy(next(iter(state["confirmed_plans"].values())))
+                expected = new_state()
+                expected["confirmed_plans"][plan_fingerprint(WEEK, "alice", 123456)] = original
+                # Observe the stable ID before a later rename, even if the
+                # account is currently excluded from the public standings.
+                issue["user"]["id"] = 123456
+                if reason == "withdrawal":
+                    issue["body"] = issue["body"].replace("### Public leaderboard\n\nYes", "### Public leaderboard\n\nNo")
+                elif reason == "recovery":
+                    issue["body"] = issue["body"].replace("### Participation mode\n\nActive", "### Participation mode\n\nRecovery")
+                else:
+                    issue["comments_data"] = [comment("/pause")]
+                self.assertEqual(build_week([issue], WEEK, AS_OF, ranking_state=state)["leaderboard"], [])
+                self.assertEqual(state, expected)
+                issue = plan(handle="alice-renamed", sessions=1)
+                issue["user"]["id"] = 123456
+                issue["comments_data"] = [comment("/done S1 2026-10-26", "alice-renamed")]
+                row = result([issue], state)
+                self.assertEqual((row["confirmed_planned"], row["execution_points"]), (3, 2))
+                self.assertEqual(state, expected)
+
+    def test_missing_or_invalid_user_ids_remain_compatible_with_legacy_records(self):
+        for user_id in (None, 0, -1, True, "123456", 1.5):
+            with self.subTest(user_id=user_id):
+                state = new_state()
+                issue = plan(sessions=2)
+                result([issue], state)
+                original = deepcopy(state)
+                issue["user"]["id"] = user_id
+                issue["body"] = issue["body"].replace("\nS2 | Monday | Session 2", "")
+                issue["comments_data"] = [comment("/done S1 2026-10-26")]
+                self.assertEqual(result([issue], state)["execution_points"], 3)
+                self.assertEqual(state, original)
+
+    def test_an_already_renamed_legacy_account_is_not_guessed_from_other_hashes(self):
+        state = new_state()
+        original_issue = plan(sessions=2)
+        result([original_issue], state)
+        original_key = plan_fingerprint(WEEK, "alice")
+        original = deepcopy(state["confirmed_plans"][original_key])
+        issue = plan(handle="renamed-before-migration", sessions=1)
+        issue["user"]["id"] = 123456
+        row = result([issue], state)
+        self.assertEqual(row["confirmed_planned"], 1)
+        self.assertEqual(state["confirmed_plans"][original_key], original)
+        self.assertEqual(len(state["confirmed_plans"]), 2)
+
     def test_deleting_unfinished_sessions_does_not_increase_execution_points(self):
         state = new_state()
         issue = plan(sessions=2)

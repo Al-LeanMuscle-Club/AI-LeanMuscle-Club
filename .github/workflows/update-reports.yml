@@ -48,6 +48,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPORT_WEEK: ${{ inputs.week_start }}
       - name: Commit reports and confirmed plan snapshots
+        # GITHUB_TOKEN pushes do not trigger push workflows. The optional
+        # Pages workflow listens for this workflow's successful completion.
         run: |
           git add -- README.md reports/ data/ranking-state.json
           if git diff --cached --quiet; then

@@ -69,6 +69,50 @@ class ReportingTests(unittest.TestCase):
             self.assertNotIn("PRIVATE_DETAIL_NOT_FOR_REPORTS", public_text)
             self.assertNotIn("Felt good", public_text)
 
+    def test_rule_versions_preserve_legacy_scores_during_historical_count_refresh(self):
+        visible = plan()
+        hidden = plan(2, "private-member", "No")
+        old = build_week([visible, hidden], "2026-10-26", AS_OF)
+        old.pop("scoring_version")  # Both earlier rule sets shipped unversioned reports.
+        for row in old["leaderboard"]:
+            for field in ("confirmed_planned", "current_planned", "recorded_training_days", "meal_days"):
+                row.pop(field)
+        old_score = old["leaderboard"][0]["total_points"]
+        current = build_week([], "2026-11-02", AS_OF)
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text("<!-- CLUB:START -->\n<!-- CLUB:END -->\n")
+            write_reports(root, [old])
+            write_reports(root, [current], source_records=[visible], as_of=AS_OF)
+
+            archived = json.loads((root / "reports/2026-10-26.json").read_text())
+            self.assertEqual(archived["participants_count"], 1)
+            self.assertEqual(archived["leaderboard"][0]["total_points"], old_score)
+            self.assertNotIn("scoring_version", archived)
+            old_markdown = (root / "reports/2026-10-26.md").read_text()
+            self.assertIn("Scoring rules: not recorded", old_markdown)
+            self.assertNotIn("partial = 0.5", old_markdown)
+            self.assertIn("| — | — | — / — |", old_markdown)
+            self.assertIn("Scoring rules: v2", (root / "reports/2026-11-02.md").read_text())
+            self.assertIn("Scoring rules: v2", (root / "README.md").read_text())
+
+            index = json.loads((root / "reports/index.json").read_text())
+            weeks = {week["week_start"]: week for week in index["weeks"]}
+            self.assertNotIn("scoring_version", weeks["2026-10-26"])
+            self.assertEqual(weeks["2026-11-02"]["scoring_version"], 2)
+
+    def test_unknown_rule_version_keeps_its_label_without_claiming_current_formula(self):
+        board = build_week([plan()], "2026-10-26", AS_OF)
+        board["scoring_version"] = 3
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text("<!-- CLUB:START -->\n<!-- CLUB:END -->\n")
+            write_reports(root, [board])
+            markdown = (root / "reports/2026-10-26.md").read_text()
+            self.assertIn("Scoring rules: v3", markdown)
+            self.assertNotIn("partial = 0.5", markdown)
+            self.assertEqual(json.loads((root / "reports/index.json").read_text())["weeks"][0]["scoring_version"], 3)
+
     def test_invalid_readme_cannot_silently_replace_content_or_write_reports(self):
         board = build_week([], "2026-10-26", AS_OF)
         for text in ("No markers", "<!-- CLUB:END --><!-- CLUB:START -->", "<!-- CLUB:START --><!-- CLUB:START --><!-- CLUB:END -->"):

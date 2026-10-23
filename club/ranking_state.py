@@ -23,13 +23,34 @@ def new_state() -> dict[str, Any]:
     return {"schema_version": 1, "confirmed_plans": {}, "contribution_approvals": {}}
 
 
-def plan_fingerprint(week: str, handle: str) -> str:
+def plan_fingerprint(week: str, handle: str, user_id: int | None = None) -> str:
     """Retain a baseline after withdrawal without a public account/Issue index.
 
+    GitHub's numeric user ID survives username changes. Missing or invalid IDs
+    retain the legacy handle key for older records and synthetic fixtures.
     This is a lookup fingerprint, not a promise of anonymity: public accounts
     and weeks can be guessed. Never store descriptions or member identifiers.
     """
-    return hashlib.sha256(f"{week}:{handle.casefold()}".encode("utf-8")).hexdigest()
+    if isinstance(user_id, int) and not isinstance(user_id, bool) and user_id > 0:
+        identity = f"{week}:github-user-id:{user_id}"
+    else:
+        identity = f"{week}:{handle.casefold()}"
+    return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+
+
+def migrate_plan_confirmation(state: dict[str, Any], week: str, handle: str,
+                              user_id: int | None) -> None:
+    """Move an existing same-handle baseline to its stable ID, never create one.
+
+    Run this even for withdrawn/recovery plans so a subsequently observed
+    username change retains the baseline. An old name not observed with an ID
+    cannot be recovered from its hash; do not guess between other entries.
+    """
+    key = plan_fingerprint(week, handle, user_id)
+    legacy_key = plan_fingerprint(week, handle)
+    plans = state["confirmed_plans"]
+    if key != legacy_key and key not in plans and legacy_key in plans:
+        plans[key] = plans.pop(legacy_key)
 
 
 def body_sha256(body: str) -> str:

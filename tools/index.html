@@ -75,8 +75,8 @@
       <section class="card wide" aria-labelledby="ranking-heading">
         <div class="section-top"><div><span class="step">03 / 每周参与榜</span><h2 id="ranking-heading">看看大家这周的坚持</h2></div><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/blob/main/docs/SCORING.md">计分与更正规则 ↗</a></div>
         <p>这是按个人计划完成情况计算的<strong>参与分</strong>，每周重置，上限 10 分。相同总分并列；不同运动量、体能和身体变化不作比较。</p>
-        <div class="score-guide" aria-label="分数组成"><span>计划 <strong>1</strong></span><span>执行 <strong>0–6</strong></span><span>复盘 <strong>0–2</strong></span><span>获批分享 <strong>0–1</strong></span></div>
-        <p class="hint">执行分 = 6 ×（整次完成 + 0.5 × 部分完成）÷ 已确认计划次数。替代完成计入整次完成；饮食记录不加分。首次成功同步确认计划后，删除计划项不会自动缩小计分分母。</p>
+        <div id="score-guide" class="score-guide" hidden aria-label="v2 分数组成"><span>计划 <strong>1</strong></span><span>执行 <strong>0–6</strong></span><span>复盘 <strong>0–2</strong></span><span>获批分享 <strong>0–1</strong></span></div>
+        <p id="report-rules" class="hint" aria-live="polite">报告载入后会显示该周的评分规则；历史分数按原报告保留，不重新推算。</p>
         <div class="filters">
           <div><label for="filter-week">选择报告周（周一）</label><select id="filter-week"><option value="">等待公开报告</option></select></div>
           <div><label for="filter-handle">查找成员</label><input id="filter-handle" placeholder="用户名，可模糊搜索" autocomplete="off" spellcheck="false"></div>
@@ -92,13 +92,19 @@
 
       <section class="card wide" aria-labelledby="history-heading">
         <span class="step">04 / 我的公开记录</span><h2 id="history-heading">把每一周，慢慢积累起来</h2>
-        <p>输入完整用户名，查看自己已公开的参与周数、训练记录日和饮食记录日。训练日按日期去重，部分完成也属于记录；饮食日不增加分数。这里仅汇总同意公开的周计划记录，自由记录不自动加入。</p>
+        <p>输入完整用户名，查看自己已公开的参与周数、训练记录日和饮食记录日。训练日按日期去重，部分完成也属于记录；饮食日不增加分数。周计划统计只汇总同意公开的记录；自由记录可在本节下方单独回顾。</p>
         <label for="history-handle">完整 GitHub 用户名</label><input id="history-handle" placeholder="例如 your-username" autocomplete="off" spellcheck="false">
         <div id="member-stats" class="stat-grid" hidden aria-live="polite"></div>
         <p id="history-message" class="message" role="status">输入用户名后查看。仅统计已加载周报中的公开周计划记录；自由记录不在此汇总。</p>
         <div class="table-scroll"><table id="history-table" class="responsive-table" hidden><caption class="visually-hidden">成员每周公开记录</caption><thead><tr><th>报告周</th><th>当周名次</th><th>计划完成情况</th><th>参与分 / 10</th><th>训练日</th><th>饮食日</th><th>来源与快照</th></tr></thead><tbody id="history-body"></tbody></table></div>
         <div class="actions"><button id="load-older" class="secondary" type="button" hidden>载入更早的 12 周</button><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/blob/main/reports/README.md">打开全部历史周报 ↗</a></div>
         <p id="history-window" class="hint">默认读取最近 12 个报告周，可以继续载入更早报告。旧报告未提供的天数显示“未记录”，不会当成 0。</p>
+        <div class="record-review" aria-labelledby="free-record-heading">
+          <h3 id="free-record-heading">回顾我的自由记录</h3>
+          <p class="hint">输入上方的完整用户名，即可在 GitHub 查看自己的自由运动和饮食记录，包含打开和已关闭的帖子。</p>
+          <div id="free-record-links" class="actions" hidden><a id="free-activity-link" class="action-link" target="_blank" rel="noopener noreferrer">我的自由运动记录 ↗</a><a id="free-meal-link" class="action-link" target="_blank" rel="noopener noreferrer">我的饮食记录 ↗</a></div>
+          <p id="free-record-message" class="message" role="status">输入完整用户名后，可到 GitHub 回顾自己的自由运动和饮食记录，无须参加周榜。</p>
+        </div>
       </section>
 
       <section class="card wide" aria-labelledby="community-heading">
@@ -117,7 +123,7 @@
       </section>
     </div>
 
-    <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">真实记录，按自己的节奏。</h2><p>照片、体重、热量和营养数据都不是参加条件。可选估算请注明来源和不确定之处；这里没有自动食物识别或营养评分。</p><p>此页面无需登录，不保存凭据，也不会自动发帖。草稿和复制操作留在浏览器；公开报告来自本站部署文件。报告更新后，维护者需要重新发布 Pages，网页才能反映新内容。</p><details><summary>本地预览说明</summary><p>GitHub 代码页面不会执行 HTML。请打开部署后的 Pages 地址，或在仓库目录运行 <code>python -m http.server 8000</code>，再打开 <code>http://localhost:8000/tools/</code>。</p></details></section>
+    <section class="help" aria-labelledby="help-heading"><h2 id="help-heading">真实记录，按自己的节奏。</h2><p>照片、体重、热量和营养数据都不是参加条件。可选估算请注明来源和不确定之处；这里没有自动食物识别或营养评分。</p><p>此页面无需登录，不保存凭据，也不会自动发帖。草稿和复制操作留在浏览器。这里展示最近一次发布的报告；周报更新后，网站完成发布才会显示新内容。</p><details><summary>本地预览说明</summary><p>GitHub 代码页面不会执行 HTML。请打开部署后的 Pages 地址，或在仓库目录运行 <code>python -m http.server 8000</code>，再打开 <code>http://localhost:8000/tools/</code>。</p></details></section>
   </main>
   <footer class="wrap"><p>AI Lean Muscle Club · 计划可以小一点，也欢迎重新开始。</p></footer>
 </body>

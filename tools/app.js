@@ -57,6 +57,12 @@
     return "https://github.com/" + repository(repo) + "/issues?q=" + encodeURIComponent(query);
   }
 
+  function freeRecordSearchUrl(repo, username, label) {
+    if (!["activity-record", "meal-record"].includes(label)) throw new Error("请选择自由运动或饮食记录。");
+    const query = "is:issue label:" + label + " author:" + handle(username) + " sort:created-desc";
+    return "https://github.com/" + repository(repo) + "/issues?q=" + encodeURIComponent(query);
+  }
+
   function issueUrl(repo, number) {
     return "https://github.com/" + repository(repo) + "/issues/" + issueNumber(number);
   }
@@ -124,6 +130,22 @@
     return typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value)) ? value : null;
   }
 
+  function scoringVersion(value) {
+    return count(value) > 0 ? value : null;
+  }
+
+  function scoringLabel(value) {
+    const version = scoringVersion(value);
+    return version === null ? "规则版本未记录 · 保留原分数" : "评分规则 v" + version + (version === 2 ? "" : " · 保留原分数");
+  }
+
+  function scoringExplanation(value) {
+    const version = scoringVersion(value);
+    if (version === 2) return "评分规则 v2：执行分 = 6 ×（整次完成 + 0.5 × 部分完成）÷ 已确认计划次数。替代完成计入整次完成；饮食记录不加分。确认后删除计划项不会缩小计分分母；贡献分还需匹配审批记录。";
+    if (version === null) return "该报告的规则版本未记录。历史分数和完成比例保留原样，未按当前公式重算。";
+    return "该报告标注评分规则 v" + version + "，本页尚无该版本的公式说明。分数与完成比例按原报告显示。";
+  }
+
   function reportWeeks(data) {
     if (!data || data.schema_version !== 2 || !Array.isArray(data.weeks)) throw new Error("公开报告暂不支持当前格式，请稍后再试。");
     const seen = new Set();
@@ -164,6 +186,7 @@
           week: week.week_start, handle: row.handle, issue_url: url,
           rank: count(row.rank) > 0 ? row.rank : null,
           generated_at: timestamp(week.generated_at),
+          scoring_version: scoringVersion(week.scoring_version),
           goal: GOALS.includes(row.goal) ? row.goal : "habit",
           research_week: ["regular", "deadline", "travel"].includes(row.research_week) ? row.research_week : "regular",
           sports: Array.isArray(row.sports) ? [...new Set(row.sports.filter(sport => SPORTS.includes(sport)))] : [],
@@ -308,7 +331,7 @@
     let olderError = "";
     const shownNumber = value => value === null || value === undefined ? "未记录" : String(value);
     const shownTime = value => timestamp(value) ? new Date(value).toLocaleString("zh-CN", {timeZone:"Asia/Shanghai", hour12:false}) + "（北京时间）" : "未提供生成时间";
-    const progress = row => row.completed + " 整次 + " + row.partial + " 部分 / " + row.confirmed_planned + " 已确认";
+    const progress = row => row.completed + " 整次 + " + row.partial + " 部分 / " + row.confirmed_planned + (row.has_confirmed_plan ? " 已确认" : " 原计划");
     function cell(tr, label, text) {
       const td = doc.createElement("td");
       td.setAttribute("data-label", label);
@@ -341,7 +364,7 @@
         note(member, GOAL_LABELS[row.goal] + " · " + (row.sports.map(sport => SPORT_LABELS[sport]).join(" / ") || "未分类"));
         const execution = cell(tr, "计划完成情况", progress(row));
         const rate = row.execution_rate ?? row.completion_rate;
-        if (rate !== null) note(execution, "计分完成比例 " + Math.round(rate * 10000) / 100 + "%");
+        if (rate !== null) note(execution, (row.execution_rate !== null ? "报告计分比例 " : "报告完整完成比例 ") + Math.round(rate * 10000) / 100 + "%");
         const score = cell(tr, "参与分 / 10");
         const total = doc.createElement("strong");
         total.textContent = row.points + " 分";
@@ -355,7 +378,9 @@
         get("ranking-body").append(tr);
       }
       const week = weeks.find(item => item.week_start === selectedWeek);
-      get("report-snapshot").textContent = week ? "所选周 " + selectedWeek + " · 快照生成于 " + shownTime(week.generated_at) + "。更早周的补录、暂停或分数更正需单独重算，并重新发布网页。" : "报告发布后，这里会显示所选周的快照生成时间。";
+      get("report-snapshot").textContent = week ? "所选周 " + selectedWeek + " · 快照生成于 " + shownTime(week.generated_at) + "。更早周的分数更正需单独重算；网站完成发布后才会显示更新。" : "报告发布后，这里会显示所选周的快照生成时间。";
+      get("score-guide").hidden = !week || scoringVersion(week.scoring_version) !== 2;
+      get("report-rules").textContent = week ? scoringExplanation(week.scoring_version) : "报告载入后会显示该周的评分规则；历史分数按原报告保留，不重新推算。";
       const message = !weeks.length ? "还没有可展示的公开周报。你仍可用上方工具创建计划、找计划和准备打卡。" : matching.length ? "所选周找到 " + matching.length + " 位公开成员，按整周参与分排列，相同总分并列。" + (matching.length > 100 ? " 当前显示前 100 位，请缩小筛选范围查看其他成员。" : "") : rows.some(row => row.week === selectedWeek) ? "当前筛选没有匹配成员，可以清空用户名、运动或目标筛选。" : "本周暂时没有同意公开且处于 Active 状态的记录。";
       setMessage("report-message", message);
     }
@@ -392,10 +417,25 @@
           const td = cell(tr, "来源与快照");
           source(td, row);
           note(td, shownTime(row.generated_at));
+          note(td, scoringLabel(row.scoring_version));
           get("history-body").append(tr);
         }
       }
       setMessage("history-message", !username ? "输入完整 GitHub 用户名查看自己的记录。仅统计已加载的公开周计划报告，自由记录不在此汇总。" : summary.weeks ? "@" + summary.rows[0].handle + " · 已找到 " + summary.weeks + " 个公开参与周。中断、未公开或尚未加载的周不会补成 0。" : "已加载报告中没有该用户名的公开记录。请检查完整用户名，也可以载入更早周报或用上方工具找计划。");
+    }
+    function renderFreeRecords() {
+      const username = value("history-handle").trim();
+      get("free-record-links").hidden = true;
+      if (!username) {
+        setMessage("free-record-message", "输入完整用户名后，可到 GitHub 回顾自己的自由运动和饮食记录，无须参加周榜。");
+        return;
+      }
+      try {
+        get("free-activity-link").href = freeRecordSearchUrl(value("repository"), username, "activity-record");
+        get("free-meal-link").href = freeRecordSearchUrl(value("repository"), username, "meal-record");
+        get("free-record-links").hidden = false;
+        setMessage("free-record-message", "链接已准备好，包含打开和已关闭的记录。这些记录不加分，也不并入上方周计划统计。");
+      } catch (error) { setMessage("free-record-message", error.message, true); }
     }
     function updateData() {
       rows = publicRows({schema_version:2, weeks});
@@ -418,6 +458,10 @@
     }
     for (const id of ["filter-week", "filter-handle", "filter-sport", "filter-goal"]) get(id).addEventListener(id === "filter-handle" ? "input" : "change", renderReports);
     get("history-handle").addEventListener("input", renderHistory);
+    get("history-handle").addEventListener("input", renderFreeRecords);
+    get("repository").addEventListener("input", renderFreeRecords);
+    get("repository").addEventListener("change", renderFreeRecords);
+    renderFreeRecords();
 
     async function fetchReport(path) {
       const controller = new AbortController();
@@ -469,5 +513,5 @@
     loadReports();
   }
 
-  return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, reportWeeks, publicRows, filterRows, memberSummary, localDate, weekDates, mount};
+  return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, freeRecordSearchUrl, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, scoringVersion, scoringLabel, scoringExplanation, reportWeeks, publicRows, filterRows, memberSummary, localDate, weekDates, mount};
 });
