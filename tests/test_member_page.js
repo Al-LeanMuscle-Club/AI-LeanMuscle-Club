@@ -35,6 +35,16 @@ test("invalid or injected repository, username, date and issue inputs are reject
   for (const value of ["0", "-1", "1?comment=2", "Infinity", "9007199254740993"]) assert.throws(() => tools.issueNumber(value));
 });
 
+test("mobile check-in accepts safe GitHub issue links and rejects wrong repositories", () => {
+  assert.equal(tools.issueUrl("example/club", "https://github.com/example/club/issues/123"), "https://github.com/example/club/issues/123");
+  assert.equal(tools.issueUrl("example/club", "123"), "https://github.com/example/club/issues/123");
+  for (const value of ["https://github.com/other/club/issues/123", "https://github.com/example/club/issues/123?x=1",
+    "https://github.com/example/club/issues/123#comment", "http://github.com/example/club/issues/123",
+    "https://github.com.evil.test/example/club/issues/123"]) {
+    assert.throws(() => tools.issueUrl("example/club", value));
+  }
+});
+
 test("comment generation preserves notes, validates sessions and cannot embed extra commands", () => {
   assert.equal(tools.buildComment({status:"done",session:"s2",date:"2026-10-27",notes:"Strength, 30 min.\r\nFelt good."}), "/done S2 2026-10-27\nStrength, 30 min.\nFelt good.");
   for (const status of ["fallback", "partial", "skip"]) assert.equal(tools.buildComment({status,session:"S1",date:"2026-10-27"}), "/" + status + " S1 2026-10-27");
@@ -291,6 +301,30 @@ test("page renders backend ranking and selected-week timestamp, then prepares a 
     await get("plan-workout").fire("click");
     assert.equal(get("log-status").value,"done");
     assert.equal(get("log-session").disabled,false);
+  } finally {page.restore();}
+});
+
+test("mobile form accepts a pasted plan link, resets the date and keeps publishing manual", async () => {
+  const page=await mountedPage({schema_version:2,weeks:[]});
+  try {
+    const get=page.doc.getElementById;
+    const today=get("log-date").value;
+    get("log-date").value="2026-10-21";
+    await get("log-today").fire("click");
+    assert.equal(get("log-date").value,today);
+    get("log-date").value="2026-10-21";
+    get("log-issue").value="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/123";
+    get("log-session").value="S2";
+    get("log-notes").value="周三晚上打了篮球。";
+    await get("log-form").fire("submit");
+    assert.equal(get("log-result").hidden,false);
+    assert.equal(get("log-link").href,get("log-issue").value);
+    assert.equal(get("log-output").value,"/done S2 2026-10-21\n周三晚上打了篮球。");
+    get("log-issue").value="https://github.com/other/club/issues/123";
+    await get("log-form").fire("submit");
+    assert.equal(get("log-result").hidden,true);
+    assert.match(get("log-message").textContent,/当前仓库/);
+    assert.deepEqual(page.calls,["../reports/index.json"],"drafting must not post or fetch member records");
   } finally {page.restore();}
 });
 

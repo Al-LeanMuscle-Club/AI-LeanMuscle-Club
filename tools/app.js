@@ -40,9 +40,18 @@
     return value;
   }
 
-  function issueNumber(value) {
-    const text = String(value || "").trim();
-    if (!/^[1-9][0-9]*$/.test(text) || !Number.isSafeInteger(Number(text))) throw new Error("请填写正整数 Issue 编号，例如 123。");
+  function issueNumber(value, repo = null) {
+    let text = String(value || "").trim();
+    if (text.startsWith("https://")) {
+      const url = new URL(text);
+      const match = /^\/([^/]+\/[^/]+)\/issues\/([1-9][0-9]*)$/.exec(url.pathname);
+      if (url.origin !== "https://github.com" || !match || url.search || url.hash || url.username || url.password ||
+          (repo !== null && match[1].toLowerCase() !== repository(repo).toLowerCase())) {
+        throw new Error("请粘贴当前仓库的完整 Issue 链接，或直接填写编号。");
+      }
+      text = match[2];
+    }
+    if (!/^[1-9][0-9]*$/.test(text) || !Number.isSafeInteger(Number(text))) throw new Error("请填写有效的 Issue 编号或链接。");
     return text;
   }
 
@@ -64,7 +73,7 @@
   }
 
   function issueUrl(repo, number) {
-    return "https://github.com/" + repository(repo) + "/issues/" + issueNumber(number);
+    return "https://github.com/" + repository(repo) + "/issues/" + issueNumber(number, repo);
   }
 
   function safeIssueUrl(value) {
@@ -255,6 +264,10 @@
     get("find-week").value = dates.current;
     get("carry-week").value = dates.next;
     get("log-date").value = localDate();
+    get("log-today").addEventListener("click", () => {
+      get("log-date").value = localDate();
+      setMessage("log-message", "日期已设为今天；补记之前的运动可自行修改日期。");
+    });
 
     get("find-form").addEventListener("submit", event => {
       event.preventDefault();
