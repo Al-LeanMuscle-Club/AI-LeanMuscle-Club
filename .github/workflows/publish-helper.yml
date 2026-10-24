@@ -54,6 +54,12 @@ jobs:
         run: |
           mkdir -p .club-site
           cp -R tools reports examples .club-site/
+          # A friendly root URL redirects to the existing member helper.
+          cp tools/pages-landing.html .club-site/index.html
+          test -s .club-site/tools/index.html
+          test -s .club-site/tools/app.js
+          test -s .club-site/reports/index.json
+          python -m json.tool .club-site/reports/index.json >/dev/null
       - uses: actions/upload-pages-artifact@v4
         with:
           path: .club-site
