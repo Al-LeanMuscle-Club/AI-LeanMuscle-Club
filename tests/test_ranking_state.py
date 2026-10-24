@@ -348,12 +348,16 @@ class RecordCountTests(unittest.TestCase):
             with patch("scripts.sync_github.GitHubReader") as reader, redirect_stdout(StringIO()):
                 reader.return_value.records.return_value = [issue]
                 self.assertEqual(sync_main(args + ["--dry-run"]), 0)
-                reader.return_value.records.assert_called_once_with([WEEK], cache_path=None, refresh=False)
+                reader.return_value.records.assert_called_once_with(
+                    [WEEK], cache_path=None, refresh=False, deleted_issue=None
+                )
                 self.assertFalse((root / "data" / "ranking-state.json").exists())
                 self.assertFalse((root / ".club-cache").exists())
                 reader.return_value.records.reset_mock()
                 self.assertEqual(sync_main(args + ["--dry-run", "--cache", str(root / "custom-cache.json")]), 0)
-                reader.return_value.records.assert_called_once_with([WEEK], cache_path=None, refresh=False)
+                reader.return_value.records.assert_called_once_with(
+                    [WEEK], cache_path=None, refresh=False, deleted_issue=None
+                )
                 self.assertEqual(sync_main(args), 0)
             state = load_state(root / "data" / "ranking-state.json")
             self.assertEqual(len(state["confirmed_plans"]), 1)

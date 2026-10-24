@@ -58,9 +58,9 @@ class CacheTests(unittest.TestCase):
             return deepcopy(self.thread)
         raise AssertionError(f"Unexpected API request: {path}")
 
-    def read(self, now=NOW, refresh=False):
+    def read(self, now=NOW, refresh=False, deleted_issue=None):
         with patch.object(GitHubReader, "_pages", self.pages), patch("scripts.github_api._now", return_value=now):
-            return self.reader.records([WEEK], cache_path=self.cache, refresh=refresh)
+            return self.reader.records([WEEK], cache_path=self.cache, refresh=refresh, deleted_issue=deleted_issue)
 
     def test_first_read_saves_only_complete_private_cache_and_target_comments(self):
         records = self.read()
@@ -130,6 +130,36 @@ class CacheTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "temporary"):
             self.read(NOW + timedelta(hours=1))
         self.assertEqual(self.cache.read_bytes(), original)
+
+    def test_deletion_event_immediately_evicts_cached_issue_and_comments(self):
+        self.read()
+        self.calls.clear()
+        # Empty incremental response: GitHub no longer lists the deleted Issue.
+        records = self.read(NOW + timedelta(hours=1), deleted_issue=1)
+        self.assertEqual([record["number"] for record in records], [2, 3])
+        cache = json.loads(self.cache.read_text())
+        self.assertNotIn("1", cache["issues"])
+        self.assertNotIn("1", cache["comments"])
+        # Repeated deletion notifications are safe and do not remove other records.
+        again = self.read(NOW + timedelta(hours=2), deleted_issue=1)
+        self.assertEqual([record["number"] for record in again], [2, 3])
+        self.assertEqual([path for path, _ in self.calls if path == "issues" and "labels" in _], [])
+
+    def test_invalid_deletion_number_fails_before_cache_mutation(self):
+        self.read()
+        original = self.cache.read_bytes()
+        with self.assertRaises(ValueError):
+            self.read(NOW + timedelta(hours=1), deleted_issue=0)
+        self.assertEqual(original, self.cache.read_bytes())
+
+    def test_deleted_issue_is_not_resurrected_by_stale_incremental_metadata(self):
+        self.read()
+        self.updates = [issue()]
+        self.comment_updates = [comment()]
+        self.fail_thread = True
+        records = self.read(NOW + timedelta(hours=1), deleted_issue=1)
+        self.assertEqual([record["number"] for record in records], [2, 3])
+        self.assertNotIn("1", json.loads(self.cache.read_text())["issues"])
 
     def test_seven_day_full_reconciliation_drops_deleted_issues(self):
         self.read()

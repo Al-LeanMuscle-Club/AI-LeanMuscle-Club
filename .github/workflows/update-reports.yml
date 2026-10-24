@@ -56,14 +56,18 @@ jobs:
       - name: Calculate reports from real GitHub records
         if: steps.report-event.outputs.run == 'true'
         run: |
+          ARGS=()
           if [ -n "$REPORT_WEEK" ]; then
-            python scripts/sync_github.py --week "$REPORT_WEEK"
-          else
-            python scripts/sync_github.py
+            ARGS+=(--week "$REPORT_WEEK")
           fi
+          if [ -n "$DELETED_ISSUE" ]; then
+            ARGS+=(--deleted-issue "$DELETED_ISSUE")
+          fi
+          python scripts/sync_github.py "${ARGS[@]}"
         env:
           GH_TOKEN: ${{ github.token }}
           REPORT_WEEK: ${{ inputs.week_start }}
+          DELETED_ISSUE: ${{ github.event_name == 'issues' && github.event.action == 'deleted' && github.event.issue.number || '' }}
       - name: Commit reports and confirmed plan snapshots
         if: steps.report-event.outputs.run == 'true'
         # GITHUB_TOKEN pushes do not trigger push workflows. The optional

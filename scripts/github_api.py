@@ -171,7 +171,8 @@ class GitHubReader:
             issue["comments_data"] = list(self._pages(f"issues/{number}/comments"))
         return issue
 
-    def records(self, weeks: list[str], cache_path: Path | None = None, refresh: bool = False) -> list[dict]:
+    def records(self, weeks: list[str], cache_path: Path | None = None, refresh: bool = False,
+                deleted_issue: int | None = None) -> list[dict]:
         """Read metadata and selected-week comments, optionally using a local cache.
 
         The no-cache route retains the original full-scan behavior. Cached runs
@@ -180,8 +181,10 @@ class GitHubReader:
         The cache contains raw public content and must never be published.
         API failures do not update its synchronization cursor or replace it.
         """
+        if deleted_issue is not None and (type(deleted_issue) is not int or deleted_issue < 1):
+            raise ValueError("Deleted issue number must be a positive integer.")
         if cache_path is not None:
-            return self._cached_records(weeks, Path(cache_path), refresh)
+            return self._cached_records(weeks, Path(cache_path), refresh, deleted_issue)
         records: dict[int, dict] = {}
         for label in ("weekly-plan", "experience,points-approved"):
             for issue in self._pages("issues", {"state": "all", "labels": label}):
@@ -196,7 +199,8 @@ class GitHubReader:
                 issue["comments_data"] = list(self._pages(f"issues/{issue['number']}/comments"))
         return list(records.values())
 
-    def _cached_records(self, weeks: list[str], cache_path: Path, refresh: bool) -> list[dict]:
+    def _cached_records(self, weeks: list[str], cache_path: Path, refresh: bool,
+                        deleted_issue: int | None = None) -> list[dict]:
         now = _now()
         previous = None if refresh else _load_cache(cache_path, self.repository, now)
         full = previous is None or now - _timestamp(previous["full_sync"]) >= timedelta(days=7)
@@ -234,6 +238,14 @@ class GitHubReader:
                     key = url[len(prefix):]
                     if re.fullmatch(r"[1-9][0-9]*", key):
                         changed_comments.add(key)
+
+        # A deleted Issue does not appear in GitHub's incremental 'since' query.
+        # Evict it explicitly when handling the trusted issues.deleted webhook.
+        # Apply this after deltas so a stale API response cannot resurrect it.
+        if deleted_issue is not None:
+            key = str(deleted_issue)
+            issues.pop(key, None)
+            comment_cache.pop(key, None)
 
         wanted = set(weeks)
         result: list[dict] = []
