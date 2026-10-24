@@ -10,6 +10,10 @@ A community for AI researchers to make room for exercise, recovery, and a life a
 
 [Log a workout](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [Share a meal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [Meet the community](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) · [Weekly participation board](reports/README.md)
 
+## News
+
+- **2026-10-24 · Member spotlight**: [@rentainhe](https://github.com/rentainhe) shares how basketball became a starting point for lasting exercise habits. **[Read the edited story (Chinese)](docs/experiences/2026-10-24-rentainhe.md)** · [Original post and discussion #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35).
+
 ## Choose how to join today
 
 | I want to… | Start here |

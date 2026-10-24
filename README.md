@@ -10,6 +10,10 @@
 
 [运动打卡](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [记录饮食](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) · [分享交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose) · [每周参与榜](reports/README.md)
 
+## News
+
+- **2026-10-24 · 成员精选**：[@rentainhe](https://github.com/rentainhe) 分享从篮球起步、逐渐建立运动习惯的经历。**[阅读经验整理：从喜欢的运动开始](docs/experiences/2026-10-24-rentainhe.md)** · [原帖与交流 #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)。
+
 ## 今天想怎样参与
 
 | 我想…… | 从这里开始 |
