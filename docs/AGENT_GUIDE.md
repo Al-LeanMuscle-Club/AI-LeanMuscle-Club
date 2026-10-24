@@ -41,6 +41,10 @@ No body judgments, health rankings, diagnoses, or research-productivity ranking.
 If context is missing, say so. Produce a draft only; a maintainer reviews it.
 ```
 
+## Reusable assistant skills
+
+Three optional, review-only skills are available in [`skills/`](../skills/): [`weekly-plan`](../skills/weekly-plan/SKILL.md), [`workout-checkin`](../skills/workout-checkin/SKILL.md), and [`weekly-review`](../skills/weekly-review/SKILL.md). Each produces a draft requiring human confirmation; none configures an API key, posts Issues, or replaces deterministic scoring.
+
 ## Implementation status
 
 Optional AI summaries are a documented process, not an enabled feature. A future model integration should be separately reviewed, include an explicit data-sharing decision, preserve human approval, and measure whether it saves maintainers time. The core scoring workflow needs no paid API key.
