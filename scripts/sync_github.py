@@ -227,12 +227,31 @@ def _withdraw_history(board: dict, eligible: set[tuple[int, str, str]], *, curre
     return True
 
 
+def _same_report_content(old: dict, new: dict) -> bool:
+    """Only generation time changed: keep the original reproducible snapshot."""
+    if not isinstance(old, dict) or not isinstance(new, dict):
+        return False
+    return ({k: v for k, v in old.items() if k != "generated_at"}
+            == {k: v for k, v in new.items() if k != "generated_at"})
+
+
 def write_reports(root: Path, boards: list[dict], *, source_records: list | None = None,
                   as_of: datetime | None = None, ranking_state: dict | None = None) -> None:
     """Validate the README before writing anything; never save raw issue bodies."""
     readme = root / "README.md"
-    updated_readme = replace_readme(readme.read_text(encoding="utf-8"), boards)
     reports = root / "reports"
+    # An identical public result must not rewrite the report, README, or index
+    # solely because a scheduled run has a newer clock time.
+    stable_boards = []
+    for board in boards:
+        existing = reports / f"{board['week_start']}.json"
+        if existing.is_file():
+            previous = json.loads(existing.read_text(encoding="utf-8"))
+            if _same_report_content(previous, board):
+                board = previous
+        stable_boards.append(board)
+    boards = stable_boards
+    updated_readme = replace_readme(readme.read_text(encoding="utf-8"), boards)
     snapshots = {}
     rewritten = {}
     current_by_week = {board["week_start"]: board for board in boards}

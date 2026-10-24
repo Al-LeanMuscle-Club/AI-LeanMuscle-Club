@@ -24,6 +24,18 @@ jobs:
       github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
       && github.event.sender.type != 'Bot'
       && !github.event.issue.pull_request
+      && (
+        github.event_name != 'issue_comment'
+        || contains(github.event.issue.labels.*.name, 'weekly-plan')
+      )
+      && (
+        github.event_name != 'issues'
+        || github.event.action == 'deleted'
+        || contains(github.event.issue.labels.*.name, 'weekly-plan')
+        || contains(github.event.issue.labels.*.name, 'experience')
+        || contains(github.event.issue.labels.*.name, 'points-approved')
+        || contains(fromJSON('["weekly-plan","experience","points-approved"]'), github.event.label.name)
+      )
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -32,12 +44,17 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Decide whether the event changes reports
+        id: report-event
+        run: python scripts/report_event.py
       - uses: actions/cache@v4
+        if: steps.report-event.outputs.run == 'true'
         with:
           path: .club-cache
           key: community-issues-${{ github.repository_id }}-${{ github.run_id }}
           restore-keys: community-issues-${{ github.repository_id }}-
       - name: Calculate reports from real GitHub records
+        if: steps.report-event.outputs.run == 'true'
         run: |
           if [ -n "$REPORT_WEEK" ]; then
             python scripts/sync_github.py --week "$REPORT_WEEK"
@@ -48,6 +65,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPORT_WEEK: ${{ inputs.week_start }}
       - name: Commit reports and confirmed plan snapshots
+        if: steps.report-event.outputs.run == 'true'
         # GITHUB_TOKEN pushes do not trigger push workflows. The optional
         # Pages workflow listens for this workflow's successful completion.
         run: |

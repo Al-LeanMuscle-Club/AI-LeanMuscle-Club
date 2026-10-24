@@ -1,7 +1,7 @@
 """Integration tests for public report generation and its live API boundary."""
 
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 import subprocess
@@ -43,6 +43,29 @@ def plan(number=1, handle="member-one", public="Yes"):
 
 
 class ReportingTests(unittest.TestCase):
+    def test_identical_results_do_not_change_report_or_readme_timestamps(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text(
+                "<!-- CLUB:START -->\n<!-- CLUB:END -->\n", encoding="utf-8"
+            )
+            records = [plan()]
+            before = build_week(records, "2026-10-26", AS_OF)
+            write_reports(root, [before])
+            old_readme = (root / "README.md").read_bytes()
+            old_report = (root / "reports/2026-10-26.json").read_bytes()
+            old_index = (root / "reports/index.json").read_bytes()
+            unchanged = build_week(records, "2026-10-26", AS_OF + timedelta(hours=3))
+            write_reports(root, [unchanged])
+            self.assertEqual(old_readme, (root / "README.md").read_bytes())
+            self.assertEqual(old_report, (root / "reports/2026-10-26.json").read_bytes())
+            self.assertEqual(old_index, (root / "reports/index.json").read_bytes())
+            changed = deepcopy(unchanged)
+            changed["participants_count"] += 1
+            write_reports(root, [changed])
+            self.assertNotEqual(old_report, (root / "reports/2026-10-26.json").read_bytes())
+
+
     def test_china_monday_rollover_and_year_boundary(self):
         instant = datetime(2026, 10, 25, 16, tzinfo=timezone.utc)
         self.assertEqual(reporting_weeks(instant), ["2026-10-26", "2026-10-19"])
