@@ -72,6 +72,35 @@
     return "https://github.com/" + repository(repo) + "/issues?q=" + encodeURIComponent(query);
   }
 
+  function communitySearchUrl(repo, topic = "all") {
+    const topics = {all:"", activity:'"[Activity]"', experience:'"[Experience]"', meal:'"[Meal]"', buddies:'"[Buddies]"', research:'"[Research / Agent]"', hello:'"[Hello]"'};
+    if (!Object.prototype.hasOwnProperty.call(topics, topic)) throw new Error("请选择社区话题。");
+    // Title searches keep older posts discoverable before labels are repaired.
+    const query = ['is:issue', 'in:title', '-label:example', '-"Fictional example"', '-虚构', topics[topic], 'sort:updated-desc'].filter(Boolean).join(" ");
+    return "https://github.com/" + repository(repo) + "/issues?q=" + encodeURIComponent(query);
+  }
+
+  function activityDraft(repo, {date, timeZone, sport, text}) {
+    const day = isoDate(date);
+    const zone = String(timeZone || "").trim();
+    try { new Intl.DateTimeFormat("en", {timeZone:zone}).format(); }
+    catch (_) { throw new Error("请填写有效时区，例如 Asia/Shanghai。"); }
+    if (!zone || !SPORTS.includes(sport)) throw new Error("请检查时区和运动项目。");
+    const note = String(text || "").replace(/\r\n?/g, "\n").trim();
+    if (!note || note.length > 500) throw new Error("请用 1–500 个字记录自己实际做了什么；更多内容可在 GitHub 补充。");
+    const body = "### Activity date\n\n" + day + "\n\n### Time zone\n\n" + zone + "\n\n### Sport\n\n" + sport + "\n\n### What I did\n\n" + note + "\n";
+    const url = new URL("https://github.com/" + repository(repo) + "/issues/new");
+    url.search = new URLSearchParams({template:"activity-record.yml", title:"[Activity] " + day + " · " + SPORT_LABELS[sport], "activity-date":day, "time-zone":zone, activity:note}).toString();
+    return {url:url.href, body};
+  }
+
+  function communityActivity(value) {
+    if (!value || value.schema_version !== 1 || value.timezone !== "UTC") return null;
+    const fields = ["participants_count", "posts_count", "replies_count", "responded_posts_count", "activity_records", "meal_records", "experiences", "conversations", "weekly_plan_posts"];
+    if (fields.some(field => count(value[field]) === null)) return null;
+    return Object.fromEntries(fields.map(field => [field, value[field]]));
+  }
+
   function issueUrl(repo, number) {
     return "https://github.com/" + repository(repo) + "/issues/" + issueNumber(number, repo);
   }
@@ -264,6 +293,39 @@
     get("find-week").value = dates.current;
     get("carry-week").value = dates.next;
     get("log-date").value = localDate();
+    get("activity-date").value = localDate();
+    get("activity-zone").value = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    get("activity-sport").value = "walking";
+    get("activity-today").addEventListener("click", () => {
+      get("activity-date").value = localDate();
+      get("activity-result").hidden = true;
+    });
+    get("activity-form").addEventListener("submit", event => {
+      event.preventDefault();
+      get("activity-result").hidden = true;
+      try {
+        const draft = activityDraft(value("repository"), {date:value("activity-date"), timeZone:value("activity-zone"), sport:value("activity-sport"), text:value("activity-text")});
+        get("activity-link").href = draft.url;
+        get("activity-output").value = draft.body;
+        get("activity-result").hidden = false;
+        setMessage("activity-message", "草稿已准备好。GitHub 会预填日期、时区和文字；请在 Sport 中选择“" + SPORT_LABELS[value("activity-sport")] + "（" + value("activity-sport") + "）”，检查后再发布。");
+      } catch (error) { setMessage("activity-message", error.message, true); }
+    });
+    for (const id of ["activity-date", "activity-zone", "activity-sport", "activity-text"]) {
+      get(id).addEventListener("input", () => { get("activity-result").hidden = true; });
+      get(id).addEventListener("change", () => { get("activity-result").hidden = true; });
+    }
+    function updateCommunityLinks() {
+      try {
+        for (const [id, topic] of [["browse-community","all"], ["browse-community-summary","all"], ["topic-activity","activity"], ["topic-experience","experience"], ["topic-meal","meal"], ["topic-buddies","buddies"], ["topic-research","research"], ["topic-hello","hello"]]) {
+          get(id).href = communitySearchUrl(value("repository"), topic);
+        }
+      } catch (_) { /* Keep the last valid repository links while a setting is edited. */ }
+      get("activity-result").hidden = true;
+    }
+    get("repository").addEventListener("input", updateCommunityLinks);
+    get("repository").addEventListener("change", updateCommunityLinks);
+    updateCommunityLinks();
     get("log-today").addEventListener("click", () => {
       get("log-date").value = localDate();
       setMessage("log-message", "日期已设为今天；补记之前的运动可自行修改日期。");
@@ -337,6 +399,7 @@
     }
     get("copy-log").addEventListener("click", () => copy("log-output", "log-message"));
     get("copy-carry").addEventListener("click", () => copy("carry-output", "carry-message"));
+    get("copy-activity").addEventListener("click", () => copy("activity-output", "activity-message"));
 
     let rows = [];
     let weeks = [];
@@ -391,6 +454,19 @@
         get("ranking-body").append(tr);
       }
       const week = weeks.find(item => item.week_start === selectedWeek);
+      const activity = communityActivity(week?.community_activity);
+      get("community-stats").replaceChildren();
+      get("community-overview").hidden = !activity;
+      if (activity) {
+        get("community-week").textContent = selectedWeek + " 开始的一周 · 按 UTC 统计发布与回复时间" + (timestamp(week.activity_updated_at) ? " · 社区统计更新于 " + shownTime(week.activity_updated_at) : "");
+        for (const [label, number] of [["发帖或回复人数", activity.participants_count], ["新帖子", activity.posts_count], ["人工回复", activity.replies_count]]) {
+          const stat = doc.createElement("div");
+          const strong = doc.createElement("strong"); strong.textContent = String(number);
+          const title = doc.createElement("span"); title.textContent = label;
+          stat.append(strong, title); get("community-stats").append(stat);
+        }
+        get("community-breakdown").textContent = "自由运动 " + activity.activity_records + " · 饮食记录 " + activity.meal_records + " · 经验分享 " + activity.experiences + " · 其他交流 " + activity.conversations + " · 周计划 " + activity.weekly_plan_posts + "。其中 " + activity.responded_posts_count + " 个新帖已得到其他成员回复。";
+      }
       get("report-snapshot").textContent = week ? "所选周 " + selectedWeek + " · 快照生成于 " + shownTime(week.generated_at) + "。更早周的分数更正需单独重算；网站完成发布后才会显示更新。" : "报告发布后，这里会显示所选周的快照生成时间。";
       get("score-guide").hidden = !week || scoringVersion(week.scoring_version) !== 2;
       get("report-rules").textContent = week ? scoringExplanation(week.scoring_version) : "报告载入后会显示该周的评分规则；历史分数按原报告保留，不重新推算。";
@@ -526,5 +602,5 @@
     loadReports();
   }
 
-  return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, freeRecordSearchUrl, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, scoringVersion, scoringLabel, scoringExplanation, reportWeeks, publicRows, filterRows, memberSummary, localDate, weekDates, mount};
+  return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, freeRecordSearchUrl, communitySearchUrl, activityDraft, communityActivity, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, scoringVersion, scoringLabel, scoringExplanation, reportWeeks, publicRows, filterRows, memberSummary, localDate, weekDates, mount};
 });

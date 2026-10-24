@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 from club.scoring import SCORING_VERSION, build_week  # noqa: E402
 from club.ranking_state import load_state, new_state, save_state  # noqa: E402
 from scripts.github_api import GitHubReader, validate_repository  # noqa: E402
+from scripts.community_activity import build_community_activity, public_community_activity  # noqa: E402
 
 START = "<!-- CLUB:START -->"
 END = "<!-- CLUB:END -->"
@@ -43,6 +44,23 @@ def scoring_rules_note(board: dict, language: str = "en") -> str:
             "do not apply the current formula retroactively.")
 
 
+def community_summary(board: dict, language: str = "en") -> list[str]:
+    activity = public_community_activity(board.get("community_activity"))
+    if activity is None:
+        return []
+    if language == "zh-CN":
+        return [
+            f"社区发帖/回复人数：**{activity['participants_count']}** · 新帖：**{activity['posts_count']}** · 人工回复：**{activity['replies_count']}**", "",
+            f"自由运动：**{activity['activity_records']}** · 饮食记录：**{activity['meal_records']}** · 经验分享：**{activity['experiences']}** · 交流帖：**{activity['conversations']}** · 新周计划：**{activity['weekly_plan_posts']}**", "",
+            f"本周新帖中 **{activity['responded_posts_count']}** 篇已获其他成员回复。按 UTC 发帖/回复时间统计，排除示例、机器人和开发事项；不计积分。", "",
+        ]
+    return [
+        f"Community posters/repliers: **{activity['participants_count']}** · New posts: **{activity['posts_count']}** · Human replies: **{activity['replies_count']}**", "",
+        f"Free activity records: **{activity['activity_records']}** · Meal records: **{activity['meal_records']}** · Experiences: **{activity['experiences']}** · Conversations: **{activity['conversations']}** · New weekly plans: **{activity['weekly_plan_posts']}**", "",
+        f"**{activity['responded_posts_count']}** new posts have a reply from another member. Counts use UTC creation times, exclude examples, bots and development threads, and earn no points.", "",
+    ]
+
+
 def board_summary(board: dict, language: str = "en") -> str:
     """Keep the home page bounded; full member rows live in weekly reports."""
     summary = board.get("summary", {})
@@ -54,11 +72,12 @@ def board_summary(board: dict, language: str = "en") -> str:
     if language == "zh-CN":
         lines = [
             f"### 周次：{week} 起", "",
-            f"参与人数：**{board['participants_count']}** · 恢复/暂停人数：**{board['recovery_count']}**", "",
+            *community_summary(board, language),
+            f"周计划参与人数：**{board['participants_count']}** · 恢复/暂停人数：**{board['recovery_count']}**", "",
             f"公开参与人数：**{len(rows)}** · 已记录完成：**{completed}/{planned}** · 周复盘：**{reviewed}**", "",
             "次数仅汇总选择公开的活跃成员各自的计划，不代表健康或运动能力排名。", "",
             scoring_rules_note(board, language), "",
-            f"[完整周报](reports/{week}.md) · [公开数据](reports/{week}.json) · [查找计划与打卡助手](tools/index.html)", "",
+            f"[完整周报](reports/{week}.md) · [公开数据](reports/{week}.json) · [查找计划与打卡助手][member-helper]", "",
             f"更新时间：{board['generated_at']}",
         ]
         if board.get("counts_updated_at"):
@@ -73,11 +92,12 @@ def board_summary(board: dict, language: str = "en") -> str:
         return "\n".join(lines) + "\n"
     lines = [
         f"### Week starting {week}", "",
-        f"Participants: **{board['participants_count']}** · Recovery/paused: **{board['recovery_count']}**", "",
+        *community_summary(board),
+        f"Weekly-plan participants: **{board['participants_count']}** · Recovery/paused: **{board['recovery_count']}**", "",
         f"Opted-in active members: **{len(rows)}** · Recorded sessions: **{completed}/{planned}** · Weekly reflections: **{reviewed}**", "",
         "Session totals describe opted-in active members' own plans; they are not health or athletic rankings.", "",
         scoring_rules_note(board), "",
-        f"[Full weekly report](reports/{week}.md) · [Public data](reports/{week}.json) · [Find my plan / browser helper](tools/index.html)", "",
+        f"[Full weekly report](reports/{week}.md) · [Public data](reports/{week}.json) · [Find my plan / browser helper][member-helper]", "",
         f"Updated: {board['generated_at']}",
     ]
     if board["warnings"]:
@@ -101,11 +121,14 @@ def board_markdown(board: dict, report_links: bool = False) -> str:
         return board_summary(board)
     lines = [
         f"### Week starting {board['week_start']}", "",
-        f"Updated: {board['generated_at']} · Valid weekly participants: {board['participants_count']} · "
+        f"Updated: {board['generated_at']} · Valid weekly-plan participants: {board['participants_count']} · "
         f"Recovery/paused: {board['recovery_count']}", "",
+        *community_summary(board),
         "Only opted-in Active participants are named. These are self-reported participation points.", "",
         scoring_rules_note(board), "",
     ]
+    if board.get("activity_updated_at"):
+        lines += [f"Community activity refreshed: {board['activity_updated_at']}. Scores retain their original snapshot.", ""]
     if board.get("counts_updated_at"):
         lines += [f"Participant/recovery counts refreshed: {board['counts_updated_at']}. "
                   "Remaining members' scores retain the original snapshot above.", ""]
@@ -156,6 +179,11 @@ def public_index_snapshot(board: dict) -> dict:
         snapshot["scoring_version"] = version
     if "counts_updated_at" in board:
         snapshot["counts_updated_at"] = board["counts_updated_at"]
+    activity = public_community_activity(board.get("community_activity"))
+    if activity is not None:
+        snapshot["community_activity"] = activity
+        if "activity_updated_at" in board:
+            snapshot["activity_updated_at"] = board["activity_updated_at"]
     snapshot["summary"] = {key: value for key, value in board.get("summary", {}).items()
                            if key in {"public_members", "planned_sessions", "completed_sessions", "partial_sessions", "skipped_sessions", "reviewed_members"}}
     snapshot["sports"] = [{key: row[key] for key in ("sport", "planned", "completed")}
@@ -181,6 +209,8 @@ def replace_readme(text: str, boards: list[dict]) -> str:
     end = text.index(END)
     language = "zh-CN" if CHINESE_README in text else "en"
     block = "\n\n" + "\n".join(board_summary(board, language) for board in boards) + "\n"
+    if not re.search(r"^ {0,3}\[member-helper\]:", text, re.MULTILINE | re.IGNORECASE):
+        block = block.replace("][member-helper]", "](docs/PAGES_QUICKSTART.zh-CN.md)")
     return text[:start] + block + text[end:]
 
 
@@ -268,7 +298,13 @@ def write_reports(root: Path, boards: list[dict], *, source_records: list | None
                                      ranking_state=ranking_state)
             eligible = {(row["issue_number"], row["handle"].casefold(), path.stem)
                         for row in current["leaderboard"]}
-            if _withdraw_history(old, eligible, current=current):
+            changed = _withdraw_history(old, eligible, current=current)
+            activity = build_community_activity(source_records, path.stem, as_of or datetime.now(timezone.utc))
+            if old.get("community_activity") != activity:
+                old["community_activity"] = activity
+                old["activity_updated_at"] = current["generated_at"]
+                changed = True
+            if changed:
                 rewritten[path.stem] = old
         snapshots[path.stem] = public_index_snapshot(old)
     rewritten.update({board["week_start"]: board for board in boards})
@@ -278,7 +314,7 @@ def write_reports(root: Path, boards: list[dict], *, source_records: list | None
     index = {"schema_version": 2, "window_weeks": INDEX_WEEKS,
              "available_weeks": weeks, "weeks": [snapshots[week] for week in weeks[:INDEX_WEEKS]]}
     archive = "# Weekly participation reports\n\nOnly opted-in active members are named. Raw notes, food logs, and photos are not copied here.\n\n"
-    archive += "The [browser helper](../tools/index.html) loads the latest 12 report weeks. Older reports remain available below.\n\n"
+    archive += "The [browser helper](../README.md#member-helper) loads the latest 12 report weeks. Older reports remain available below.\n\n"
     archive += "\n".join(f"- [{week}]({week}.md) · [JSON]({week}.json)" for week in weeks) + "\n"
     reports.mkdir(parents=True, exist_ok=True)
     for board in rewritten.values():
@@ -337,9 +373,12 @@ def main(argv: list[str] | None = None) -> int:
                         if re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem)]
             read_weeks = sorted(set(weeks + archived))
             issues = GitHubReader(args.repository, token).records(
-                read_weeks, cache_path=cache, refresh=args.refresh, deleted_issue=args.deleted_issue
+                read_weeks, cache_path=cache, refresh=args.refresh, deleted_issue=args.deleted_issue,
+                include_community=True,
             )
         boards = [build_week(issues, week, as_of, ranking_state=ranking_state) for week in weeks]
+        for board in boards:
+            board["community_activity"] = build_community_activity(issues, board["week_start"], as_of)
         if args.dry_run:
             print(json.dumps(boards, indent=2, ensure_ascii=False))
         else:

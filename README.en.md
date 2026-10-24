@@ -21,7 +21,9 @@ A community for AI researchers to make room for exercise, recovery, and a life a
 
 A photo or one sentence is welcome. Free workout and food records do not require a weekly plan and do not enter the ranking. All records posted here are public. Structured weekly records can also show training days, meal-record days, and partial completions without awarding points for food quantities or body metrics.
 
-[Member helper and weekly standings](tools/index.html) · [Newcomer, training, food, partner, Agent, and ranking examples](examples/README.en.md). The helper runs locally or after [Pages setup](docs/SETUP.md#9-optional-browser-helper-and-pages-deployment); GitHub's source viewer displays its HTML. Community Issue forms become available after they are merged into the default branch.
+<a id="member-helper"></a>
+
+[Read recent community posts](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=is%3Aissue%20is%3Aopen%20-label%3Aexample%20-%22Fictional%20example%22%20-%E8%99%9A%E6%9E%84%20in%3Atitle%20sort%3Aupdated-desc) · [Member helper and quick records][member-helper] · [Writing examples](examples/README.en.md). Until the first deployment, the helper link opens setup instructions; a successful deployment automatically switches it to the live site.
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI Lean Muscle Club: For AI Researchers to Keep Healthy. Train models. Train your body. Includes a WeChat group invitation QR code." width="1000"></a>
@@ -53,7 +55,7 @@ Use full English weekdays and stable IDs `S1`–`S99`. The optional fifth column
 
 Use `/fallback S1 YYYY-MM-DD` when completing S1's confirmed fallback; `/partial` earns half of that session's execution credit and `/skip` earns none. Each session counts once, using its latest valid status. The first successful report confirms the scored sessions; later edits are shown separately and deleting unfinished sessions cannot raise the score. Put each command in a separate comment. [Full instructions, meal logs, and examples →](docs/MEMBER_GUIDE.md)
 
-**Quick tools:** [Find my plan / prepare a check-in](tools/index.html) ([open locally or configure hosting](docs/MEMBER_GUIDE.md#browser-helper)) · [Reuse last week's plan](docs/MEMBER_GUIDE.md#command-line-tools) · [Browse opt-in report data](reports/index.json)
+**Quick tools:** [Find my plan / prepare a check-in][member-helper] ([open locally or configure hosting](docs/MEMBER_GUIDE.md#browser-helper)) · [Reuse last week's plan](docs/MEMBER_GUIDE.md#command-line-tools) · [Browse opt-in report data](reports/index.json)
 
 ## Find your people
 
@@ -66,6 +68,9 @@ Use `/fallback S1 YYYY-MM-DD` when completing S1's confirmed fallback; `/partial
 A member can lift, play basketball, and run in the same week. Goals and sports are independent; beginners and mixed plans are welcome. Weight, sets, pace, distance, energy, and fatigue are optional notes, never points multipliers. [Example templates →](examples/README.en.md)
 
 ## Weekly community board
+
+<details>
+<summary>Show fictional examples (excluded from real participation)</summary>
 
 <!-- DEMO:START -->
 
@@ -87,6 +92,8 @@ Full/fallback completion earns 1 execution unit; partial earns 0.5. Training and
 [Full fictional plans, raw records, and score components](examples/demo-training-records.md) · [Synthetic leaderboard data](examples/demo-leaderboard.json)
 
 <!-- DEMO:END -->
+
+</details>
 
 [View latest overview →](README.md#每周社区概况) · [Full weekly reports →](reports/README.md)
 
@@ -119,3 +126,5 @@ Be honest, kind, and respectful of different bodies and schedules. Recovery and 
 The reporting workflow refreshes the current and previous Asia/Shanghai reporting weeks on relevant Issue/comment changes and at **09:15 Asia/Shanghai daily**, once enabled on the default branch. Session dates use each member's declared time zone. Reports are revisable snapshots, and scheduled runs may be delayed. Repository settings, scoring labels, and default-branch Issue forms require [maintainer setup](docs/SETUP.md). There is no connected external AI model or WeChat collector.
 
 [Member guide](docs/MEMBER_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)
+
+[member-helper]: docs/SETUP.md#9-optional-browser-helper-and-pages-deployment

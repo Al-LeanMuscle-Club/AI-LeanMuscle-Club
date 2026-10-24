@@ -6,3 +6,5 @@
 @media(prefers-color-scheme:dark){:root{color:#e7f0ed;background:#111c1b;--line:#344b46;--surface:#1c2a28;--muted:#b0c7c1;--soft:#253b32;--accent:#8cd5af;--error:#ffaaaa}.entry:first-child,.button-link,button{color:#102b20}.entry:first-child>span{color:#173e2e}.entry:first-child>strong{color:#102b20}input,select,textarea{border-color:#526b62}textarea[readonly]{background:#15241f}.secondary{color:var(--accent)}input:focus,textarea:focus,select:focus{outline-color:#8cd5af45}}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}.entry{transition:none}.entry:hover{transform:none}}
 .record-review{border-top:1px solid var(--line);margin-top:25px;padding-top:18px}.record-review h3{font-size:1rem;margin:0 0 8px}.record-review .actions{margin-top:12px}
+
+.quick-record{border-color:var(--accent)}.quick-record details{margin-top:14px}.quick-record #activity-zone{max-width:420px}@media(max-width:600px){#activity-form button[type=submit],#activity-result .button-link{width:100%}}

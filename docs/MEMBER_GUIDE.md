@@ -117,6 +117,8 @@ Reflection receives the same two points after an incomplete week. Research outpu
 
 The weekly maximum stays **10**: plan 1, execution 0–6, reflection 2, and an approved experience contribution 0–1. Execution uses full/fallback = 1 and partial = 0.5 against confirmed sessions. The full-completion percentage still counts only full/fallback sessions. Scores measure participation, not athletic ability. See [the full scoring rules](SCORING.md) and [fictional ranking examples](../examples/ranking.en.md).
 
+The experience form’s **Week starting** field is optional for ordinary sharing. Fill in the relevant Monday only when requesting weekly contribution recognition.
+
 Community Issue posts and replies do not automatically grant contribution points. An experience Issue needs both `points-approved` and a trusted repository approval entry matching its current body, author, and week. Editing an approved body requires review again; labels alone do not grant credit. Maintainers prepare approval records for review using the process in [setup](SETUP.md).
 
 To step away from scoring, choose `Recovery` or comment `/pause`. A pause stays in effect until you edit or remove that pause comment; posting it again does not toggle participation back on.
@@ -130,6 +132,12 @@ python3 -m http.server 8000
 ```
 
 Then open [the local helper](http://localhost:8000/tools/). A hosted copy becomes available only after maintainers configure Pages and enable its deployment workflow; see [setup](SETUP.md). Review generated text and paste it into GitHub yourself.
+
+The quick activity form prepares a free-record draft from a short account of what you actually did. It defaults to your device’s local date and time zone; both remain editable for past activities or travel. Chinese sport labels map to the existing canonical categories. Open the GitHub form with its date, time-zone and text fields prefilled; choose the indicated sport, check each field, and submit it yourself. A complete Markdown draft is also available to copy. Preparing a draft never publishes it; add longer notes or photographs on GitHub.
+
+**See the community** and topic links search real Issues, including older posts without labels, and exclude example labels and explicit fictional title markers. Example references remain separate.
+
+When available in a report, the community overview shows people who posted or replied, new posts, and human replies for the selected UTC publication week. These counts include free records, experiences, conversations, and weekly-plan threads; examples, bots, and development tasks are excluded. They do not award points or change named-leaderboard consent. Missing historical aggregates remain unknown rather than being shown as zero.
 
 In **My public records**, enter your full GitHub username to view the loaded public weekly-plan summaries. Below those summaries, **Review my free records** prepares separate links to your `activity-record` and `meal-record` Issues, including open and closed records, in the selected repository. These search links work even without a weekly plan or published reports. Open them on GitHub to read your records; free records do not add points or enter the weekly-plan day counts, and the helper does not download them or ask for a token.
 

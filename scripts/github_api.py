@@ -13,6 +13,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from club.community import community_category
+
 
 def validate_repository(value: str) -> str:
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", value):
@@ -63,13 +65,15 @@ def _week(issue: dict) -> str | None:
     return match.group(1) if match else None
 
 
-def _load_cache(path: Path, repository: str, now: datetime) -> dict | None:
+def _load_cache(path: Path, repository: str, now: datetime, include_community: bool = False) -> dict | None:
     """A missing, corrupt, incompatible, or foreign cache triggers a fresh read."""
     try:
         cached = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
     if not isinstance(cached, dict) or cached.get("schema_version") != 1 or cached.get("repository") != repository:
+        return None
+    if cached.get("include_community", False) != include_community:
         return None
     last = _timestamp(cached.get("last_sync"))
     full = _timestamp(cached.get("full_sync"))
@@ -172,7 +176,7 @@ class GitHubReader:
         return issue
 
     def records(self, weeks: list[str], cache_path: Path | None = None, refresh: bool = False,
-                deleted_issue: int | None = None) -> list[dict]:
+                deleted_issue: int | None = None, include_community: bool = False) -> list[dict]:
         """Read metadata and selected-week comments, optionally using a local cache.
 
         The no-cache route retains the original full-scan behavior. Cached runs
@@ -180,29 +184,36 @@ class GitHubReader:
         target-week comment threads, and fully reconcile every seven days.
         The cache contains raw public content and must never be published.
         API failures do not update its synchronization cursor or replace it.
+        include_community adds recognized non-example community posts and their
+        threads; its cache scope is separate from the scoring-only reader.
         """
         if deleted_issue is not None and (type(deleted_issue) is not int or deleted_issue < 1):
             raise ValueError("Deleted issue number must be a positive integer.")
         if cache_path is not None:
-            return self._cached_records(weeks, Path(cache_path), refresh, deleted_issue)
+            return self._cached_records(weeks, Path(cache_path), refresh, deleted_issue, include_community)
         records: dict[int, dict] = {}
-        for label in ("weekly-plan", "experience,points-approved"):
-            for issue in self._pages("issues", {"state": "all", "labels": label}):
+        queries = [{"state": "all"}] if include_community else [
+            {"state": "all", "labels": label} for label in ("weekly-plan", "experience,points-approved")
+        ]
+        for query in queries:
+            for issue in self._pages("issues", query):
                 if not isinstance(issue, dict):
                     raise RuntimeError("Malformed GitHub issue response.")
                 if "pull_request" in issue:
                     continue
-                records[_number(issue)] = dict(issue)
+                if not include_community or _names(issue) & {"weekly-plan", "experience"} or community_category(issue):
+                    records[_number(issue)] = dict(issue)
         wanted = set(weeks)
         for issue in records.values():
-            if "weekly-plan" in _names(issue) and _week(issue) in wanted:
+            if ("weekly-plan" in _names(issue) and _week(issue) in wanted
+                    or include_community and community_category(issue)):
                 issue["comments_data"] = list(self._pages(f"issues/{issue['number']}/comments"))
         return list(records.values())
 
     def _cached_records(self, weeks: list[str], cache_path: Path, refresh: bool,
-                        deleted_issue: int | None = None) -> list[dict]:
+                        deleted_issue: int | None = None, include_community: bool = False) -> list[dict]:
         now = _now()
-        previous = None if refresh else _load_cache(cache_path, self.repository, now)
+        previous = None if refresh else _load_cache(cache_path, self.repository, now, include_community)
         full = previous is None or now - _timestamp(previous["full_sync"]) >= timedelta(days=7)
         issues: dict[str, dict] = {} if full else dict(previous["issues"])
         comment_cache: dict[str, dict] = {} if full else dict(previous["comments"])
@@ -210,10 +221,14 @@ class GitHubReader:
         if full:
             # Read all experience metadata, including unapproved experiences:
             # removing approval later must remove that week's contribution.
-            for label in ("weekly-plan", "experience"):
-                for issue in self._pages("issues", {"state": "all", "labels": label}):
+            queries = [{"state": "all"}] if include_community else [
+                {"state": "all", "labels": label} for label in ("weekly-plan", "experience")
+            ]
+            for query in queries:
+                for issue in self._pages("issues", query):
                     _number(issue)
-                    if "pull_request" not in issue:
+                    if "pull_request" not in issue and (not include_community or
+                            _names(issue) & {"weekly-plan", "experience"} or community_category(issue)):
                         issues[str(issue["number"])] = dict(issue)
         else:
             # No label filter: an update that removes a relevant label must
@@ -221,7 +236,8 @@ class GitHubReader:
             since = _iso(_timestamp(previous["last_sync"]) - timedelta(minutes=5))
             for issue in self._pages("issues", {"state": "all", "since": since, "sort": "updated", "direction": "asc"}):
                 key = str(_number(issue))
-                if "pull_request" not in issue and _names(issue) & {"weekly-plan", "experience"}:
+                if "pull_request" not in issue and (_names(issue) & {"weekly-plan", "experience"}
+                        or include_community and community_category(issue)):
                     issues[key] = dict(issue)
                 else:
                     issues.pop(key, None)
@@ -256,7 +272,8 @@ class GitHubReader:
             # have their own validated freshness signature below.
             issue.pop("comments_data", None)
             issues[key] = dict(issue)
-            if "weekly-plan" in _names(issue) and _week(issue) in wanted:
+            if ("weekly-plan" in _names(issue) and _week(issue) in wanted
+                    or include_community and community_category(issue)):
                 cached = comment_cache.get(key)
                 count = issue.get("comments")
                 updated = issue.get("updated_at")
@@ -277,6 +294,7 @@ class GitHubReader:
             result.append(issue)
         cache = {
             "schema_version": 1,
+            "include_community": include_community,
             "repository": self.repository,
             "last_sync": _iso(now),
             "full_sync": _iso(now) if full else previous["full_sync"],

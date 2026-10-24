@@ -43,6 +43,62 @@ def plan(number=1, handle="member-one", public="Yes"):
 
 
 class ReportingTests(unittest.TestCase):
+    def test_helper_links_work_for_legacy_readme_and_preserve_existing_definitions(self):
+        board = build_week([], "2026-10-26", AS_OF)
+        prose = "An existing [custom link][member-helper].\n"
+        template = prose + "<!-- CLUB:START -->old<!-- CLUB:END -->"
+        legacy = replace_readme(template, [board])
+        self.assertTrue(legacy.startswith(prose))
+        self.assertIn("[Find my plan / browser helper](docs/PAGES_QUICKSTART.zh-CN.md)", legacy)
+        definition = "\n[member-helper]: https://example.org/club/tools/\n"
+        configured = replace_readme(template + definition, [board])
+        self.assertIn("[Find my plan / browser helper][member-helper]", configured)
+        self.assertTrue(configured.endswith(definition))
+
+    def test_community_aggregate_is_anonymous_stable_and_withdrawn_from_history(self):
+        from scripts.community_activity import build_community_activity
+        activity = {
+            "number": 10, "labels": [{"name": "activity-record"}],
+            "title": "PRIVATE_TITLE", "user": {"login": "private-free-member"},
+            "body": "PRIVATE_HEALTH_DETAILS", "created_at": "2026-10-27T10:00:00Z", "comments_data": [],
+        }
+        board = build_week([], "2026-10-26", AS_OF)
+        board["community_activity"] = build_community_activity([activity], "2026-10-26", AS_OF)
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text("<!-- README:LANG=zh-CN -->\n<!-- CLUB:START -->\n<!-- CLUB:END -->\n")
+            write_reports(root, [board], source_records=[activity], as_of=AS_OF)
+            before = {path.name: path.read_bytes() for path in (root / "reports").iterdir()}
+            home = (root / "README.md").read_text()
+            self.assertIn("社区发帖/回复人数：**1**", home)
+            self.assertIn("周计划参与人数：**0**", home)
+            self.assertNotIn("private-free-member", home)
+            next_board = deepcopy(board)
+            next_board["generated_at"] = "2026-11-03T12:00:00Z"
+            write_reports(root, [next_board], source_records=[activity], as_of=AS_OF + timedelta(days=1))
+            self.assertEqual(before, {path.name: path.read_bytes() for path in (root / "reports").iterdir()})
+            public = "\n".join(path.read_text() for path in (root / "reports").iterdir())
+            for private in ("PRIVATE_TITLE", "PRIVATE_HEALTH_DETAILS", "private-free-member"):
+                self.assertNotIn(private, public)
+            newer = build_week([], "2026-11-02", AS_OF)
+            write_reports(root, [newer], source_records=[], as_of=AS_OF + timedelta(days=1))
+            archived = json.loads((root / "reports/2026-10-26.json").read_text())
+            self.assertEqual(archived["community_activity"]["participants_count"], 0)
+            self.assertEqual(archived["generated_at"], board["generated_at"])
+            self.assertEqual(archived["activity_updated_at"], "2026-11-03T12:00:00Z")
+            index = json.loads((root / "reports/index.json").read_text())
+            self.assertEqual(index["weeks"][1]["community_activity"]["posts_count"], 0)
+
+    def test_public_index_does_not_copy_unknown_community_fields(self):
+        from scripts.community_activity import build_community_activity
+        from scripts.sync_github import public_index_snapshot
+        board = build_week([], "2026-10-26", AS_OF)
+        board["community_activity"] = build_community_activity([], "2026-10-26", AS_OF)
+        board["community_activity"]["notes"] = "PRIVATE_NOTES"
+        self.assertNotIn("PRIVATE_NOTES", json.dumps(public_index_snapshot(board)))
+        board.pop("community_activity")
+        self.assertNotIn("community_activity", public_index_snapshot(board))
+
     def test_identical_results_do_not_change_report_or_readme_timestamps(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)
@@ -109,7 +165,7 @@ class ReportingTests(unittest.TestCase):
         self.assertIn("部分完成计 0.5 次", text)
         self.assertIn("[完整周报](reports/2026-10-26.md)", text)
         self.assertIn("[公开数据](reports/2026-10-26.json)", text)
-        self.assertIn("[查找计划与打卡助手](tools/index.html)", text)
+        self.assertIn("[查找计划与打卡助手](docs/PAGES_QUICKSTART.zh-CN.md)", text)
         self.assertIn("更新时间：2026-11-02T12:00:00Z", text)
         self.assertIn("发现重复周计划，仅统计最早的有效计划。", text)
         self.assertIn("有周计划因必填字段无效而被跳过。", text)

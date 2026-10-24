@@ -1,0 +1,41 @@
+name: Set up community labels
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Apply label changes (leave off to preview)
+        type: boolean
+        default: false
+      backfill:
+        description: Classify existing records and explicitly marked examples
+        type: boolean
+        default: true
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: community-label-setup
+  cancel-in-progress: false
+jobs:
+  labels:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Preview or apply additive labels
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPLY: ${{ inputs.apply }}
+          BACKFILL: ${{ inputs.backfill }}
+        run: |
+          args=()
+          if [[ "$APPLY" == 'true' ]]; then args+=(--apply); fi
+          if [[ "$BACKFILL" == 'true' ]]; then args+=(--backfill); fi
+          python scripts/setup_community.py "${args[@]}"
