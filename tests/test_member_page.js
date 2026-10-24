@@ -26,6 +26,51 @@ test("free record search targets an author's activity or meal issues, including 
   assert.throws(() => tools.freeRecordSearchUrl("example/club?token=x", "Alice", "activity-record"));
 });
 
+test("community searches include unlabelled real posts and exclude labelled and titled examples", () => {
+  for (const topic of ["all", "activity", "experience", "meal", "buddies", "research", "hello"]) {
+    const url = new URL(tools.communitySearchUrl("example/club", topic));
+    const query = url.searchParams.get("q");
+    assert.equal(url.pathname, "/example/club/issues");
+    assert.match(query, /is:issue in:title -label:example/);
+    for (const marker of ['-"Fictional example"', '-虚构']) assert(query.includes(marker));
+    assert(!query.includes("is:open"));
+    assert(!/(?:^| )label:/.test(query), "new posts must be discoverable before label repair");
+  }
+  assert.match(new URL(tools.communitySearchUrl("example/club", "activity")).searchParams.get("q"), /"\[Activity\]"/);
+  assert.match(new URL(tools.communitySearchUrl("example/club", "experience")).searchParams.get("q"), /"\[Experience\]"/);
+  assert.throws(() => tools.communitySearchUrl("example/club", "all author:other"));
+});
+
+test("quick activity drafts preserve actual inputs in the existing GitHub form without privileged parameters", () => {
+  const input = {date:"2026-10-21",timeZone:"Asia/Shanghai",sport:"basketball",text:"今天打球，想问个问题：A&B?\n之后再补照片。"};
+  const draft = tools.activityDraft("example/club", input);
+  const url = new URL(draft.url);
+  assert.equal(url.origin, "https://github.com");
+  assert.equal(url.pathname, "/example/club/issues/new");
+  assert.equal(url.searchParams.get("template"), "activity-record.yml");
+  assert.equal(url.searchParams.get("activity-date"), input.date);
+  assert.equal(url.searchParams.get("time-zone"), input.timeZone);
+  assert(!url.searchParams.has("sport"), "GitHub documents prefills for text fields, not dropdowns");
+  assert.equal(url.searchParams.get("activity"), input.text);
+  assert.equal(url.searchParams.get("title"), "[Activity] 2026-10-21 · 篮球");
+  assert(!url.searchParams.has("labels"));
+  assert(!url.searchParams.has("assignees"));
+  assert.match(draft.body, /### Sport\n\nbasketball/);
+  assert(draft.body.endsWith(input.text + "\n"));
+  assert(!draft.body.includes("Public leaderboard"));
+  for (const changed of [{date:"2026-02-30"},{timeZone:"Asia/Fake"},{timeZone:""},{sport:"basketball&labels=points-approved"},{text:""},{text:"x".repeat(501)}]) assert.throws(() => tools.activityDraft("example/club", {...input,...changed}));
+  const template = fs.readFileSync(path.join(__dirname,"../.github/ISSUE_TEMPLATE/activity-record.yml"),"utf8");
+  for (const id of ["activity-date","time-zone","sport","activity"]) assert(template.includes("id: " + id));
+});
+
+test("casual experience sharing does not require a scoring week", () => {
+  const template = fs.readFileSync(path.join(__dirname,"../.github/ISSUE_TEMPLATE/experience.yml"),"utf8");
+  const week = template.split("id: week-starting")[1].split("  - type:")[0];
+  assert.match(week, /required: false/);
+  assert.match(week, /周一/);
+  assert.match(template.split("id: context")[1].split("  - type:")[0], /required: true/);
+});
+
 test("invalid or injected repository, username, date and issue inputs are rejected", () => {
   for (const value of ["https://github.com/a/b", "a/b?x=1", "../b", "a/..", "a/b/extra", "a/b\n&token=x"]) assert.throws(() => tools.repository(value));
   for (const value of ["a author:someone", "-invalid", "someone/else", "a\nlabel:x"]) assert.throws(() => tools.handle(value));
@@ -430,4 +475,70 @@ test("empty or unavailable public reports show honest empty states while local t
       assert.equal(get("log-status").value,"meal");
     } finally {page.restore();}
   }
+});
+
+test("quick activity form defaults to the local date and timezone, invalidates edited drafts and leaves publishing manual", async () => {
+  const page=await mountedPage(undefined);
+  try {
+    const get=page.doc.getElementById;
+    assert.equal(get("activity-date").value,tools.localDate());
+    assert.equal(get("activity-zone").value,Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+    assert.equal(get("activity-sport").value,"walking");
+    get("activity-date").value="2026-10-21";
+    get("activity-zone").value="Asia/Shanghai";
+    get("activity-sport").value="basketball";
+    get("activity-text").value="今天打了篮球。";
+    await get("activity-form").fire("submit");
+    assert.equal(get("activity-result").hidden,false);
+    assert.equal(new URL(get("activity-link").href).searchParams.get("activity-date"),"2026-10-21");
+    assert.match(get("activity-output").value,/### What I did\n\n今天打了篮球。/);
+    assert.match(get("activity-message").textContent,/Sport.*篮球（basketball）/);
+    get("activity-text").value="修改后的真实记录。";
+    await get("activity-text").fire("input");
+    assert.equal(get("activity-result").hidden,true,"never leave an older publish link after editing");
+    await get("activity-today").fire("click");
+    assert.equal(get("activity-date").value,tools.localDate());
+    get("repository").value="other/club";
+    await get("repository").fire("change");
+    assert.equal(new URL(get("browse-community").href).pathname,"/other/club/issues");
+    assert.match(new URL(get("topic-experience").href).searchParams.get("q"),/Experience/);
+    await get("activity-form").fire("submit");
+    assert.equal(new URL(get("activity-link").href).pathname,"/other/club/issues/new");
+    get("activity-zone").value="not a timezone";
+    await get("activity-form").fire("submit");
+    assert.equal(get("activity-result").hidden,true);
+    assert.match(get("activity-message").textContent,/时区/);
+    assert.deepEqual(page.calls,["../reports/index.json"],"local drafting and browsing must not fetch or post member records");
+  } finally {page.restore();}
+});
+
+test("community aggregate view follows the selected report and leaves legacy or malformed counts unknown", async () => {
+  const activity={schema_version:1,timezone:"UTC",participants_count:2,posts_count:2,replies_count:1,responded_posts_count:1,activity_records:1,meal_records:0,experiences:1,conversations:0,weekly_plan_posts:0};
+  const page=await mountedPage({schema_version:2,weeks:[
+    {week_start:"2026-10-26",activity_updated_at:"2026-11-03T12:00:00Z",generated_at:"2026-11-01T12:00:00Z",community_activity:{...activity,private_note:"DO_NOT_RENDER"},leaderboard:[]},
+    {week_start:"2026-10-19",leaderboard:[]},
+    {week_start:"2026-10-12",community_activity:{...activity,participants_count:-1},leaderboard:[]},
+  ]});
+  try {
+    const get=page.doc.getElementById;
+    assert.equal(get("community-overview").hidden,false);
+    assert.equal(get("community-stats").children[0].children[0].textContent,"2");
+    assert.match(get("community-breakdown").textContent,/自由运动 1.*经验分享 1/);
+    assert.match(get("community-breakdown").textContent,/1 个新帖已得到其他成员回复/);
+    assert.match(get("community-week").textContent,/2026-10-26.*UTC/);
+    assert.match(get("community-week").textContent,/社区统计更新于.*2026\/11\/3/);
+    assert.match(get("report-snapshot").textContent,/2026\/11\/1/);
+    assert(!get("report-snapshot").textContent.includes("2026/11/3"));
+    assert(!get("community-breakdown").textContent.includes("DO_NOT_RENDER"));
+    assert.equal(get("ranking-table").hidden,true,"community posting never creates ranking rows");
+    for (const week of ["2026-10-19","2026-10-12"]) {
+      get("filter-week").value=week;
+      await get("filter-week").fire("change");
+      assert.equal(get("community-overview").hidden,true);
+      assert.equal(get("community-stats").children.length,0);
+    }
+    assert.equal(tools.communityActivity({...activity,timezone:"Asia/Shanghai"}),null);
+    assert.equal(tools.communityActivity({...activity,schema_version:2}),null);
+    assert.equal(tools.communityActivity({...activity,replies_count:"1"}),null);
+  } finally {page.restore();}
 });

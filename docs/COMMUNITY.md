@@ -78,3 +78,14 @@ These are fictional, unscored examples. Choose a language below to open its Issu
 | Research and Agents | [#18](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/18) | [#21](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/21) |
 
 <!-- club-published-issue-examples:end -->
+
+
+## Read real activity and welcome first posts
+
+The homepage and member helper show two separate measures: anonymous community activity and optional weekly-plan standings. Community activity counts recognized public forms and replies, including free workouts, meals, experiences, introductions and other community topics. Explicit fictional examples, bots, PRs and development requests are excluded. The classifier can recognize existing form headings before missing labels are repaired; this does not grant scoring eligibility or contribution approval.
+
+Community weeks use UTC, Monday through Sunday. New posts use their GitHub creation time, not a claimed workout date. Replies use their own creation time, including replies to older threads. Participants are distinct human authors posting or replying that week; self-replies count as activity, but a new post is considered answered only after another human replies by the snapshot cutoff. The answered-post count may therefore increase after the original week. Counts can be corrected after deletion, reclassification or removal of comments. An `activity_updated_at` timestamp distinguishes a historical activity refresh from the saved score timestamp. Old snapshots without community data display no fabricated zero counts.
+
+These aggregates do not enter points or named rankings and are independent of leaderboard opt-in. Reports export counts only, not member identities, titles, stories, health details or comment bodies. Open the original Issues to read and respond. All test fixtures must be synthetic; never commit downloaded member posts.
+
+For the first week, invite a few members to post a genuine record or question and aim to respond personally within 24 hours. Ask one specific follow-up about the author's experience rather than sending a generic automated welcome. Track new participants, answered posts and repeat participation separately from Stars. The shipped dashboard measures weekly activity and answered posts; it does not claim to measure visitor conversion or seven-day retention. Share links to selected original posts in the group only with appropriate author consent; no group messages or automatic replies are configured.

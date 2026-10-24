@@ -9,9 +9,15 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from club.community import community_category  # noqa: E402
 
 
-RELEVANT_LABELS = {"weekly-plan", "experience", "points-approved"}
+RELEVANT_LABELS = {"weekly-plan", "experience", "points-approved", "activity-record", "meal-record", "example"}
 
 
 def should_refresh(event_name: str, event: dict) -> bool:
@@ -25,14 +31,23 @@ def should_refresh(event_name: str, event: dict) -> bool:
         if isinstance(label, dict)
     }
     if event_name == "issue_comment":
-        # Only weekly-plan comment commands affect reports; a normal
-        # conversation/experience Issue reply does not.
-        return "weekly-plan" in labels
+        # Human conversation replies affect aggregate participation, but never
+        # confer points. Weekly-plan comments still refresh scored records.
+        return "weekly-plan" in labels or community_category(issue) is not None
     if event.get("action") == "deleted":
         # The removed Issue's previous labels may be unavailable.
         return True
     changed = event.get("label") or {}
-    return bool(RELEVANT_LABELS & labels) or changed.get("name") in RELEVANT_LABELS
+    if bool(RELEVANT_LABELS & labels) or changed.get("name") in RELEVANT_LABELS or community_category(issue):
+        return True
+    # An edit can remove the form title/headings that previously classified a
+    # genuine thread. Reconcile the earlier form too so old counts disappear.
+    previous = dict(issue)
+    changes = event.get("changes") or {}
+    for field in ("title", "body"):
+        if isinstance(changes.get(field), dict) and "from" in changes[field]:
+            previous[field] = changes[field]["from"]
+    return community_category(previous) is not None
 
 
 def main() -> None:

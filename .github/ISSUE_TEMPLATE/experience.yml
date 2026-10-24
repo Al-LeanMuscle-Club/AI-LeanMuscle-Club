@@ -7,6 +7,7 @@ body:
     attributes:
       value: |
         分享训练安排、饮食记录方法、找搭子或科研与 Agent 经验。所有内容公开。
+        普通经验分享不要求选择周次；申请每周贡献认可时再补充归属周一。
         发帖本身不加分；贡献分需要维护者审核、points-approved 标签及匹配当前正文的仓库审批记录，每人每周最多 1 分。
         随意交流也欢迎选择社区 Issue 表单，无需周计划且不计分；不要提交虚构经历作为真实活动。
         For casual conversation, use a community Issue form; no weekly plan is needed and these posts earn no points. Do not submit fictional experiences as real activity.
@@ -14,10 +15,10 @@ body:
     id: week-starting
     attributes:
       label: Week starting
-      description: 这条经验希望归属的周一，格式 YYYY-MM-DD。
+      description: 普通分享可以留空。只有申请每周贡献认可时，才填写希望归属的周一（YYYY-MM-DD）；不是今天的日期。
       placeholder: "2026-10-26"
     validations:
-      required: true
+      required: false
   - type: textarea
     id: context
     attributes:

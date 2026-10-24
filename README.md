@@ -21,7 +21,9 @@
 
 一句话或一张照片也欢迎。自由运动与饮食记录不要求先制定周计划，也不加入积分榜；发到这里的内容都是公开的。结构化周记录还会展示训练记录天数、饮食记录天数和部分完成情况，食物数量与身体指标不加分。
 
-[成员辅助页与周榜](tools/index.html) · [新人、训练、饮食、搭子、Agent 与排名示例](examples/README.md)。辅助页可在本地运行，或由维护者按照[中文 Pages 启用指南](docs/PAGES_QUICKSTART.zh-CN.md)部署；成功部署后访问 Actions 中提供的站点地址。直接在 GitHub 打开 HTML 文件只会显示源码。社区 Issue 表单合并到默认分支后即可使用。
+<a id="member-helper"></a>
+
+[看看大家最近在聊什么](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=is%3Aissue%20is%3Aopen%20-label%3Aexample%20-%22Fictional%20example%22%20-%E8%99%9A%E6%9E%84%20in%3Atitle%20sort%3Aupdated-desc) · [成员辅助页与快捷记录][member-helper] · [不会写时参考示例](examples/README.md)。成员辅助页首次部署前链接到启用说明；成功部署后会自动更新为在线入口。
 
 <p align="center">
   <a href="assets/club-poster.png"><img src="assets/club-poster.png" alt="AI 薄肌俱乐部：面向 AI 科研人员，一起兼顾科研与健康。练模型，也练身体。海报附微信群邀请二维码。" width="1000"></a>
@@ -53,7 +55,7 @@ S3 | Saturday | running | 轻松跑
 
 完成 S1 已确认的替代方案时，用 `/fallback S1 YYYY-MM-DD`；部分完成用 `/partial`，获得该次执行额度的一半；跳过用 `/skip`，不获得执行分。同一训练只计一次，使用最新有效状态。首次成功同步会确认本周计分训练，之后调整会单独展示，删掉未完成项目不能提高积分。每条评论只放一个命令。[完整操作与饮食记录说明 →](docs/MEMBER_GUIDE.zh-CN.md)
 
-**快捷工具：** [查找我的计划／生成打卡评论](tools/index.html)（[本地打开方式](docs/MEMBER_GUIDE.md#browser-helper)）· [沿用上周计划](docs/MEMBER_GUIDE.zh-CN.md) · [自愿公开的报告数据](reports/index.json)
+**快捷工具：** [查找我的计划／生成打卡评论][member-helper]（[本地打开方式](docs/MEMBER_GUIDE.md#browser-helper)）· [沿用上周计划](docs/MEMBER_GUIDE.zh-CN.md) · [自愿公开的报告数据](reports/index.json)
 
 ## 按运动、目标和科研节奏找到同行
 
@@ -66,6 +68,11 @@ S3 | Saturday | running | 轻松跑
 一个人可以在同一周练力量、打篮球、跑步。运动项目与目标分开分类，不要求选择唯一运动类型。动作、组次、重量、里程、配速、精力和疲劳都可以选填，不影响基本打卡，也不增加积分。[各项目模板 →](examples/README.md)
 
 ## 每周社区概况
+
+[查看真实成员的新帖与交流](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=is%3Aissue%20is%3Aopen%20-label%3Aexample%20-%22Fictional%20example%22%20-%E8%99%9A%E6%9E%84%20in%3Atitle%20sort%3Aupdated-desc)。社区活跃统计包括自由记录和交流；周计划参与人数单独展示。
+
+<details>
+<summary>展开查看虚构示例（不计入真实参与）</summary>
 
 <!-- DEMO:START -->
 
@@ -88,11 +95,13 @@ S3 | Saturday | running | 轻松跑
 
 <!-- DEMO:END -->
 
+</details>
+
 <!-- CLUB:START -->
 
 ### 周次：2026-10-19 起
 
-参与人数：**0** · 恢复/暂停人数：**0**
+周计划参与人数：**0** · 恢复/暂停人数：**0**
 
 公开参与人数：**0** · 已记录完成：**0/0** · 周复盘：**0**
 
@@ -100,13 +109,13 @@ S3 | Saturday | running | 轻松跑
 
 计分规则：v2。整次完成或按预设替代方案完成计 1 次，部分完成计 0.5 次；已确认计划固定计分分母。
 
-[完整周报](reports/2026-10-19.md) · [公开数据](reports/2026-10-19.json) · [查找计划与打卡助手](tools/index.html)
+[完整周报](reports/2026-10-19.md) · [公开数据](reports/2026-10-19.json) · [查找计划与打卡助手][member-helper]
 
 更新时间：2026-10-23T16:05:02.691919Z
 
 ### 周次：2026-10-12 起
 
-参与人数：**0** · 恢复/暂停人数：**0**
+周计划参与人数：**0** · 恢复/暂停人数：**0**
 
 公开参与人数：**0** · 已记录完成：**0/0** · 周复盘：**0**
 
@@ -114,7 +123,7 @@ S3 | Saturday | running | 轻松跑
 
 计分规则：v2。整次完成或按预设替代方案完成计 1 次，部分完成计 0.5 次；已确认计划固定计分分母。
 
-[完整周报](reports/2026-10-12.md) · [公开数据](reports/2026-10-12.json) · [查找计划与打卡助手](tools/index.html)
+[完整周报](reports/2026-10-12.md) · [公开数据](reports/2026-10-12.json) · [查找计划与打卡助手][member-helper]
 
 更新时间：2026-10-23T16:05:02.691919Z
 
@@ -149,3 +158,5 @@ S3 | Saturday | running | 轻松跑
 维护者完成设置后，报告流程会在相关 Issue／评论变化后，以及**每天北京时间 09:15**更新当前和上一报告周，GitHub 的定时任务可能延迟。报告周按北京时间选择，每次打卡日期按成员所填时区解释，历史报告允许纠正。仓库权限与计分标签需要[手工设置（英文）](docs/SETUP.md)，社区 Issue 表单需要合并到默认分支后使用。当前没有连接外部 AI 模型或微信群采集器。
 
 [中文参与指南](docs/MEMBER_GUIDE.zh-CN.md) · [贡献指南（英文）](CONTRIBUTING.md) · [行为准则（英文）](CODE_OF_CONDUCT.md) · [维护者设置（英文）](docs/SETUP.md)
+
+[member-helper]: docs/PAGES_QUICKSTART.zh-CN.md

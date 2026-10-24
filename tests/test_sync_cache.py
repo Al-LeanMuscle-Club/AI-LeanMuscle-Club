@@ -191,6 +191,69 @@ class CacheTests(unittest.TestCase):
                 self.assertIn("labels", self.calls[0][1])
 
 
+class CommunityReaderTests(unittest.TestCase):
+    def community_post(self, number=10, created="2026-09-01T12:00:00Z"):
+        return {"number": number, "labels": [], "title": "[Activity] A real walk",
+                "user": {"id": 10, "login": "member", "type": "User"},
+                "body": "### Activity date\n\n2026-09-01\n### Time zone\n\nUTC\n### Sport\n\nwalking\n### What I did\n\nPRIVATE_ACTIVITY",
+                "created_at": created, "updated_at": "2026-10-28T10:00:00Z", "comments": 1}
+
+    def test_full_read_includes_unlabelled_threads_and_replies_to_older_posts(self):
+        post = self.community_post()
+        example = {**post, "number": 11, "title": "[Fictional example] [Activity] Example"}
+        pr = {**post, "number": 12, "pull_request": {}}
+        calls = []
+        def pages(path, params=None):
+            calls.append((path, params))
+            if path == "issues":
+                return [post, example, pr]
+            if path == "issues/10/comments":
+                return [comment("PRIVATE_REPLY")]
+            raise AssertionError(path)
+        reader = GitHubReader("example/club", "token")
+        with patch.object(reader, "_pages", pages):
+            records = reader.records([WEEK], include_community=True)
+        self.assertEqual([record["number"] for record in records], [10])
+        self.assertEqual(records[0]["comments_data"][0]["body"], "PRIVATE_REPLY")
+        self.assertEqual(calls[0], ("issues", {"state": "all"}))
+
+    def test_existing_scoring_cache_is_rebuilt_then_comments_are_incremental(self):
+        with TemporaryDirectory() as directory:
+            cache = Path(directory) / "issues.json"
+            cache.write_text(json.dumps({
+                "schema_version": 1, "repository": "example/club", "issues": {}, "comments": {},
+                "last_sync": NOW.isoformat(), "full_sync": NOW.isoformat(),
+            }))
+            reader = GitHubReader("example/club", "token")
+            post = self.community_post()
+            updates = []
+            comment_updates = []
+            thread = [comment()]
+            calls = []
+            def pages(path, params=None):
+                calls.append((path, params))
+                if path == "issues":
+                    return updates if params.get("since") else [post]
+                if path == "issues/comments":
+                    return comment_updates
+                if path == "issues/10/comments":
+                    return thread
+                raise AssertionError(path)
+            with patch.object(reader, "_pages", pages), patch("scripts.github_api._now", return_value=NOW):
+                first = reader.records([WEEK], cache_path=cache, include_community=True)
+            self.assertEqual(calls[0], ("issues", {"state": "all"}))
+            self.assertTrue(json.loads(cache.read_text())["include_community"])
+            calls.clear()
+            with patch.object(reader, "_pages", pages), patch("scripts.github_api._now", return_value=NOW + timedelta(hours=1)):
+                self.assertEqual(reader.records([WEEK], cache_path=cache, include_community=True), first)
+            self.assertEqual([path for path, _ in calls], ["issues", "issues/comments"])
+            # A deletion or reclassification must remove both metadata and replies.
+            updates = [{**post, "title": "Technical request", "labels": []}]
+            with patch.object(reader, "_pages", pages), patch("scripts.github_api._now", return_value=NOW + timedelta(hours=2)):
+                self.assertEqual(reader.records([WEEK], cache_path=cache, include_community=True), [])
+            self.assertEqual(json.loads(cache.read_text())["comments"], {})
+
+
 class SingleIssueTests(unittest.TestCase):
     def test_positive_issue_number_and_optional_full_thread(self):
         reader = GitHubReader("example/club", "token")

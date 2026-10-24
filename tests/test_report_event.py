@@ -14,8 +14,34 @@ def issue(labels, action="edited", changed=None):
 class ReportEventTests(unittest.TestCase):
     def test_unrelated_community_events_are_ignored(self):
         self.assertFalse(should_refresh("issues", issue([])))
-        self.assertFalse(should_refresh("issue_comment", issue(["meal-record"])))
-        self.assertFalse(should_refresh("issue_comment", issue(["experience"])))
+        self.assertFalse(should_refresh("issue_comment", issue(["bug"])))
+
+    def test_genuine_community_posts_and_replies_refresh_without_scoring(self):
+        for category in ("activity-record", "meal-record", "experience"):
+            event = issue([category])
+            event["issue"]["user"] = {"login": "member", "type": "User"}
+            self.assertTrue(should_refresh("issues", event))
+            self.assertTrue(should_refresh("issue_comment", event))
+        form = issue([])
+        form["issue"].update(user={"login": "member"}, title="[Activity] Walk", body=(
+            "### Activity date\n\n2026-10-26\n### Time zone\n\nUTC\n"
+            "### Sport\n\nwalking\n### What I did\n\nA walk."
+        ))
+        self.assertTrue(should_refresh("issues", form))
+        self.assertTrue(should_refresh("issue_comment", form))
+        form["changes"] = {"title": {"from": form["issue"]["title"]}}
+        form["issue"]["title"] = "An unrelated topic"
+        self.assertTrue(should_refresh("issues", form))
+        form.pop("changes")
+        self.assertFalse(should_refresh("issues", form))
+
+    def test_examples_and_bot_replies_do_not_create_genuine_conversations(self):
+        event = issue(["example", "activity-record"])
+        event["issue"]["user"] = {"login": "member"}
+        self.assertFalse(should_refresh("issue_comment", event))
+        # Changing the example flag must still remove earlier real counts.
+        self.assertTrue(should_refresh("issues", event))
+        self.assertTrue(should_refresh("issues", issue([], action="unlabeled", changed="example")))
 
     def test_scored_plans_and_contributions_run(self):
         self.assertTrue(should_refresh("issues", issue(["weekly-plan"])))

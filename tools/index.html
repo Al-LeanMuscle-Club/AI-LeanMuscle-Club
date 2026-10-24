@@ -18,7 +18,7 @@
     <nav class="entry-grid" aria-label="参与入口">
       <a id="start-workout" class="entry" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml" target="_blank" rel="noopener noreferrer"><strong>运动打卡 <span aria-hidden="true">↗</span></strong><span>随手记一次运动，无须周计划</span></a>
       <a id="start-meal" class="entry" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml" target="_blank" rel="noopener noreferrer"><strong>记录饮食 <span aria-hidden="true">↗</span></strong><span>直接记录一餐，无须周计划</span></a>
-      <a class="entry" href="#ranking-heading"><strong>看看大家 <span aria-hidden="true">↓</span></strong><span>每周参与榜与公开记录</span></a>
+      <a id="browse-community" class="entry" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=is%3Aissue%20-label%3Aexample%20in%3Atitle%20-%22Fictional%20example%22%20-虚构%20sort%3Aupdated-desc" target="_blank" rel="noopener noreferrer"><strong>看看大家 <span aria-hidden="true">↗</span></strong><span>阅读真实新帖，给同行一个回应</span></a>
       <a class="entry" href="#community-heading"><strong>分享交流 <span aria-hidden="true">↓</span></strong><span>训练、饮食、搭子与 Agent</span></a>
     </nav>
     <p class="notice">这里帮你准备文字和链接。请自行到 GitHub 检查并发布；公开仓库中的 Issue、评论和照片都可被任何人看到。</p>
@@ -26,13 +26,26 @@
 
   <main class="wrap">
     <section class="welcome" aria-labelledby="welcome-heading">
-      <div><p class="eyebrow">第一次来？</p><h2 id="welcome-heading">随手记录，也可以认真规划。</h2><p>点击上方运动或饮食入口即可自由记录，无须先建周计划。想按计划练习、复盘或自愿参加周榜，可以另外创建周计划。自由记录不会自动进入周榜，也不计入下方榜单的饮食日统计。</p></div>
+      <div><p class="eyebrow">第一次来？</p><h2 id="welcome-heading">随手记录，也可以认真规划。</h2><p>下方可以用一句话准备运动记录，上方入口也可直接填写 GitHub 表单，无须先建周计划。想按计划练习、复盘或自愿参加周榜，可以另外创建周计划。自由记录不会自动进入周榜，也不计入下方榜单的饮食日统计。</p></div>
       <div class="welcome-links"><a class="button-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml" target="_blank" rel="noopener noreferrer">可选：创建本周计划 ↗</a><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples">先看完整参与示例</a></div>
     </section>
 
-    <details class="settings"><summary>仓库设置</summary><label for="repository">GitHub 仓库</label><input id="repository" value="Al-LeanMuscle-Club/AI-LeanMuscle-Club" autocomplete="off" spellcheck="false"><p class="hint">此设置只用于找计划和打开评论链接。下方榜单读取当前部署站点的公开报告。</p></details>
+    <details class="settings"><summary>仓库设置</summary><label for="repository">GitHub 仓库</label><input id="repository" value="Al-LeanMuscle-Club/AI-LeanMuscle-Club" autocomplete="off" spellcheck="false"><p class="hint">此设置用于草稿、搜索和社区链接。下方榜单读取当前部署站点的公开报告。</p></details>
 
     <div class="tool-grid">
+      <section class="card wide quick-record" aria-labelledby="activity-heading">
+        <span class="step">随手记一次</span><h2 id="activity-heading">今天做了什么？一句话就够。</h2>
+        <p>日期和时区已按当前设备填写，可以修改后补记。自由记录无须周计划，不参加积分排名。</p>
+        <form id="activity-form">
+          <div class="field-pair"><div><label for="activity-date">实际活动日期</label><input id="activity-date" type="date" required><button id="activity-today" type="button" class="secondary date-shortcut">今天</button></div><div><label for="activity-sport">运动项目</label><select id="activity-sport"><option value="walking">步行</option><option value="strength">力量</option><option value="basketball">篮球</option><option value="running">跑步</option><option value="swimming">游泳</option><option value="cycling">骑行</option><option value="mobility">活动恢复</option><option value="other">其他</option></select></div></div>
+          <label for="activity-text">我的记录</label><textarea id="activity-text" rows="3" maxlength="500" placeholder="写下自己实际做了什么，或想和大家聊的感受。" required></textarea>
+          <details><summary>查看或修改时区</summary><label for="activity-zone">活动发生地的时区</label><input id="activity-zone" placeholder="例如 Asia/Shanghai" required><p class="hint">旅行或补记时，请确认这里是活动发生地的时区。</p></details>
+          <button type="submit">准备运动记录</button>
+        </form>
+        <p id="activity-message" class="message" role="status"></p>
+        <div id="activity-result" hidden><div class="actions"><a id="activity-link" class="button-link" target="_blank" rel="noopener noreferrer">到 GitHub 检查并发布 ↗</a></div><details><summary>查看或复制草稿</summary><label for="activity-output">我的运动记录草稿</label><textarea id="activity-output" rows="8" readonly></textarea><button id="copy-activity" class="secondary" type="button">复制草稿</button></details><p class="hint">照片和更多内容可在 GitHub 补充。记录将公开；准备草稿不会发布帖子。</p></div>
+      </section>
+
       <section class="card" aria-labelledby="find-heading">
         <span class="step">01 / 找计划</span>
         <h2 id="find-heading">找到我的本周计划</h2>
@@ -72,6 +85,12 @@
         </div>
       </section>
 
+      <section id="community-overview" class="card wide" aria-labelledby="community-overview-heading" hidden>
+        <div class="section-top"><div><span class="step">社区近况</span><h2 id="community-overview-heading">发过记录，也参与过交流。</h2></div><a id="browse-community-summary" class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer">阅读与回应真实帖子 ↗</a></div>
+        <p id="community-week" class="hint"></p><div id="community-stats" class="stat-grid" aria-live="polite"></div><p id="community-breakdown" class="hint"></p>
+        <p class="hint">随下方所选报告周变化。统计社区帖和人工回复，不包含虚构示例、机器人或开发任务；这里的参与人数与周计划参榜人数不同，不增加积分。</p>
+      </section>
+
       <section class="card wide" aria-labelledby="ranking-heading">
         <div class="section-top"><div><span class="step">03 / 每周参与榜</span><h2 id="ranking-heading">看看大家这周的坚持</h2></div><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/blob/main/docs/SCORING.md">计分与更正规则 ↗</a></div>
         <p>这是按个人计划完成情况计算的<strong>参与分</strong>，每周重置，上限 10 分。相同总分并列；不同运动量、体能和身体变化不作比较。</p>
@@ -109,8 +128,8 @@
 
       <section class="card wide" aria-labelledby="community-heading">
         <span class="step">05 / 交流与搭子</span><h2 id="community-heading">分享一个别人也能试试的办法</h2>
-        <div class="community-grid"><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>新人报到与训练记录</strong><span>随手记一次运动，或用小计划记录中断与重新开始。</span></a><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>餐食与忙周安排</strong><span>食堂搭配、出差吃饭、快手菜与真实感受。</span></a><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>找运动搭子</strong><span>写清地点、时间、项目和对参与者的期待。</span></a><a href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples"><strong>科研与 Agent 工作流</strong><span>分享实际用过的方法、效果和适用条件。</span></a></div>
-        <div class="actions"><a class="button-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose" target="_blank" rel="noopener noreferrer">前往 Issues 发起交流 ↗</a><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples">先看交流示例</a></div><p class="hint">社区交流统一使用 Issue，无需周计划且不计分。示例内容为虚构演示，不代表真实成员记录；可以参考格式，再填写自己的实际内容。</p>
+        <div class="community-grid"><a id="topic-activity" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer"><strong>自由运动记录</strong><span>看看同行最近做了什么，也分享一次小小的尝试。</span></a><a id="topic-experience" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer"><strong>真实经验分享</strong><span>具体经历、遇到的困难，以及值得继续聊的问题。</span></a><a id="topic-meal" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer"><strong>餐食与忙周安排</strong><span>饮食记录、备餐灵感和真实感受。</span></a><a id="topic-buddies" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer"><strong>找运动搭子</strong><span>找到邀请，交流大致时间和参与方式。</span></a><a id="topic-research" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer"><strong>科研与 Agent 工作流</strong><span>实际用过的方法、效果和适用条件。</span></a><a id="topic-hello" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues" target="_blank" rel="noopener noreferrer"><strong>新人报到</strong><span>认识新来的同行，留下第一句欢迎。</span></a></div>
+        <div class="actions"><a class="button-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose" target="_blank" rel="noopener noreferrer">前往 Issues 发起交流 ↗</a><a class="action-link" href="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/tree/main/examples">不知道怎么写？参考示例</a></div><p class="hint">社区交流统一使用 Issue，无需周计划且不计分。示例内容为虚构演示，不代表真实成员记录；可以参考格式，再填写自己的实际内容。</p>
       </section>
 
       <section class="card wide" aria-labelledby="carry-heading">

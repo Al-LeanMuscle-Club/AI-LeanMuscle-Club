@@ -23,6 +23,18 @@ Enable **Settings → General → Features → Issues**. Create these labels bef
 | `points-approved` | `FBCA04` | A maintainer's approval for an eligible contribution |
 | `activity-record` | `5319E7` | Free workout records, outside the points board |
 | `meal-record` | `D4C5F9` | Free food records, outside the points board |
+| `example` | `BFDADC` | Explicit fictional demonstrations, excluded from community participation |
+
+The easiest repeatable setup is **Actions → Set up community labels → Run workflow** on the default branch. Leave `apply` off for a preview, inspect the label names and Issue numbers in the log, then run with `apply` enabled. The optional `backfill` recognizes existing record forms and explicitly marked fictional examples. It only adds missing labels, preserves existing label colors/descriptions and unrelated Issue labels, and never assigns `points-approved`, changes member text, or creates comments. Examples receive only the `example` classification. A title prefix alone is insufficient to classify a normal record; the expected form headings must also be present.
+
+The same preview is available locally with a securely configured `GH_TOKEN` (read access for previews, Issues write for applying):
+
+```bash
+python scripts/setup_community.py --backfill
+python scripts/setup_community.py --backfill --apply
+```
+
+After applying labels, manually run **Update weekly participation reports** once; changes made with the workflow token do not start other Issue workflows. New form submissions will use the created labels. Use `-label:example` when browsing real community posts. Backfill does not remove an existing label, including an existing scoring label on an example; inspect any such older mistakes separately before refreshing scores.
 
 You can use the Issues label interface or, with GitHub CLI authenticated, run:
 
@@ -32,6 +44,7 @@ gh label create experience --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 
 gh label create points-approved --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color FBCA04 --description "Maintainer-approved weekly contribution"
 gh label create activity-record --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 5319E7 --description "Free workout records"
 gh label create meal-record --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color D4C5F9 --description "Free food records"
+gh label create example --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color BFDADC --description "Fictional demonstration, excluded from community participation"
 ```
 
 Skip labels that already exist. Only trusted maintainers should decide which experience Issues receive `points-approved`. The label is necessary but no longer sufficient for points: an approval must also bind the exact content revision, author, and week in the reviewed ledger. Members do not need repository write access to open Issues and comment on public Issues.

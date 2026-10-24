@@ -349,14 +349,14 @@ class RecordCountTests(unittest.TestCase):
                 reader.return_value.records.return_value = [issue]
                 self.assertEqual(sync_main(args + ["--dry-run"]), 0)
                 reader.return_value.records.assert_called_once_with(
-                    [WEEK], cache_path=None, refresh=False, deleted_issue=None
+                    [WEEK], cache_path=None, refresh=False, deleted_issue=None, include_community=True
                 )
                 self.assertFalse((root / "data" / "ranking-state.json").exists())
                 self.assertFalse((root / ".club-cache").exists())
                 reader.return_value.records.reset_mock()
                 self.assertEqual(sync_main(args + ["--dry-run", "--cache", str(root / "custom-cache.json")]), 0)
                 reader.return_value.records.assert_called_once_with(
-                    [WEEK], cache_path=None, refresh=False, deleted_issue=None
+                    [WEEK], cache_path=None, refresh=False, deleted_issue=None, include_community=True
                 )
                 self.assertEqual(sync_main(args), 0)
             state = load_state(root / "data" / "ranking-state.json")
