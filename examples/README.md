@@ -29,11 +29,11 @@ Community conversations use Issue forms and title prefixes; no additional catego
 
 ## 虚拟用户训练记录与演示榜 / Fictional training-record demo
 
-首页的虚拟榜单展示 6 位虚拟用户的参与积分，另有 1 位恢复成员的记录。演示周固定为 **2026-10-12 至 2026-10-18**，所有人物和活动均为虚构。
+独立的虚拟榜单展示 6 位虚拟用户的参与积分，另有 1 位恢复成员的记录。演示周固定为 **2026-10-12 至 2026-10-18**，所有人物和活动均为虚构。
 
-[完整训练记录与复盘](demo-training-records.md) · [虚拟输入数据](demo-training-records.json) · [演示榜单数据](demo-leaderboard.json)
+[查看演示榜](demo-board.md) · [English demo board](demo-board.en.md) · [完整训练记录与复盘](demo-training-records.md) · [虚拟输入数据](demo-training-records.json) · [演示榜单数据](demo-leaderboard.json)
 
-演示文件保存在 `examples/`，README 演示表使用独立的 `DEMO` 区块；真实社区概况由原有 `CLUB` 区块自动更新。修改虚拟记录后，在仓库目录重新生成两种语言的榜单：
+演示文件均保存在 `examples/`；生成器不会读取或改写社区首页。首页的 `CLUB` 区块只显示真实社区概况。修改虚拟记录后，在仓库目录重新生成两种语言的榜单：
 
 ```bash
 python scripts/render_demo_board.py

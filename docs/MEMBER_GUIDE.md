@@ -2,18 +2,24 @@
 
 **English** | [简体中文](MEMBER_GUIDE.zh-CN.md)
 
-Start with a free activity record, a meal record, or a conversation. A weekly plan is optional; use one weekly Issue for planned check-ins and reflection if you choose it. Daily pull requests, body photos, exercise measurements, and leaderboard participation are never required.
+Start by replying to a member's story or sharing a short note of your own. No plan, commands, or daily check-in commitment is needed.
 
-All examples below are fictional templates, not prescribed training plans or actual member activity. Choose your own activities, schedule, and amount of detail.
+[See the community](../README.en.md#a-conversation-to-join) · [Join the conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml) · [Optional advanced features](ADVANCED.md)
+
+The plan rows and command examples in this guide are fictional templates, not prescribed training plans or actual member activity. Choose your own activities, schedule, and amount of detail.
 
 ## Choose how to take part
 
+- **Say something**: [reply to the existing member story #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35#new_comment_field) or [start your own topic](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml). A thought, question, or note from your day is enough; no special format is needed.
+- **Find a buddy**: [write an invitation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml) with the activity and roughly when you are available.
 - [Activity record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml): record what you did without a plan or scoring commands; these Issues do not enter standings.
 - [Meal record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml): record food without a plan, calories, or photographs; these Issues do not enter standings or the weekly-plan meal-day summary.
-- [Community Issues](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose): introduce yourself, ask questions, share, find a partner, or propose a notice using the matching topic form.
+- [More topic forms](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose): use a newcomer, experience-sharing, or other topic form when prompts would help.
 - **Weekly training plan**: choose the structured plan below if you want to follow your own commitments and optionally join the weekly participation board.
 
 See [six short sets of fictional examples](../examples/README.en.md). All Issues and comments are public whichever route you choose.
+
+The rest of this guide is a reference for optional weekly plans and tools. You do not need these rules to join a conversation.
 
 ## 1. Make a plan that fits this research week
 
@@ -125,7 +131,9 @@ To step away from scoring, choose `Recovery` or comment `/pause`. A pause stays 
 
 ## Browser helper
 
-The [member helper](../tools/index.html) prepares search links, check-in text, and reusable plan drafts without asking for credentials or submitting posts. The GitHub file viewer shows the HTML source and does not run the page. Download the repository and open `tools/index.html` locally. If your browser restricts local-file data loading, run this from the repository root:
+The [member helper entry](../README.en.md#member-helper) leads to conversations, free records, and optional plan tools; before its first deployment, the entry opens setup instructions. The page starts with community conversations. Expand its optional weekly-plan tools to prepare search links, check-in text, and reusable plan drafts. It never asks for credentials or submits a post for you.
+
+To run it locally, download the repository and open `tools/index.html`; GitHub's file viewer only shows the source. If your browser restricts local-file data loading, run this from the repository root:
 
 ```bash
 python3 -m http.server 8000
@@ -137,7 +145,7 @@ The quick activity form prepares a free-record draft from a short account of wha
 
 **See the community** and topic links search real Issues, including older posts without labels, and exclude example labels and explicit fictional title markers. Example references remain separate.
 
-When available in a report, the community overview shows people who posted or replied, new posts, and human replies for the selected UTC publication week. These counts include free records, experiences, conversations, and weekly-plan threads; examples, bots, and development tasks are excluded. They do not award points or change named-leaderboard consent. Missing historical aggregates remain unknown rather than being shown as zero.
+When available in a report, the community overview shows people who posted or replied, new posts, and human replies for the report's UTC publication week. These counts include free records, experiences, conversations, and weekly-plan threads; examples, bots, and development tasks are excluded. They do not award points or change named-leaderboard consent. Missing historical aggregates remain unknown rather than being shown as zero.
 
 In **My public records**, enter your full GitHub username to view the loaded public weekly-plan summaries. Below those summaries, **Review my free records** prepares separate links to your `activity-record` and `meal-record` Issues, including open and closed records, in the selected repository. These search links work even without a weekly plan or published reports. Open them on GitHub to read your records; free records do not add points or enter the weekly-plan day counts, and the helper does not download them or ask for a token.
 

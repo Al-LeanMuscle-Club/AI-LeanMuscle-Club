@@ -45,6 +45,26 @@ class FakeClient:
 
 
 class CommunityClassificationTests(unittest.TestCase):
+    def test_one_sentence_chat_needs_no_plan_or_scoring_labels(self):
+        from datetime import datetime, timezone
+        from scripts.community_activity import build_community_activity
+        from club.scoring import build_week
+
+        issue = {"number": 90, "title": "[Chat] Synthetic conversation",
+                 "body": "### 我想说的话\n\n这周实验忙，想听听大家怎样安排运动。",
+                 "user": {"login": "synthetic-member", "type": "User"}, "labels": [],
+                 "created_at": "2026-10-27T09:00:00Z", "comments_data": []}
+        cutoff = datetime(2026, 11, 2, tzinfo=timezone.utc)
+        self.assertEqual(community_category(issue), "community-chat")
+        self.assertEqual(inferred_labels(issue), set())
+        activity = build_community_activity([issue], "2026-10-26", cutoff)
+        self.assertEqual(activity["participants_count"], 1)
+        self.assertEqual(activity["conversations"], 1)
+        self.assertEqual(build_week([issue], "2026-10-26", cutoff)["participants_count"], 0)
+        issue["title"] = "[Chat] [虚构演示｜交流] Synthetic example"
+        self.assertIsNone(community_category(issue))
+        self.assertEqual(inferred_labels(issue), {"example"})
+
     def test_records_need_both_prefix_and_form_fields(self):
         for category in ("weekly-plan", "activity-record", "meal-record", "experience"):
             with self.subTest(category=category):
@@ -86,6 +106,7 @@ class CommunityClassificationTests(unittest.TestCase):
 
     def test_all_conversation_forms_are_recognized_without_labels(self):
         forms = {
+            "community-chat": ("[Chat]", ["我想说的话"]),
             "beginners": ("[Hello]", ["A short introduction", "What I would like to try", "How members can help"]),
             "training-and-recovery": ("[Training]", ["Question or experience", "Context and what I tried", "Feedback I would find useful"]),
             "nutrition": ("[Food]", ["Meal or question", "Optional food context", "Optional estimate and source"]),

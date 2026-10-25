@@ -2,18 +2,24 @@
 
 [English](MEMBER_GUIDE.md) | **简体中文**
 
-可以先随手记一次运动、一顿饭，或者参与交流。周计划可选；需要计划打卡和复盘时，每人每周用一个 Issue。无需每天提 PR，也不要求身材照片、详细运动数据或参加排行榜。
+第一次来，可以先读一篇分享并回复，或用一句话发起交流。无需制定计划、学习命令或承诺每天打卡。
 
-以下示例均为假想模板，不代表真实成员的活动，也不是规定训练计划。请按自己的情况选择运动、节奏和记录详略。
+[看看大家](../README.md#正在聊什么) · [我也参与](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml) · [可选进阶功能](ADVANCED.zh-CN.md)
+
+本指南中的计划行和命令示例是假想模板，不代表真实成员的活动，也不是规定训练计划。请按自己的情况选择运动、节奏和记录详略。
 
 ## 选择适合自己的参与方式
 
+- **先聊一句**：[回复现有的成员分享 #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35#new_comment_field)，或者[发起自己的话题](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)。写下感受、问题或今天的小事即可，没有固定格式。
+- **找个人一起**：[发出搭子邀请](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml)，写清想做什么和大致时间。
 - [自由运动记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml)：不需要周计划或命令，写下今天做了什么；此类 Issue 不参加排名。
 - [饮食记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml)：不要求周计划、热量或照片；独立 Issue 不参加排名，也不自动进入周计划饮食天数汇总。
-- [社区 Issues](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose)：新人报到、提问、分享、找搭子和活动公告，选择对应话题表单即可。
+- [更多话题表单](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose)：需要提示时，可以按新人报到、经验分享或其他话题选择表单。
 - **Weekly training plan**：如果想按计划记录，并可选参加每周参与积分榜，使用下面的周计划流程。
 
 [六类虚构示例](../examples/README.md)可以参考格式。无论选择哪种方式，原 Issue 和讨论都是公开的。
+
+以下是可选周计划与工具的详细说明，随时回来查阅即可。一般交流无需阅读这些规则。
 
 ## 1. 按本周科研安排制定计划
 
@@ -125,7 +131,9 @@ S3 | Saturday | running | 自己选择的路线
 
 ## 浏览器辅助页
 
-[成员辅助页](../tools/index.html) 可以准备搜索链接、打卡文字和可复用的计划草稿，不要求凭据，也不会替你发帖。在 GitHub 文件浏览器中看到的是 HTML 源码，页面不会运行。下载仓库后，在本地打开 `tools/index.html`。如果浏览器限制本地文件读取数据，可以在仓库根目录运行：
+[成员辅助页入口](../README.md#member-helper)提供交流、自由记录和可选周计划工具。首次部署前，入口会指向启用说明。页面默认展示社区交流；展开“计划、打卡与周榜”后，可以准备搜索链接、打卡文字和可复用的计划草稿。页面不要求凭据，也不会替你发帖。
+
+需要本地运行时，可以下载仓库并打开 `tools/index.html`；GitHub 文件浏览器只显示源码。若浏览器限制本地文件读取数据，可以在仓库根目录运行：
 
 ```bash
 python3 -m http.server 8000
@@ -137,7 +145,7 @@ python3 -m http.server 8000
 
 “看看大家”和各话题入口打开真实 Issue 搜索，包括尚未补标签的帖子，排除标记为示例或标题注明虚构的演示。示例另外保留为写作参考。
 
-报告包含社区近况时，辅助页会展示所选周发帖或回复人数、新帖子和人工回复数，按 UTC 发布时间统计，不按运动发生日期统计。人数包含自由记录、经验分享、其他交流与周计划的发帖者和回复者；示例、机器人和开发任务不计入。这些是社区参与统计，不加积分，不改变具名周榜的公开选择。旧报告没有此统计时不会补成 0。
+报告包含社区近况时，辅助页会展示报告周发帖或回复人数、新帖子和人工回复数，按 UTC 发布时间统计，不按运动发生日期统计。人数包含自由记录、经验分享、其他交流与周计划的发帖者和回复者；示例、机器人和开发任务不计入。这些是社区参与统计，不加积分，不改变具名周榜的公开选择。旧报告没有此统计时不会补成 0。
 
 在“我的公开记录”输入完整 GitHub 用户名，可以查看已加载的公开周计划汇总。下方“回顾我的自由记录”会按所选仓库、作者和 `activity-record`／`meal-record` 标签生成搜索链接，包含打开和已关闭的 Issue。没有周计划或已发布周报也可以使用。点击后到 GitHub 查看；自由记录不加分，也不并入周计划的天数统计，辅助页不会下载这些记录或要求 token。
 

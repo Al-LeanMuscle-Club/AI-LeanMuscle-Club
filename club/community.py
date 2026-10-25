@@ -11,6 +11,7 @@ import re
 
 RECORD_LABELS = frozenset({"weekly-plan", "activity-record", "meal-record", "experience"})
 _FORMS = {
+    "community-chat": ("[Chat]", {"我想说的话"}),
     "weekly-plan": ("[Plan]", {"Week starting", "Time zone", "Participation mode", "Public leaderboard", "Planned sessions"}),
     "activity-record": ("[Activity]", {"Activity date", "Time zone", "Sport", "What I did"}),
     "meal-record": ("[Meal]", {"Meal date", "Time zone", "Food and context"}),
@@ -23,7 +24,7 @@ _FORMS = {
     "announcements": ("[Club]", {"Announcement", "What members need to do"}),
 }
 _EXAMPLE_PREFIX = re.compile(
-    r"^\s*(?:\[(?:Plan|Activity|Meal|Experience|Hello|Training|Food|Buddies|Research / Agent|Club)\]\s*)?"
+    r"^\s*(?:\[(?:Plan|Activity|Meal|Experience|Hello|Training|Food|Buddies|Research / Agent|Club|Chat)\]\s*)?"
     r"(?:\[Fictional example(?:\s*\||\])|[\[【〖](?:虚构示例|虚构演示)(?:[｜|\]】〗]))",
     re.IGNORECASE,
 )

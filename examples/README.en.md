@@ -25,11 +25,11 @@ Templates do not create live posts or fake members. A published demonstration mu
 
 ## Fictional training-record demo
 
-The README demo shows participation points for 6 fictional users, plus a separate recovery record. Its fixed demonstration week is **October 12–18, 2026**. All people and activities are fictional.
+The standalone demo board shows participation points for 6 fictional users, plus a separate recovery record. Its fixed demonstration week is **October 12–18, 2026**. All people and activities are fictional.
 
-[Full training records and reflections](demo-training-records.md) · [Synthetic input](demo-training-records.json) · [Demo standings data](demo-leaderboard.json)
+[View the demo board](demo-board.en.md) · [中文演示榜](demo-board.md) · [Full training records and reflections](demo-training-records.md) · [Synthetic input](demo-training-records.json) · [Demo standings data](demo-leaderboard.json)
 
-Demo files live in `examples/` and use a separate `DEMO` block in each README. The existing `CLUB` block continues to refresh the real community overview. After editing the fictional records, regenerate both language versions from the repository root:
+All demo files live in `examples/`; the renderer does not read or modify community homepages. The homepage's `CLUB` block only refreshes real community activity. After editing the fictional records, regenerate both language versions from the repository root:
 
 ```bash
 python scripts/render_demo_board.py
