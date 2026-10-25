@@ -11,7 +11,7 @@
   },
   "sports": [],
   "week_start": "2026-10-19",
-  "generated_at": "2026-10-25T10:02:03.049231Z",
+  "generated_at": "2026-10-25T12:09:47.160490Z",
   "participants_count": 0,
   "recovery_count": 0,
   "leaderboard": [],
@@ -20,12 +20,12 @@
     "schema_version": 1,
     "timezone": "UTC",
     "participants_count": 6,
-    "posts_count": 6,
+    "posts_count": 7,
     "replies_count": 2,
     "responded_posts_count": 1,
     "activity_records": 4,
     "meal_records": 0,
-    "experiences": 1,
+    "experiences": 2,
     "conversations": 1,
     "weekly_plan_posts": 0
   }
