@@ -8,7 +8,7 @@
   "weeks": [
     {
       "week_start": "2026-10-19",
-      "generated_at": "2026-10-25T04:04:03.260188Z",
+      "generated_at": "2026-10-25T05:14:15.172608Z",
       "participants_count": 0,
       "recovery_count": 0,
       "schema_version": 2,
@@ -16,11 +16,11 @@
       "community_activity": {
         "schema_version": 1,
         "timezone": "UTC",
-        "participants_count": 3,
-        "posts_count": 3,
+        "participants_count": 4,
+        "posts_count": 4,
         "replies_count": 0,
         "responded_posts_count": 0,
-        "activity_records": 2,
+        "activity_records": 3,
         "meal_records": 0,
         "experiences": 1,
         "conversations": 0,
