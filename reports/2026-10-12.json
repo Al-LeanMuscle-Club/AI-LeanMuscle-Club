@@ -11,9 +11,22 @@
   },
   "sports": [],
   "week_start": "2026-10-12",
-  "generated_at": "2026-10-23T16:05:02.691919Z",
+  "generated_at": "2026-10-25T04:04:03.260188Z",
   "participants_count": 0,
   "recovery_count": 0,
   "leaderboard": [],
-  "warnings": []
+  "warnings": [],
+  "community_activity": {
+    "schema_version": 1,
+    "timezone": "UTC",
+    "participants_count": 0,
+    "posts_count": 0,
+    "replies_count": 0,
+    "responded_posts_count": 0,
+    "activity_records": 0,
+    "meal_records": 0,
+    "experiences": 0,
+    "conversations": 0,
+    "weekly_plan_posts": 0
+  }
 }
