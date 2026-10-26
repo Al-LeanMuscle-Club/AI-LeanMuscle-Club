@@ -27,6 +27,7 @@ START = "<!-- CLUB:START -->"
 END = "<!-- CLUB:END -->"
 VERSION = 3
 WINDOW = 12
+HOME_ROWS = 10
 ROW_FIELDS = ("rank", "handle", "issue_number", "issue_url", "work_days",
               "exercise_days", "checkin_days", "score", "time_zone")
 
@@ -127,10 +128,24 @@ def board_markdown(board: dict) -> str:
 def replace_readme(text: str, board: dict) -> str:
     if text.count(START) != 1 or text.count(END) != 1 or text.index(START) > text.index(END):
         raise ValueError("README must retain exactly one correctly ordered CLUB marker pair.")
+    if board.get("schema_version") != VERSION or board.get("scoring_version") != VERSION:
+        raise ValueError("The homepage board must use the v3 100-point schema.")
     week = board["week_start"]
-    block = (f"{week} 起的一周：**{board['participants_count']}** 位成员进入公开打卡榜。\n\n"
-             f"[查看本周 100 分榜单](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md)\n\n"
-             f"每日定时更新；数据更新：{board['generated_at']}。\n")
+    rows = board["leaderboard"]
+    lines = [f"**{week} — {board['week_end']}** · **{board['participants_count']}** 位成员进入公开打卡榜。", "",
+             "| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |",
+             "| ---: | --- | ---: | ---: | ---: | --- |"]
+    for row in rows[:HOME_ROWS]:
+        lines.append(f"| {row['rank']} | [@{row['handle']}](https://github.com/{row['handle']}) | "
+                     f"{row['work_days']} | {row['exercise_days']} | {row['score']:.2f} | "
+                     f"[#{row['issue_number']}]({row['issue_url']}) |")
+    if not rows:
+        lines += ["", "本周暂无选择公开排名且有有效真实打卡的成员；示例记录不计入此榜。"]
+    elif len(rows) > HOME_ROWS:
+        lines += ["", f"首页展示前 {HOME_ROWS} 位成员，同分并列；全部成员见完整周榜。"]
+    lines += ["", f"[查看完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md)", "",
+              f"每日定时更新；数据更新：{board['generated_at']}。"]
+    block = "\n".join(lines) + "\n"
     return text[:text.index(START) + len(START)] + "\n\n" + block + "\n" + text[text.index(END):]
 
 

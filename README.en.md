@@ -11,34 +11,26 @@ A community for AI researchers: record work and exercise, follow a weekly board,
 
 **[Start my check-in journal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml) · [Share an experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [Start a conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)**
 
-## Daily check-ins
-
-1. Create one long-running Issue and choose its time zone. Select **Yes** for **Public leaderboard** to appear on the board; the default is No.
-2. Comment on your own Issue each day. `W` means work, `E` means exercise; `1` means yes and `0` means no:
-
-   ```text
-   /checkin 2026-10-26 W=1 E=0
-   ```
-
-3. The board updates daily at **01:15 UTC / 09:15 Beijing time**. Each Monday–Sunday week counts distinct work and exercise dates. The latest valid check-in replaces earlier ones for the same date.
-
+<a id="daily-check-ins"></a>
 <a id="member-helper"></a>
 
-The [check-in helper][member-helper] finds your journal, prepares comment text, and displays standings. Review and post the text yourself; the page never posts for you.
+[Check-in and scoring guide](docs/MEMBER_GUIDE.md) · [Check-in helper][member-helper]
 
 ## Weekly board
 
 <a id="weekly-community-board"></a>
 
-For weekly work days $W$ and exercise days $E$:
+[See the latest board](README.md#周榜) · [Weekly reports](reports/daily/README.md).
 
-$$
-S = 100 \sqrt{\min(W/5, 1) \cdot \min(E/4, 1)}
-$$
+### Example standings (fictional; excluded from the real board)
 
-Five work days and four exercise days reach 100 points. Either count at zero makes the score zero. This measures self-reported participation, not work hours, exercise volume, or physical condition. [Full rules](docs/SCORING.md)
+Invented records for 2026-10-19 — 2026-10-25, shown only to demonstrate the format.
 
-[See the latest board](README.md#周榜) · [Weekly reports](reports/daily/README.md). The first report will appear after the new daily calculation runs.
+| Rank | Example member | Work days W | Exercise days E | Score / 100 | Records |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | Fictional demo member | 5 | 4 | 100.00 | [Example Issue #48](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/48) |
+
+[View all seven example days](examples/daily-checkin-demo.md). This is not any member's real result.
 
 <a id="news"></a>
 

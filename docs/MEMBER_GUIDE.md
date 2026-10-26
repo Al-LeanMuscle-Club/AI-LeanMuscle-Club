@@ -1,4 +1,4 @@
-# Member guide
+# Member guide: check-ins and scoring
 
 **English** | [简体中文](MEMBER_GUIDE.zh-CN.md)
 
@@ -26,7 +26,21 @@ Only the journal author's comments count. Other members' replies are conversatio
 
 ## 3. Follow the weekly board
 
-Each Monday–Sunday week counts distinct work and exercise dates. Five work days plus four exercise days reach 100 points; either count at zero yields zero. Other combinations use the geometric-mean formula. [Rules and examples](SCORING.md)
+Each Monday–Sunday week counts distinct work and exercise dates. Let $W$ be the week's work days and $E$ its exercise days:
+
+$$
+S = 100 \sqrt{\min(W/5, 1) \cdot \min(E/4, 1)}
+$$
+
+Work and exercise contributions cap at five and four days respectively. Either count at zero yields zero. Scores are rounded to two decimal places, and equal scores share a rank.
+
+| Work days W | Exercise days E | Weekly score |
+| ---: | ---: | ---: |
+| 5 | 4 | 100.00 |
+| 5 | 1 | 50.00 |
+| 0 | 4 | 0.00 |
+
+These are calculation examples, not member records. The score measures self-reported participation, not work hours, exercise volume, or physical condition. [Full rules and corrections](SCORING.md)
 
 The board updates daily at **01:15 UTC / 09:15 Beijing time**, though GitHub may delay a scheduled run. The current and preceding weeks refresh automatically, so you can backfill genuine records for those weeks. Ask a maintainer to refresh an older week after correcting it. [Reports and history](../reports/daily/README.md)
 

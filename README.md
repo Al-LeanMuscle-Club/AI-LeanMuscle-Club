@@ -11,38 +11,39 @@
 
 **[建立我的打卡帖](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml) · [分享经验](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [随便聊聊](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)**
 
-## 怎么打卡
-
-1. 每人建一个长期 Issue，选好时区；想进入公开周榜时，把 **Public leaderboard** 选为 **Yes**（默认 No）。
-2. 每天在自己的 Issue 下评论一行，`W` 表示是否工作、`E` 表示是否运动，`1` 是、`0` 否：
-
-   ```text
-   /checkin 2026-10-26 W=1 E=0
-   ```
-
-3. 周榜每天北京时间 **09:15** 定时更新。每周一至周日分别累计工作和运动天数，同一天重复打卡只算一次，以最新有效记录为准。
-
+<a id="怎么打卡"></a>
 <a id="member-helper"></a>
 
-[打卡辅助页][member-helper]可以帮你找自己的帖子、生成打卡文字、查看周榜。你检查后自行发布，页面不会代发。
+[打卡与计分说明](docs/MEMBER_GUIDE.zh-CN.md) · [打卡辅助页][member-helper]
 
 ## 周榜
 
 <a id="每周社区概况"></a>
 
-工作天数记为 $W$，运动天数记为 $E$，每周得分为：
-
-$$
-S = 100 \sqrt{\min(W/5, 1) \cdot \min(E/4, 1)}
-$$
-
-工作满 5 天、运动满 4 天即为 100 分；任一项为 0，得分为 0。它记录自报的参与，不比较工作时长、运动量或身体状态。[完整规则](docs/SCORING.md)
-
 <!-- CLUB:START -->
 
-新公式的周榜将在首次定时统计后显示。[查看周榜与历史](reports/daily/README.md)。
+**2026-10-26 — 2026-11-01** · **0** 位成员进入公开打卡榜。
+
+| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |
+| ---: | --- | ---: | ---: | ---: | --- |
+
+本周暂无选择公开排名且有有效真实打卡的成员；示例记录不计入此榜。
+
+[查看完整周榜](reports/daily/2026-10-26.md) · [历史周榜](reports/daily/README.md)
+
+每日定时更新；数据更新：2026-10-26T05:39:32.581021Z。
 
 <!-- CLUB:END -->
+
+### 示例榜单（虚构，不计入真实周榜）
+
+2026-10-19 — 2026-10-25 的虚构记录，仅用于展示榜单效果。
+
+| 名次 | 示例成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 记录 |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | 演示用户（虚构） | 5 | 4 | 100.00 | [示例 Issue #48](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/48) |
+
+[查看七天示例记录](examples/daily-checkin-demo.md)。这不是任何成员的真实成绩。
 
 <a id="news"></a>
 
