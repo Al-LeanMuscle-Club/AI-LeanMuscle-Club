@@ -3,7 +3,19 @@
   "scoring_version": 3,
   "week_start": "2026-10-19",
   "week_end": "2026-10-25",
-  "generated_at": "2026-10-26T05:39:32.581021Z",
-  "participants_count": 0,
-  "leaderboard": []
+  "generated_at": "2026-10-26T06:02:26.311373Z",
+  "participants_count": 1,
+  "leaderboard": [
+    {
+      "rank": 1,
+      "handle": "yukang2017",
+      "issue_number": 51,
+      "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51",
+      "work_days": 5,
+      "exercise_days": 4,
+      "checkin_days": 7,
+      "score": 100.0,
+      "time_zone": "Asia/Shanghai"
+    }
+  ]
 }
