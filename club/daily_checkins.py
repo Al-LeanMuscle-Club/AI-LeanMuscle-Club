@@ -1,6 +1,6 @@
 """Deterministic weekly scores from an owner's daily work/exercise check-ins.
 
-This module interprets explicit check-in commands and marked legacy exercise
+This module interprets explicit check-in commands and marked legacy activity
 dates, never prose or model output. Only weekly counts from publicly enabled
 journals leave the calculation; bodies, notes, individual dates and comment
 metadata are not part of public reports.
@@ -33,6 +33,7 @@ _COMMAND = re.compile(
 )
 _COMMAND_LINE = re.compile(r"^/checkin(?:\s|$)", re.IGNORECASE)
 _ACTIVITY_IMPORT = "<!-- club-import:activity-v1 -->"
+_WORK_IMPORT = "<!-- club-import:work-v1 -->"
 
 
 @dataclass(frozen=True)
@@ -217,6 +218,28 @@ def _imported_exercise_date(journal: _Journal, zone: ZoneInfo, start: date,
     return imported
 
 
+def _imported_work_dates(journal: _Journal, zone: ZoneInfo, exercise_date: date,
+                         as_of: datetime) -> set[date]:
+    fields = _form_fields(journal.issue)
+    if fields is None or _WORK_IMPORT not in {
+            line.strip() for line in fields.get("Migration notes", "").splitlines()}:
+        return set()
+    values = [line.strip() for line in fields.get("Imported work dates", "").splitlines()
+              if line.strip()]
+    if not 1 <= len(values) <= 7:
+        return set()
+    dates = {_date(value) for value in values}
+    if None in dates or len(dates) != len(values):
+        return set()
+    start = exercise_date - timedelta(days=exercise_date.weekday())
+    end = start + timedelta(days=6)
+    created_day = journal.created.astimezone(zone).date()
+    today = as_of.astimezone(zone).date()
+    if any(not start <= day <= end or day > created_day or day > today for day in dates):
+        return set()
+    return dates
+
+
 def _checkins(journal: _Journal, zone: ZoneInfo, start: date, end: date,
               as_of: datetime) -> dict[date, tuple[int, int]]:
     days = {}
@@ -225,6 +248,8 @@ def _checkins(journal: _Journal, zone: ZoneInfo, start: date, end: date,
         # Legacy Activity forms establish exercise only. Zero here grants no
         # work credit; it does not claim that the member did not work that day.
         days[imported] = (0, 1)
+        for day in _imported_work_dates(journal, zone, imported, as_of):
+            days[day] = (1, days.get(day, (0, 0))[1])
     comments = journal.issue.get("comments_data")
     if not isinstance(comments, list):
         return days
@@ -259,8 +284,8 @@ def _checkins(journal: _Journal, zone: ZoneInfo, start: date, end: date,
         previous = latest.get(day)
         if previous is None or key > previous[0]:
             latest[day] = key, work, exercise
-    # The owner's explicit daily flags always supersede the imported exercise,
-    # including E=0 corrections, without counting the same local date twice.
+    # The owner's explicit daily flags always supersede imported work/exercise,
+    # including zero corrections, without counting the same local date twice.
     days.update({day: (work, exercise) for day, (_, work, exercise) in latest.items()})
     return days
 
@@ -271,8 +296,8 @@ def build_week(records: Iterable[object], week_start: str, as_of: datetime,
 
     Dates refer to each journal's chosen IANA time zone. Latest valid state for
     a given day replaces both W and E, so corrections can also remove credit.
-    Imported exercise dates grant no work credit. Old 10-point plans and
-    experience approval labels never enter this score.
+    Imports credit only their explicit exercise date and marked work dates.
+    Old 10-point plans and experience approval labels never enter this score.
     """
     start = _date(week_start)
     if start is None or start.weekday() != 0:

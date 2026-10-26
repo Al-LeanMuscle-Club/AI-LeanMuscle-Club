@@ -34,13 +34,21 @@ If an author creates several journals, the one with the latest creation time is 
 
 ## Authorized legacy Activity import
 
-An explicit maintainer instruction may migrate specified existing public Activity posts into their original authors' `[Check-in]` journals and enable public standings. Preserve the original post and its time zone, and include a migration note identifying the maintainer who enabled public standings. This does not represent confirmation by the original author. It is a narrow import of an exercise record already supplied by that author, not permission to generate new member activity or work records.
+An explicit maintainer instruction may migrate specified existing public Activity posts into their original authors' `[Check-in]` journals and enable public standings. Preserve the original post and its time zone, and include a migration note identifying the maintainer who enabled public standings. This does not represent confirmation by the original author. It is a narrow import of an exercise record already supplied by that author; it does not authorize inferred or fabricated activity. Additional work dates require the explicit information and backfill authorization described below.
 
 An imported journal must contain `<!-- club-import:activity-v1 -->` as a standalone line under `### Migration notes` and exactly one `### Imported exercise date` field. Its date must exactly match the preserved original `### Activity date`, be valid, and be no later than the original Issue's creation date in its original time zone. Bots, fictional examples, malformed imports, and future records are excluded.
 
 The valid imported date contributes **one exercise day** to its week. No work day is inferred: $W$ counts only registered work days, so an absent work record contributes zero to the count without asserting that the author did not work. The formula stays unchanged; a journal with an imported exercise day and no work record is visible with a score of **0.00**.
 
 A valid check-in comment by the author for the imported date overrides both daily flags, including a `W=0 E=0` correction. Duplicate dates never add extra days. The usual latest-journal selection, `No`, and closed-journal withdrawal rules still apply.
+
+### Explicit work-date backfill
+
+When a member or maintainer provides specific actual work dates and explicitly authorizes backfilling them, a maintainer may add those dates to the original migrated journal. The migration note must identify the information source and executing maintainer, without impersonating the author in a comment or claiming the author personally supplied information that came from a maintainer. Do not assume that all members worked Monday–Friday.
+
+This requires a valid Activity import, a standalone `<!-- club-import:work-v1 -->` line under `### Migration notes`, and exactly one `### Imported work dates` field. Every non-empty line in that field must be an ISO `YYYY-MM-DD` date. The list must contain one to seven distinct valid dates, all in the same Monday–Sunday week as the imported exercise date. No date may be later than the original Issue's local creation date or the reporting cutoff (`as_of`), using the original time zone. If any entry is invalid, duplicated, outside the week, or future-dated, the entire work list is ignored while a valid exercise import is retained.
+
+Each accepted date contributes one recorded work day; it adds no exercise day. The author's valid same-day `/checkin` overrides both flags from the imports, and No or closure still withdraws the journal. The formula is unchanged: five explicitly supplied work dates, such as 2026-10-19 through 2026-10-23, with one recorded exercise day in that week give $W=5$, $E=1$, and **50.00** points.
 
 ## A daily comment
 

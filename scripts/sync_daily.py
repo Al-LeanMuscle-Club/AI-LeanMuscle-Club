@@ -1,6 +1,6 @@
 """Publish the 100-point daily-check-in board from a complete GitHub snapshot.
 
-Owner check-in flags and explicitly imported activity dates supply the counts.
+Owner check-in flags and explicitly imported work/exercise dates supply the counts.
 No model, raw member prose, plan ledger, or legacy 10-point score is used.
 """
 

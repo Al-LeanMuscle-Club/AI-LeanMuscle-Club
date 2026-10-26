@@ -46,17 +46,17 @@
 | 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |
 | ---: | --- | ---: | ---: | ---: | --- |
 | 1 | [@yukang2017](https://github.com/yukang2017) | 5 | 4 | 100.00 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
-| 2 | [@Aaronhuang-778](https://github.com/Aaronhuang-778) | 0 | 1 | 0.00 | [#43](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/43) |
-| 2 | [@EasonXiao-888](https://github.com/EasonXiao-888) | 0 | 1 | 0.00 | [#40](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/40) |
-| 2 | [@kcz358](https://github.com/kcz358) | 0 | 1 | 0.00 | [#37](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/37) |
-| 2 | [@notnotMyself](https://github.com/notnotMyself) | 0 | 1 | 0.00 | [#29](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/29) |
-| 2 | [@YixunLiang](https://github.com/YixunLiang) | 0 | 1 | 0.00 | [#38](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/38) |
+| 2 | [@Aaronhuang-778](https://github.com/Aaronhuang-778) | 5 | 1 | 50.00 | [#43](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/43) |
+| 2 | [@EasonXiao-888](https://github.com/EasonXiao-888) | 5 | 1 | 50.00 | [#40](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/40) |
+| 2 | [@kcz358](https://github.com/kcz358) | 5 | 1 | 50.00 | [#37](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/37) |
+| 2 | [@notnotMyself](https://github.com/notnotMyself) | 5 | 1 | 50.00 | [#29](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/29) |
+| 2 | [@YixunLiang](https://github.com/YixunLiang) | 5 | 1 | 50.00 | [#38](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/38) |
 
 W、E 只累计已登记的工作和运动日期；缺少工作补记时 W 暂为 0。
 
 [查看完整周榜](reports/daily/2026-10-19.md) · [历史周榜](reports/daily/README.md)
 
-每日定时更新；数据更新：2026-10-26T06:22:58.969195Z。
+每日定时更新；数据更新：2026-10-26T06:32:11.356774Z。
 
 <!-- CLUB:END -->
 
