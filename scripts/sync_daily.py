@@ -131,26 +131,30 @@ def replace_readme(text: str, board: dict, *, latest_week: str | None = None) ->
         raise ValueError("README must retain exactly one correctly ordered CLUB marker pair.")
     if board.get("schema_version") != VERSION or board.get("scoring_version") != VERSION:
         raise ValueError("The homepage board must use the v3 100-point schema.")
+    generated = datetime.fromisoformat(board["generated_at"].replace("Z", "+00:00"))
+    if generated.tzinfo is None or generated.utcoffset() is None:
+        raise ValueError("Report timestamp must include its time zone.")
+    updated = generated.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     week = board["week_start"]
     rows = board["leaderboard"]
-    lines = []
+    lines = [f"**{week} — {board['week_end']}** · **{board['participants_count']}** 位成员", ""]
     if latest_week is not None and latest_week != week:
-        latest_end = (monday(latest_week) + timedelta(days=6)).isoformat()
-        lines += [f"最新统计周（{latest_week} — {latest_end}）暂无有效公开打卡；以下展示最近有记录的一周。", ""]
-    lines += [f"**{week} — {board['week_end']}** · **{board['participants_count']}** 位成员进入公开打卡榜。", "",
-              "| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |",
+        latest_start = monday(latest_week).isoformat()
+        lines += [f"<sub>最新统计周 {latest_start} 起暂无公开记录，现展示最近有记录的一周。</sub>", ""]
+    lines += ["| 排名 | 成员 | W | E | 得分 | 打卡 |",
               "| ---: | --- | ---: | ---: | ---: | --- |"]
     for row in rows[:HOME_ROWS]:
         lines.append(f"| {row['rank']} | [@{row['handle']}](https://github.com/{row['handle']}) | "
                      f"{row['work_days']} | {row['exercise_days']} | {row['score']:.2f} | "
                      f"[#{row['issue_number']}]({row['issue_url']}) |")
     if not rows:
-        lines += ["", "本周暂无已开启公开榜单且有有效记录的成员；示例记录不计入此榜。"]
+        lines += ["", "暂无有效公开记录。"]
     elif len(rows) > HOME_ROWS:
-        lines += ["", f"首页展示前 {HOME_ROWS} 位成员，同分并列；全部成员见完整周榜。"]
-    lines += ["", "W、E 只累计已登记的工作和运动日期；缺少工作补记时 W 暂为 0。", "",
-              f"[查看完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md)", "",
-              f"每日定时更新；数据更新：{board['generated_at']}。"]
+        lines += ["", f"展示前 {HOME_ROWS} 位，同分并列；全部成员见完整周榜。"]
+    lines += ["", "已登记天数：W 工作 · E 运动。满分 100。", "",
+              f"[完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md) · "
+              "[打卡指南](docs/MEMBER_GUIDE.zh-CN.md)", "",
+              f"<sub>每日更新 · 更新于 {updated}</sub>"]
     block = "\n".join(lines) + "\n"
     return text[:text.index(START) + len(START)] + "\n\n" + block + "\n" + text[text.index(END):]
 
