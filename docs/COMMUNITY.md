@@ -1,98 +1,27 @@
-# Organizing the community with Issues
+# Check in, share, and reply
 
-Use one repository to connect training, research rhythms, and shared experience. Members can take part in several sports and pursue a changing goal; they do not need a separate account, folder, or subgroup for each combination.
+There are two ways to take part: keep a daily journal and follow the weekly board, or exchange experiences with other members. You can do either or both.
 
-## Choose the right place
+## Three simple Issue forms
 
-| Place | Purpose |
-| --- | --- |
-| README | Real member stories, a conversation to join, buddy invitations, and a short anonymous activity overview |
-| Activity-record and meal-record Issues | Free records without a weekly plan or ranking; labels `activity-record` and `meal-record` |
-| Weekly-plan Issues | One person's weekly plan, short records, optional meal logs, and reflection |
-| Experience Issues | Reusable experiences eligible for the existing maintainer approval process |
-| Community Issues | Introductions, questions, conversations, partners, events, and announcements |
-| Documentation and PRs | Curated resources, examples, rules, and tool changes |
-| Browser helper and generated reports | Prepare comments, find plans, and browse opted-in records |
-
-Community Issue posts and replies do not earn contribution points automatically. To request review, summarize a reusable experience in an Experience sharing Issue and link the source. Contribution credit requires `experience`, `points-approved`, and a trusted approval record matching the body, author, and week. Multiple posts about the same work cannot exceed one contribution point per author per week.
-
-## Start with a reply or one sentence
-
-Reply to an existing member's thread to join that conversation. To start your own, use [Join the conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml): one text field, no date, time zone, training plan or score choice. These `[Chat]` posts and human replies count toward anonymous community activity, not participation points.
-
-The homepage's featured conversation links to a real existing Issue. It is an editorial selection, not a new weekly event or an automatically created thread. A maintainer can select a new existing conversation when it is useful, or explicitly open a topic Issue and link it. Do not fabricate invitations, participants or replies to make the community look active.
-
-## More specific community Issue forms
-
-Open [New issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose), choose a topic, and continue the conversation in its comments. The forms become available after `.github/ISSUE_TEMPLATE/` is merged into the default branch with Issues enabled. No weekly plan, leaderboard opt-in, extra category setting, or new community label is required.
-
-| Topic | Issue form | Title prefix |
+| Purpose | Form | Title prefix |
 | --- | --- | --- |
-| One sentence or a question / 随手聊聊 | [Join the conversation](../.github/ISSUE_TEMPLATE/community-chat.yml) | `[Chat]` |
-| Newcomer introductions / 新人报到 | [Beginners](../.github/ISSUE_TEMPLATE/beginners.yml) | `[Hello]` |
-| Training and recovery / 训练交流 | [Training and recovery](../.github/ISSUE_TEMPLATE/training-and-recovery.yml) | `[Training]` |
-| Food conversations / 饮食分享 | [Nutrition](../.github/ISSUE_TEMPLATE/nutrition.yml) | `[Food]` |
-| Research and Agents / 科研与 Agent | [Research and Agents](../.github/ISSUE_TEMPLATE/research-and-agents.yml) | `[Research / Agent]` |
-| Finding partners and events / 找搭子与活动 | [Buddies and events](../.github/ISSUE_TEMPLATE/buddies-and-events.yml) | `[Buddies]` |
-| Community notices / 社区公告 | [Announcements](../.github/ISSUE_TEMPLATE/announcements.yml) | `[Club]` |
+| One long-running daily journal | [Daily check-in](../.github/ISSUE_TEMPLATE/daily-checkin.yml) | `[Check-in]` |
+| A personal experience others may find useful | [Experience sharing](../.github/ISSUE_TEMPLATE/experience.yml) | `[Experience]` |
+| A short question, note, or invitation | [Conversation](../.github/ISSUE_TEMPLATE/community-chat.yml) | `[Chat]` |
 
-Use title prefixes to find related Issues. Announcements are ordinary Issues: anyone who can open an Issue can submit one. Maintainers review proposed notices and decide which to publish as official notices or pin; a template does not enforce maintainer-only posting.
+The forms become available when merged into the repository's default branch. No weekly plan or contribution approval is needed. Only valid daily check-in comments affect the weekly score; experience posts and all ordinary replies earn no points.
 
-Welcome new and returning members with a reply or the short conversation form. The Beginners form remains available for a longer introduction. The [six independent example files](../examples/README.en.md) illustrate introductions, training, food, partners, research/Agents, and participation points. Published demonstrations must be clearly marked as fictional and excluded from participation scoring and member statistics.
+## Share something real
 
-## Independent classification
+Describe your situation, what you tried, what happened, and any limits. Ideas include making time around deadlines, exercise routines you enjoy, sleep habits, and Agent workflows. Explain personal observations as personal observations, and link sources when you use them.
 
-| Dimension | Canonical values | Where recorded |
-| --- | --- | --- |
-| Sport | `strength`, `basketball`, `running`, `swimming`, `cycling`, `walking`, `mobility`, `other` | Every planned session |
-| Primary goal | `fat-loss`, `muscle-gain`, `cardio`, `skill`, `habit` | The weekly plan |
-| Research week | `regular`, `deadline`, `travel` | The weekly plan |
-| Content | Plan, check-in, experience, conversation, lasting resource | Its form or destination |
+A short question is welcome. Partner invitations, food conversations, introductions, and research questions can use the same conversation form rather than separate categories. Reply to existing threads when you are continuing the same topic.
 
-These fields are independent. A mixed-sport week can contain basketball and strength while the primary goal is cardio. Changing next week's goal does not rewrite the goal stored in last week's plan.
+## Highlight useful experiences
 
-The reporting tools read fields, not guessed activities in prose. Old three-column session rows remain valid and use `other`; adding an explicit sport makes future filtering more useful. Optional descriptive labels may be added by maintainers, but member records do not require dozens of labels or combined categories such as “basketball × fat-loss × beginner.” Scoring uses `weekly-plan`, `experience`, and `points-approved`, with a trusted approval ledger as well as the contribution label. A label alone is not approval. Independent `activity-record` and `meal-record` Issues are unscored, so free records cannot accidentally become a training commitment or score.
+The homepage keeps a short curated list with author credit, a concise introduction, and an original Issue link. Maintain the author's meaning and invite discussion in the original thread. A public post is not permission to redistribute someone's health details elsewhere; ask the author before broader republication.
 
-## Keep participation lightweight
+Never invent members, completed activity, replies, or events. Clearly mark any synthetic example as fictional and keep it out of real standings. Older example posts and specialized forms remain [historical references](LEGACY.md).
 
-No daily PRs, personal data files, verification photographs, or exact calorie tracking are required. A short check-in works across sports; optional details belong in notes. Share ideas that another researcher can adapt rather than setting one required routine.
-
-The board describes weekly participation, not athletic ability. Partial sessions receive half execution credit while remaining separate from full completions; distinct valid meal-record dates can be displayed without adding points. A confirmed scoring snapshot keeps deleted commitments from shrinking the denominator, while the current plan remains editable. See [scoring](SCORING.md).
-
-The homepage shows compact counts and report links. Full opt-in standings belong in weekly reports, not an ever-growing list of members on the homepage. Historical reports are revisable snapshots; opt-outs must be respected whenever a report is regenerated. Original public Issues, comments, and Git history remain public even after opting out.
-
-## Curate with permission and context
-
-Maintainers may turn a useful contribution into an experience card or reusable example with its author's agreement. Link to its origin, preserve the context and limits, and avoid republishing personal food, body, health, or confidential research details. Agent summaries need human review and source links.
-
-See [member instructions](MEMBER_GUIDE.md), [scoring](SCORING.md), and [maintainer setup](SETUP.md).
-
-## GitHub references
-
-- [Creating an Issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue)
-- [Creating Issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-issue-forms)
-- [Issue form syntax](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms)
-
-<!-- club-published-issue-examples:start -->
-## Published examples
-
-These are fictional, unscored examples. Choose a language below to open its Issue.
-
-| Topic | 中文 Issue | English Issue |
-| --- | --- | --- |
-| Newcomer introductions | [#16](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/16) | [#19](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/19) |
-| Finding exercise buddies | [#17](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/17) | [#20](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/20) |
-| Research and Agents | [#18](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/18) | [#21](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/21) |
-
-<!-- club-published-issue-examples:end -->
-
-
-## Read real activity and welcome first posts
-
-The homepage and member helper show two separate measures: anonymous community activity and optional weekly-plan standings. Community activity counts recognized public forms and replies, including free workouts, meals, experiences, introductions and other community topics. Explicit fictional examples, bots, PRs and development requests are excluded. The classifier can recognize existing form headings before missing labels are repaired; this does not grant scoring eligibility or contribution approval.
-
-Community weeks use UTC, Monday through Sunday. New posts use their GitHub creation time, not a claimed workout date. Replies use their own creation time, including replies to older threads. Participants are distinct human authors posting or replying that week; self-replies count as activity, but a new post is considered answered only after another human replies by the snapshot cutoff. The answered-post count may therefore increase after the original week. Counts can be corrected after deletion, reclassification or removal of comments. An `activity_updated_at` timestamp distinguishes a historical activity refresh from the saved score timestamp. Old snapshots without community data display no fabricated zero counts.
-
-These aggregates do not enter points or named rankings and are independent of leaderboard opt-in. Reports export counts only, not member identities, titles, stories, health details or comment bodies. Open the original Issues to read and respond. All test fixtures must be synthetic; never commit downloaded member posts.
-
-For the first week, invite a few members to post a genuine record or question and aim to respond personally within 24 hours. Ask one specific follow-up about the author's experience rather than sending a generic automated welcome. Track new participants, answered posts and repeat participation separately from Stars. The shipped dashboard measures weekly activity and answered posts; it does not claim to measure visitor conversion or seven-day retention. Share links to selected original posts in the group only with appropriate author consent; no group messages or automatic replies are configured.
+[Member guide](MEMBER_GUIDE.md) · [Scoring](SCORING.md) · [Maintainer setup](SETUP.md)

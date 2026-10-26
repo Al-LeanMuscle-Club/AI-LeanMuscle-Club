@@ -1,10 +1,12 @@
 [English](beginners.en.md) | 简体中文
 
+> 旧流程的历史示例，以下格式不再用于新榜。每日打卡和 100 分制请看[当前成员指南](../docs/MEMBER_GUIDE.zh-CN.md)。
+
 > **虚构示例 / Fictional examples.** 下列人物、活动和数字仅演示格式，不代表真实成员、打卡、排名或规定训练安排。请勿把整份示例发成真实社区帖子；只借用适合自己的格式。
 
 # 新人报到 / Beginners
 
-发布位置：[新人报到 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml)，标题使用 `[Hello]` 前缀。无需先建周计划或参加排名；此类社区 Issue 不自动计分。
+发布位置：[新人报到 Issue](../docs/legacy-issue-templates/beginners.yml)，标题使用 `[Hello]` 前缀。无需先建周计划或参加排名；此类社区 Issue 不自动计分。
 
 ## 示例一：第一次开始记录
 

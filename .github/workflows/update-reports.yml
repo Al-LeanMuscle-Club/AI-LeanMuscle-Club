@@ -8,10 +8,6 @@ on:
         description: 'Optional older report week, a Monday YYYY-MM-DD'
         required: false
         type: string
-  issues:
-    types: [opened, edited, labeled, unlabeled, deleted]
-  issue_comment:
-    types: [created, edited, deleted]
 permissions:
   contents: write
   issues: read
@@ -22,10 +18,8 @@ jobs:
   report:
     if: >-
       github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-      && github.event.sender.type != 'Bot'
-      && !github.event.issue.pull_request
-    # The Python guard recognizes form categories as well as labels, including
-    # existing unlabelled posts and edits that remove a previous category.
+    # Daily and explicit manual updates use trusted default-branch code only.
+    # Keep the workflow name stable for the optional Pages completion trigger.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -34,40 +28,25 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Decide whether the event changes reports
-        id: report-event
-        run: python scripts/report_event.py
-      - uses: actions/cache@v4
-        if: steps.report-event.outputs.run == 'true'
-        with:
-          path: .club-cache
-          key: community-issues-${{ github.repository_id }}-${{ github.run_id }}
-          restore-keys: community-issues-${{ github.repository_id }}-
-      - name: Calculate reports from real GitHub records
-        if: steps.report-event.outputs.run == 'true'
+      - name: Count work and exercise days from personal check-in journals
         run: |
           ARGS=()
           if [ -n "$REPORT_WEEK" ]; then
             ARGS+=(--week "$REPORT_WEEK")
           fi
-          if [ -n "$DELETED_ISSUE" ]; then
-            ARGS+=(--deleted-issue "$DELETED_ISSUE")
-          fi
-          python scripts/sync_github.py "${ARGS[@]}"
+          python scripts/sync_daily.py "${ARGS[@]}"
         env:
           GH_TOKEN: ${{ github.token }}
           REPORT_WEEK: ${{ inputs.week_start }}
-          DELETED_ISSUE: ${{ github.event_name == 'issues' && github.event.action == 'deleted' && github.event.issue.number || '' }}
-      - name: Commit reports and confirmed plan snapshots
-        if: steps.report-event.outputs.run == 'true'
+      - name: Commit only the new public board and homepage overview
         # GITHUB_TOKEN pushes do not trigger push workflows. The optional
         # Pages workflow listens for this workflow's successful completion.
         run: |
-          git add -- README.md reports/ data/ranking-state.json
+          git add -- README.md reports/daily/
           if git diff --cached --quiet; then
             exit 0
           fi
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Update participation reports and confirmations"
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Update daily check-in weekly board"
           git push origin "HEAD:$REPORT_BRANCH"
         env:
           REPORT_BRANCH: ${{ github.event.repository.default_branch }}

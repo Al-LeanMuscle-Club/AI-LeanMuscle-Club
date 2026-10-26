@@ -1,10 +1,12 @@
 [简体中文](research-and-agents.md) | English
 
+> Historical example from the retired workflow. Use the [current member guide](../docs/MEMBER_GUIDE.md) for daily check-ins and the new 100-point board.
+
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, rankings, or prescribed training plans. These examples earn no points and do not enter live rankings. Do not post these examples as real community activity; borrow only the format that suits you.
 
 # Research and Agents
 
-Post using the [research and Agents Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=research-and-agents.yml) with the `[Research / Agent]` title prefix. These community Issues do not automatically earn points. If the experience has clear value for others to reuse, summarize it in a separate [Experience sharing Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) and link the original post. Contribution credit still requires the `points-approved` label and a trusted approval ledger entry matching the body, author, and week, reviewed by a maintainer through the existing process.
+Post using the [research and Agents Issue form](../docs/legacy-issue-templates/research-and-agents.yml) with the `[Research / Agent]` title prefix. These community Issues do not automatically earn points. If the experience has clear value for others to reuse, summarize it in a separate [Experience sharing Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) and link the original post. Contribution credit still requires the `points-approved` label and a trusted approval ledger entry matching the body, author, and week, reviewed by a maintainer through the existing process.
 
 ## Example 1: Organizing public experiment results into a table
 

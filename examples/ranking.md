@@ -1,12 +1,14 @@
 [English](ranking.en.md) | 简体中文
 
+> 旧流程的历史示例，以下格式不再用于新榜。每日打卡和 100 分制请看[当前成员指南](../docs/MEMBER_GUIDE.zh-CN.md)。
+
 > **虚构示例 / Fictional examples.** 下列人物、活动和数字仅演示格式，不代表真实成员、打卡、排名或规定训练安排。请勿把整份示例发成真实社区帖子；只借用适合自己的格式。
 
 # 排名演示 / Ranking examples
 
 **此文件为离线演示，不是社区周报。** 虚构代号不对应任何成员，不链接真实 Issue；数据不写入 `reports/` 或首页参与统计。
 
-真实计分记录请使用 [每周计划 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml)，随手记录可用 [自由运动 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml)；不要把下面的虚构活动当作自己的真实打卡发布。
+真实计分记录请使用 [每周计划 Issue](../docs/legacy-issue-templates/weekly-plan.yml)，随手记录可用 [自由运动 Issue](../docs/legacy-issue-templates/activity-record.yml)；不要把下面的虚构活动当作自己的真实打卡发布。
 
 当前是每周 **参与积分**，满分 10：计划 1、执行 0–6、复盘 2、审核通过的贡献 0–1。分数不比较体能、训练难度或身体变化。
 
@@ -41,7 +43,7 @@ S5 可以继续记录，但不会新增本周执行积分。计划调整说明�
 
 每周重新计分。近几周的参与周数用于回顾，不需要保持不断档。贡献点要有 `points-approved` 标签和匹配正文、作者、周次的可信审批记录；单独贴标签不会使这个演示或真实帖子自动得分。
 
-完整边界与更正规则见[SCORING](../docs/SCORING.md)。
+完整边界与更正规则见[SCORING](../docs/SCORING.v2.md)。
 
 ## 运行独立的虚构数据演示
 

@@ -1,10 +1,12 @@
 [简体中文](buddies-and-events.md) | English
 
+> Historical example from the retired workflow. Use the [current member guide](../docs/MEMBER_GUIDE.md) for daily check-ins and the new 100-point board.
+
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, rankings, or prescribed training plans. These examples earn no points and do not enter live rankings. Do not post these examples as real community activity; borrow only the format that suits you.
 
 # Buddies and events
 
-Post using the [buddies and events Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml) with the `[Buddies]` title prefix. Express interest in the Issue comments first, then let the participants confirm the arrangements. These community Issues do not automatically earn points.
+Post using the [buddies and events Issue form](../docs/legacy-issue-templates/buddies-and-events.yml) with the `[Buddies]` title prefix. Express interest in the Issue comments first, then let the participants confirm the arrangements. These community Issues do not automatically earn points.
 
 ## Example 1: Starting to exercise together online
 

@@ -1,10 +1,12 @@
 [English](nutrition.en.md) | 简体中文
 
+> 旧流程的历史示例，以下格式不再用于新榜。每日打卡和 100 分制请看[当前成员指南](../docs/MEMBER_GUIDE.zh-CN.md)。
+
 > **虚构示例 / Fictional examples.** 下列人物、活动和数字仅演示格式，不代表真实成员、打卡、排名或规定训练安排。请勿把整份示例发成真实社区帖子；只借用适合自己的格式。
 
 # 饮食记录与分享 / Nutrition
 
-交流使用 [饮食分享 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=nutrition.yml)，标题使用 `[Food]` 前缀。记录用 [Meal record / 饮食记录 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml)；已有周计划也可以在该 Issue 下评论 `/meal`。社区分享和独立饮食记录都不自动计分。
+交流使用 [饮食分享 Issue](../docs/legacy-issue-templates/nutrition.yml)，标题使用 `[Food]` 前缀。记录用 [Meal record / 饮食记录 Issue](../docs/legacy-issue-templates/meal-record.yml)；已有周计划也可以在该 Issue 下评论 `/meal`。社区分享和独立饮食记录都不自动计分。
 
 ## 示例一：没有热量数字的午餐
 

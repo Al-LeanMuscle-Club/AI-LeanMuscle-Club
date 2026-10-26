@@ -1,10 +1,12 @@
 [简体中文](beginners.md) | English
 
+> Historical example from the retired workflow. Use the [current member guide](../docs/MEMBER_GUIDE.md) for daily check-ins and the new 100-point board.
+
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, standings, or prescribed training schedules. These examples do not earn points. Do not submit an entire example as a real community post; use only the format that suits you.
 
 # New member introductions / Beginners
 
-Post using the [newcomer introduction Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=beginners.yml) with the `[Hello]` title prefix. You do not need to create a weekly plan or join the standings first. These community Issues do not automatically earn points.
+Post using the [newcomer introduction Issue form](../docs/legacy-issue-templates/beginners.yml) with the `[Hello]` title prefix. You do not need to create a weekly plan or join the standings first. These community Issues do not automatically earn points.
 
 ## Example 1: Starting to keep records
 

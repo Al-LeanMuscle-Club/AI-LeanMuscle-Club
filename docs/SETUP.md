@@ -1,180 +1,60 @@
 # Maintainer setup
 
-This starter contains English and Chinese community documentation, the supplied poster, Issue forms for records and community conversations, a tested score calculator, member helpers, and GitHub Actions workflows. It does not contain real member records or a connected AI model. Committing it to GitHub and enabling the repository settings below is what activates the live workflow.
+The active workflow has three Issue forms, a deterministic daily-check-in score, a daily report job, and an optional static helper. No model service or paid API key is required.
 
-## 1. Put the files in the intended repository
+## 1. Enable the member flow
 
-`README.md` is the Simplified Chinese homepage; `README.en.md` is the English version. The old `README.zh-CN.md` URL remains a short navigation page. Keep the homepage's `README:LANG=zh-CN`, `README:COMMUNITY-FIRST`, and paired `CLUB` markers so report updates retain the compact Chinese activity overview. The English page links to that live overview. Optional planning and points instructions live in the advanced guides; fictional boards live in `examples/demo-board.md` and `examples/demo-board.en.md`. `python scripts/render_demo_board.py` refreshes only example artifacts and never rewrites either homepage.
+Merge the new code and `.github/ISSUE_TEMPLATE/` files into the repository's default branch, and enable **Settings → General → Features → Issues**. Members then choose **Daily check-in**, **Experience sharing**, or **Conversation**.
 
-Use the existing `Al-LeanMuscle-Club/AI-LeanMuscle-Club` repository if that is still the club's home. Clone it, copy this starter's files into the checkout, inspect the diff, and commit through your usual workflow. Preserve existing content you want to keep.
+The journal and current reporter do not depend on special labels. Members create their own long-running journal and explicitly choose **Yes** for public standings. The default is **No**. Do not create check-ins or opt members in on their behalf.
 
-If you choose a different repository, replace the `Al-LeanMuscle-Club/AI-LeanMuscle-Club` links in both README.md and README.en.md. The live script and workflow take their repository name from `GITHUB_REPOSITORY`, so scoring itself works after a rename or transfer. Use an Organization if you want the Maintain repository role.
+`README.md` is the Chinese homepage and `README.en.md` is English. Preserve the language and community markers, the paired `CLUB` markers in the Chinese homepage, and the single `[member-helper]:` definition in each README. The reporter replaces only the live board block; curated stories stay outside it.
 
-The poster is already stored at `assets/club-poster.png`, with the supplied QR pattern preserved. Its invitation is marked valid before October 29, 2026; replace the asset and the date note when the invitation changes.
+## 2. Enable daily reports
 
-## 2. Enable Issues and create labels
+Enable GitHub Actions, allowing the actions referenced by the repository workflows. **Update weekly participation reports** runs at **01:15 UTC daily / 09:15 Beijing time** and can be started manually. Its name is retained so the existing optional Pages workflow can follow successful report runs.
 
-Enable **Settings → General → Features → Issues**. Create these labels before members use the forms:
+The job uses GitHub's built-in token with `issues: read` and `contents: write`, reads members' journals and comments, and runs `scripts/sync_daily.py`. It refreshes the current and preceding report week, chosen using the Asia/Shanghai calendar. Individual comment dates are validated in each journal's own time zone. Only aggregate, opted-in v3 rows are written under `reports/daily/`; raw Issue bodies are not committed. The old ranking ledger is never updated.
 
-| Label | Suggested color | Purpose |
-| --- | --- | --- |
-| `weekly-plan` | `0759FF` | Weekly commitments and comment check-ins |
-| `experience` | `0E8A16` | Reusable experiences and research/fitness workflows |
-| `points-approved` | `FBCA04` | A maintainer's approval for an eligible contribution |
-| `activity-record` | `5319E7` | Free workout records, outside the points board |
-| `meal-record` | `D4C5F9` | Free food records, outside the points board |
-| `example` | `BFDADC` | Explicit fictional demonstrations, excluded from community participation |
+After merging, run the workflow manually once and check its output. An empty report is expected until a member with an open journal, public opt-in, and a valid check-in appears. Do not fill an empty board with fictional examples. GitHub schedules can be delayed; manual runs are available.
 
-The easiest repeatable setup is **Actions → Set up community labels → Run workflow** on the default branch. Leave `apply` off for a preview, inspect the label names and Issue numbers in the log, then run with `apply` enabled. The optional `backfill` recognizes existing record forms and explicitly marked fictional examples. It only adds missing labels, preserves existing label colors/descriptions and unrelated Issue labels, and never assigns `points-approved`, changes member text, or creates comments. Examples receive only the `example` classification. A title prefix alone is insufficient to classify a normal record; the expected form headings must also be present.
+For a correction older than the previous week, set the workflow's optional `week_start` input to that week's Monday in `YYYY-MM-DD` format. The script's `--week` option provides the same selection locally.
 
-The same preview is available locally with a securely configured `GH_TOKEN` (read access for previews, Issues write for applying):
+If branch protection rejects the report push, use a reviewed publishing PR or the repository's permitted update process. Do not weaken branch rules or force-push to make automation pass.
 
-```bash
-python scripts/setup_community.py --backfill
-python scripts/setup_community.py --backfill --apply
-```
+## 3. Run locally
 
-After applying labels, manually run **Update weekly participation reports** once; changes made with the workflow token do not start other Issue workflows. New form submissions will use the created labels. Use `-label:example` when browsing real community posts. Backfill does not remove an existing label, including an existing scoring label on an example; inspect any such older mistakes separately before refreshing scores.
-
-You can use the Issues label interface or, with GitHub CLI authenticated, run:
-
-```bash
-gh label create weekly-plan --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 0759FF --description "Weekly plans and check-ins"
-gh label create experience --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 0E8A16 --description "Community experiences and workflows"
-gh label create points-approved --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color FBCA04 --description "Maintainer-approved weekly contribution"
-gh label create activity-record --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color 5319E7 --description "Free workout records"
-gh label create meal-record --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color D4C5F9 --description "Free food records"
-gh label create example --repo Al-LeanMuscle-Club/AI-LeanMuscle-Club --color BFDADC --description "Fictional demonstration, excluded from community participation"
-```
-
-Skip labels that already exist. Only trusted maintainers should decide which experience Issues receive `points-approved`. The label is necessary but no longer sufficient for points: an approval must also bind the exact content revision, author, and week in the reviewed ledger. Members do not need repository write access to open Issues and comment on public Issues.
-
-## 3. Enable and test Actions
-
-1. Commit the workflow files to the repository's **default branch**.
-2. Enable GitHub Actions for this repository and allow `actions/checkout`, `actions/setup-python`, `actions/setup-node`, and `actions/cache` if your organization restricts Actions.
-3. The report job requests `contents: write` and `issues: read` using GitHub's built-in token. No personal token or paid model key needs to be stored in the repository.
-4. Open **Actions → Update weekly participation reports → Run workflow** on the default branch. An empty `week_start` uses the current and previous Asia/Shanghai reporting weeks. For one older week, supply its Monday as `YYYY-MM-DD`. A specific-week run also displays that week in the README; the next empty-input or scheduled run restores the usual current-and-previous-week view.
-5. Confirm the run finishes and commits only README.md, reports/, and data/ranking-state.json. With no real members, it should show an empty board and no synthetic records.
-
-The scheduled run is **01:15 UTC / 09:15 Asia/Shanghai daily**. Relevant human Issue/comment changes also trigger a refresh, including the first successful plan confirmation. Workflows read trusted default-branch code, serialize report jobs, skip bot/PR events, and commit only an explicit output allowlist. They calculate participation scores without an LLM. GitHub may delay scheduled runs; a manual run is available. CI runs the Python and JavaScript tests for pushes and pull requests.
-
-If a branch rule requires PRs or rejects the bot push, the job will fail without force-pushing. Use a reviewed PR publishing approach for that repository, or keep local/manual report generation and commit through the normal review path. Do not weaken branch rules just to make the starter pass.
-
-## 4. Run locally
-
-Python **3.12+**, a GitHub token with read access to repository Issues, and network access to api.github.com are enough for a live report. There are no pip dependencies.
+Use Python **3.12+** and the repository's supported Node version for the browser tests. The calculation itself has no pip dependencies.
 
 ```bash
 python -m unittest discover -s tests -v
+python scripts/render_demo_board.py --check
 python -m compileall -q club scripts tests
 node --test tests/test_member_page.js
-# Set GH_TOKEN securely in your shell or credential environment first.
-python scripts/sync_github.py --repository Al-LeanMuscle-Club/AI-LeanMuscle-Club
+# Configure GH_TOKEN securely in your environment first.
+python scripts/sync_daily.py --repository Al-LeanMuscle-Club/AI-LeanMuscle-Club
+# To refresh one older week:
+python scripts/sync_daily.py --repository Al-LeanMuscle-Club/AI-LeanMuscle-Club --week 2026-10-26
 ```
 
-Do not commit credentials or raw downloaded Issue records. Reports save only public opt-in rows and aggregate counts. The separate reviewed data/ranking-state.json file stores structural plan confirmations and content-bound contribution approvals. Commit that state together with real reports so a later sync cannot reset a confirmed plan's denominator. Never delete or recreate a live ledger to resolve a validation error; restore a trusted version. The current and previous weeks are refreshed by default; past scores remain historical snapshots unless refreshed manually.
+Do not place credentials in source files, Issue text, or the browser helper. Keep raw API data and local caches out of public artifacts. Source API failures must leave existing reports intact; do not publish a partial read as a complete board.
 
-For an **offline test only**, supply synthetic issue data and an explicit time:
+## 4. Explain visibility and history
 
-```bash
-python scripts/sync_github.py --fixture /path/to/synthetic-issues.json --week 2026-10-26 --as-of 2026-11-01T12:00:00Z --dry-run
-```
+New v3 files are separate from the previous reports in `reports/`. Never reinterpret or recalculate a historical 10-point row with the new formula. Old examples and the legacy ledger remain historical references.
 
-Never publish test fixture results as real participation.
+At each sync, reconcile saved v3 rows with the current journal's open state and explicit public setting. Closing a journal or choosing No withdraws its author from generated v3 files; prior Git commits and public source Issues remain accessible. [Scoring and correction rules](SCORING.md) · [Migration checklist](UPGRADE.md)
 
-## 5. Run a small pilot
+<a id="9-optional-browser-helper-and-pages-deployment"></a>
 
-Invite willing members to try the forms for two weeks. Check whether a training record takes about 30 seconds, whether members return the next week, and whether they find useful encouragement. Explain that GitHub Issues and images are public, including records of people who do not join the scoreboard.
+## 5. Optional browser helper and Pages deployment
 
-Keep the chat available for members who do not want public tracking. Add nutrition tooling, badges, or model integrations only after the core process is useful. Review the rules with participants; the score is encouragement, not a health measurement.
+In **Settings → Pages**, choose **GitHub Actions** as the publishing source. Manually run **Publish optional member helper**, confirm build and deploy succeeded, and use the real URL returned by the deployment. The site root leads to `/tools/`.
 
-## 6. Configure the expanded community
+The helper prepares check-in text, finds journals, and shows `reports/daily/index.json`. It never submits member records. Before the first successful deployment, README helper links lead to setup instructions. The deployment's `update-entry` job changes them only after a real Pages URL is available.
 
-Keep Issues enabled and merge the community forms in `.github/ISSUE_TEMPLATE/` into the default branch. The homepage's **Join in / 我也参与** link opens `community-chat.yml`, which requires just one message; that new form becomes available after merging to the default branch. Members can also reply to an existing thread. [Community organization](COMMUNITY.md) lists the more specific newcomer, training, food, research/Agent, partner/event, and notice forms, still available through **Issues → New issue**. Title prefixes organize topics without additional labels. Announcements are ordinary Issues that maintainers review and may pin; the form does not restrict who can submit one. Community posts and free activity/meal records need no scoring plan and earn no points. Experience contribution review still requires the approval label and a matching maintainer-reviewed ledger record.
+For automatic publication after successful report jobs and relevant default-branch changes, set the Actions repository variable `PUBLISH_MEMBER_HELPER=true`. Keep it unset if publication should remain manual. Repositories without this setting do not publish automatically.
 
-The plan form now collects independent goals and research-week context. Each training row can specify its own sport and fallback. Old three-column plans and `/done` comments still work. Detailed instructions are in the [member guide](MEMBER_GUIDE.md) and its [Chinese version](MEMBER_GUIDE.zh-CN.md).
+Only static tools and public report artifacts belong on the site; never publish the legacy ranking ledger, raw source data, or credentials. If deployment succeeds but branch protection blocks the README link update, copy the deployment's returned helper URL into each README's `[member-helper]:` definition through the normal reviewed change process.
 
-## 7. Format feedback and member helpers
-
-`check-submission.yml` runs trusted default-branch code for a `weekly-plan` Issue or an author's command comment. Its token has `contents: read` and `issues: write`. It parses the JSON event rather than interpolating member text into shell commands. Bot comments, PRs, peer comments, and ordinary conversation do not cause reply loops. It maintains one editable format-status comment per thread, so each check-in does not add another bot reply.
-
-Format validation checks fields, authorship, session IDs, fallbacks, and dates. It does not verify physical activity, assess health, or approve an experience. The report workflow separately refreshes on relevant events and on schedule. If your organization blocks Issues writes, members can still validate locally. Free activity/meal records use their own forms and do not need command validation.
-
-From the repository root, with `GH_TOKEN` securely configured for read access:
-
-```bash
-python scripts/member_tools.py find --handle YOUR_HANDLE --week 2026-10-26
-python scripts/member_tools.py carry --issue 123 --week 2026-11-02 --output draft.md
-python scripts/member_tools.py check --issue 123 --comment-file checkin.txt
-```
-
-These commands never submit changes. Carry-over writes a local draft and resets public leaderboard consent to `No`; review the schedule, goal, context, and any copied personal notes before submitting it through GitHub. Use `--fixture PATH --as-of TIMESTAMP` for offline synthetic checks.
-
-## 8. Scale reporting without growing the homepage
-
-The README contains aggregate overviews and links. Full weekly Markdown and JSON reports remain in `reports/`. The index includes the latest **12 available report weeks**; the helper can load older public reports on demand. Raw notes, meal contents, calorie estimates, photos, and body measurements are not copied into outputs. Structured weekly rows display meal-record days and training days separately; free activity/meal Issues remain at their original sources and are outside these scoring counts. Live synchronization checks historical eligibility, including withdrawal, Recovery, pause, invalid plans, and removed labels, and updates participation/recovery counts when withdrawing rows. Deleted Issues disappear after full reconciliation, which can be forced with `--refresh`. Git history and previous Pages snapshots may retain older copies. If automatic Pages publishing is enabled, a successful report refresh also updates the hosted snapshot; otherwise manually republish Pages after withdrawal. Refresh an older week explicitly to recalculate its training scores or contribution approvals.
-
-Live synchronization defaults to `.club-cache/issues.json`, an ignored local cache containing source Issue/comment data. It stores no token, is written atomically with restricted local permissions, and must never be committed or copied into a website. Scheduled jobs restore it using `actions/cache`, scoped by repository ID. Organizations that do not want source records in Actions caches can remove the restore-cache step and use `--no-cache`.
-
-An initial run scans all plan metadata. Later runs read changed Issues and comments, refreshing affected reporting and archived threads; a full reconciliation runs every seven days. Removed labels and revoked approvals are handled for selected scoring weeks. A failed read retains the previous cache and reports. Historical scores remain snapshots until explicitly refreshed; each weekly report retains its own generation time.
-
-```bash
-python scripts/sync_github.py --refresh
-python scripts/sync_github.py --no-cache
-```
-
-## 9. Optional browser helper and Pages deployment
-
-The Chinese-first `tools/` page provides free workout/meal links, check-in text, carry-over drafts, a weekly leaderboard with score components, and opt-in personal history. Sport filters select members whose plans include that sport; displayed points remain whole-week participation points. History summarizes available public participation weeks, training days, and meal-record days; old rows with unknown counts are not treated as zero. It has no sign-in, stored credential, automatic posting, or food-analysis model.
-
-To run locally, start this command at the repository root and open `http://localhost:8000/tools/`:
-
-```bash
-python -m http.server 8000
-```
-
-GitHub's source-code view does not run HTML. To publish a hosted helper:
-
-1. Review the intended Pages audience and access settings. A private source repository does not by itself guarantee a private Pages site.
-2. Choose **Settings → Pages → Build and deployment → Source: GitHub Actions**. If your organization restricts Actions, allow `actions/configure-pages`, `actions/upload-pages-artifact`, and `actions/deploy-pages`, in addition to `actions/checkout`.
-3. Manually run **Actions → Publish optional member helper** on the **default branch**. This explicit manual action works without an automatic-publishing variable. The build job has `contents: read` and `pages: read`, including the permission needed to read private repository Pages settings; only the deploy job receives `pages: write` and `id-token: write`.
-4. Use the deployed URL shown in the successful workflow. Repository ownership or custom-domain settings can change its address. Opening a README link to `tools/index.html` still opens GitHub's code viewer; add your actual deployed URL to the README once deployment succeeds.
-
-The workflow publishes only `tools/`, generated `reports/`, and clearly marked `examples/`, excluding source caches and the ranking ledger. It does not enable Pages or change the site's visibility settings.
-
-For **automatic updates**, first complete the manual deployment above, then create a repository **Actions variable** under **Settings → Secrets and variables → Actions → Variables** named `PUBLISH_MEMBER_HELPER` with the value `true`. Without this variable, automatic publishing remains disabled, including in a new fork. Remove it or change its value to `false` to return to manual publishing; this does not remove an already published site.
-
-After opting in, a successful **Update weekly participation reports** run on this repository's default branch triggers publication through `workflow_run`. This covers scheduled, Issue/comment, and manual report runs: the report's `GITHUB_TOKEN` commit does not create another `push` workflow run. Human pushes that change `tools/`, `reports/`, `examples/`, or the publish workflow also refresh the site. Failed report runs, pull requests, runs from another repository, and non-default branches do not publish. Builds always check out the latest default branch, so a report commit made during the completed run is included rather than the older event SHA. Deployments are serialized.
-
-If automatic publishing is disabled, manually rerun the publish workflow after reports or helper files change. Merging these files alone does not configure Pages or opt a repository into automatic publication.
-
-## 10. Confirmed plans and contribution approval
-
-The first successful live report locks the structured sessions of an opted-in Active plan. Confirmations persist in `data/ranking-state.json`; the ledger retains a lookup fingerprint and session structure after withdrawal so rejoining cannot reset the denominator. Fingerprints are not an anonymity guarantee. No descriptions, food text, photos, or tokens are stored there. Changes before the first successful confirmation cannot be reconstructed.
-
-For a useful experience Issue, first review its author, selected week, and current text, then add `points-approved`. With a securely configured read token, prepare the matching local approval:
-
-```bash
-python scripts/manage_ranking.py approve --issue 123
-```
-
-Review the ledger diff and submit it through a maintainer-reviewed PR. The point is awarded only after that approval record reaches the trusted reporting branch. Editing the Issue text, author, or selected week invalidates the match and needs another review. To withdraw approval, remove the label or prepare and commit a revocation:
-
-```bash
-python scripts/manage_ranking.py revoke --issue 123
-```
-
-Refresh the relevant week after approval changes. Protect ledger changes with normal maintainer review; a label or unreviewed PR alone must not authorize points. The CLI writes local files only.
-
-The example directory contains six separate topic guides and optional synthetic fixture data. Fixture runs use temporary confirmation state and `--dry-run` prints JSON without publishing it. Keep demonstrations out of `reports/` and out of the live ledger.
-
-## References
-
-- [GitHub Issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
-- [GitHub's built-in workflow token](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token)
-- [Workflow schedule syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onschedule)
-- [Workflow-run events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
-- [Triggering workflows with GITHUB_TOKEN](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#triggering-a-workflow-from-a-workflow)
-- [Reading Pages settings and required permissions](https://docs.github.com/en/rest/pages/pages#get-a-github-pages-site)
-- [Repository roles](https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/repository-roles-for-an-organization)
+[Chinese Pages walkthrough](PAGES_QUICKSTART.zh-CN.md) · [Historical features and automation](LEGACY.md)

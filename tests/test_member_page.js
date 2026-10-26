@@ -5,645 +5,216 @@ const fs = require("node:fs");
 const path = require("node:path");
 const tools = require("../tools/app.js");
 
-test("find plan search includes author, week and both open/closed issues", () => {
-  const url = new URL(tools.searchUrl("example/club", "@Researcher-1", "2026-10-26"));
-  assert.equal(url.origin, "https://github.com");
-  assert.equal(url.pathname, "/example/club/issues");
-  assert.equal(url.searchParams.get("q"), 'is:issue label:weekly-plan author:Researcher-1 in:body "2026-10-26"');
-  assert(!url.searchParams.get("q").includes("is:open"));
-});
-
-test("free record search targets an author's activity or meal issues, including closed records", () => {
-  for (const label of ["activity-record", "meal-record"]) {
-    const url = new URL(tools.freeRecordSearchUrl("example/club", "@Researcher-1", label));
-    assert.equal(url.origin, "https://github.com");
-    assert.equal(url.pathname, "/example/club/issues");
-    assert.equal(url.searchParams.get("q"), "is:issue label:" + label + " author:Researcher-1 sort:created-desc");
-    assert(!/is:(?:open|closed)|state:/.test(url.searchParams.get("q")));
-  }
-  assert.throws(() => tools.freeRecordSearchUrl("example/club", "Alice", "weekly-plan"));
-  assert.throws(() => tools.freeRecordSearchUrl("example/club", "Alice author:Bob", "meal-record"));
-  assert.throws(() => tools.freeRecordSearchUrl("example/club?token=x", "Alice", "activity-record"));
-});
-
-test("community searches include unlabelled real posts and exclude labelled and titled examples", () => {
-  for (const topic of ["all", "activity", "experience", "meal", "buddies", "research", "hello"]) {
-    const url = new URL(tools.communitySearchUrl("example/club", topic));
-    const query = url.searchParams.get("q");
-    assert.equal(url.pathname, "/example/club/issues");
-    assert.match(query, /is:issue in:title -label:example/);
-    for (const marker of ['-"Fictional example"', '-虚构']) assert(query.includes(marker));
-    assert(!query.includes("is:open"));
-    assert(!/(?:^| )label:/.test(query), "new posts must be discoverable before label repair");
-  }
-  assert.match(new URL(tools.communitySearchUrl("example/club", "activity")).searchParams.get("q"), /"\[Activity\]"/);
-  assert.match(new URL(tools.communitySearchUrl("example/club", "experience")).searchParams.get("q"), /"\[Experience\]"/);
-  assert.throws(() => tools.communitySearchUrl("example/club", "all author:other"));
-});
-
-test("quick activity drafts preserve actual inputs in the existing GitHub form without privileged parameters", () => {
-  const input = {date:"2026-10-21",timeZone:"Asia/Shanghai",sport:"basketball",text:"今天打球，想问个问题：A&B?\n之后再补照片。"};
-  const draft = tools.activityDraft("example/club", input);
-  const url = new URL(draft.url);
-  assert.equal(url.origin, "https://github.com");
-  assert.equal(url.pathname, "/example/club/issues/new");
-  assert.equal(url.searchParams.get("template"), "activity-record.yml");
-  assert.equal(url.searchParams.get("activity-date"), input.date);
-  assert.equal(url.searchParams.get("time-zone"), input.timeZone);
-  assert(!url.searchParams.has("sport"), "GitHub documents prefills for text fields, not dropdowns");
-  assert.equal(url.searchParams.get("activity"), input.text);
-  assert.equal(url.searchParams.get("title"), "[Activity] 2026-10-21 · 篮球");
-  assert(!url.searchParams.has("labels"));
-  assert(!url.searchParams.has("assignees"));
-  assert.match(draft.body, /### Sport\n\nbasketball/);
-  assert(draft.body.endsWith(input.text + "\n"));
-  assert(!draft.body.includes("Public leaderboard"));
-  for (const changed of [{date:"2026-02-30"},{timeZone:"Asia/Fake"},{timeZone:""},{sport:"basketball&labels=points-approved"},{text:""},{text:"x".repeat(501)}]) assert.throws(() => tools.activityDraft("example/club", {...input,...changed}));
-  const template = fs.readFileSync(path.join(__dirname,"../.github/ISSUE_TEMPLATE/activity-record.yml"),"utf8");
-  for (const id of ["activity-date","time-zone","sport","activity"]) assert(template.includes("id: " + id));
-});
-
-test("casual experience sharing does not require a scoring week", () => {
-  const template = fs.readFileSync(path.join(__dirname,"../.github/ISSUE_TEMPLATE/experience.yml"),"utf8");
-  const week = template.split("id: week-starting")[1].split("  - type:")[0];
-  assert.match(week, /required: false/);
-  assert.match(week, /周一/);
-  assert.match(template.split("id: context")[1].split("  - type:")[0], /required: true/);
-});
-
-test("invalid or injected repository, username, date and issue inputs are rejected", () => {
-  for (const value of ["https://github.com/a/b", "a/b?x=1", "../b", "a/..", "a/b/extra", "a/b\n&token=x"]) assert.throws(() => tools.repository(value));
-  for (const value of ["a author:someone", "-invalid", "someone/else", "a\nlabel:x"]) assert.throws(() => tools.handle(value));
-  for (const value of ["2026-02-30", "0000-01-03", "2026-2-1", "today", "2026-10-26\ncommand"]) assert.throws(() => tools.isoDate(value));
-  assert.throws(() => tools.isoDate("2026-10-27", true));
-  assert.equal(tools.isoDate("2028-02-29"), "2028-02-29");
-  for (const value of ["0", "-1", "1?comment=2", "Infinity", "9007199254740993"]) assert.throws(() => tools.issueNumber(value));
-});
-
-test("mobile check-in accepts safe GitHub issue links and rejects wrong repositories", () => {
-  assert.equal(tools.issueUrl("example/club", "https://github.com/example/club/issues/123"), "https://github.com/example/club/issues/123");
-  assert.equal(tools.issueUrl("example/club", "123"), "https://github.com/example/club/issues/123");
-  for (const value of ["https://github.com/other/club/issues/123", "https://github.com/example/club/issues/123?x=1",
-    "https://github.com/example/club/issues/123#comment", "http://github.com/example/club/issues/123",
-    "https://github.com.evil.test/example/club/issues/123"]) {
-    assert.throws(() => tools.issueUrl("example/club", value));
-  }
-});
-
-test("comment generation preserves notes, validates sessions and cannot embed extra commands", () => {
-  assert.equal(tools.buildComment({status:"done",session:"s2",date:"2026-10-27",notes:"Strength, 30 min.\r\nFelt good."}), "/done S2 2026-10-27\nStrength, 30 min.\nFelt good.");
-  for (const status of ["fallback", "partial", "skip"]) assert.equal(tools.buildComment({status,session:"S1",date:"2026-10-27"}), "/" + status + " S1 2026-10-27");
-  assert.equal(tools.buildComment({status:"meal",session:"ignored",date:"2026-10-27",notes:"Lunch, portions estimated."}), "/meal 2026-10-27\nLunch, portions estimated.");
-  for (const notes of ["/pause", "Notes.\n  /DONE S3 2026-10-27", "/meal 2026-10-27"]) assert.throws(() => tools.buildComment({status:"done",session:"S1",date:"2026-10-27",notes}));
-  assert.throws(() => tools.buildComment({status:"done",session:"S0",date:"2026-10-27"}));
-  assert.throws(() => tools.buildComment({status:"review",session:"S1",date:"2026-10-27"}));
-});
-
-test("carry-over resets consent, removes completed check marks, preserves schedule and context", () => {
-  const plan = "### Week starting\n\n2026-10-26\n\n### Time zone\n\nAsia/Shanghai\n\n### Participation mode\n\nActive\n\n### Public leaderboard\n\nYes\n\n### Primary goal\n\nmuscle-gain\n\n### Planned sessions\n\n- [x] S1 | Monday | strength | 30 min | 10 min at home\n- [ ] S2 | Friday | basketball | Skills\n\n### Notes\n\nReview my old context.";
-  const draft = tools.carryPlan(plan.replace(/\n/g, "\r\n"), "2026-11-02");
-  assert.match(draft, /### Week starting\n\n2026-11-02/);
-  assert.match(draft, /### Public leaderboard\n\nNo/);
-  assert(!draft.includes("[x]"));
-  assert(!draft.includes("[ ]"));
-  assert.match(draft, /S1 \| Monday \| strength \| 30 min \| 10 min at home/);
-  assert.match(draft, /muscle-gain/);
-  assert.match(draft, /Review my old context/);
-  assert.throws(() => tools.carryPlan(plan + "\n### Public leaderboard\n\nYes", "2026-11-02"));
-  assert.throws(() => tools.carryPlan("Missing issue form fields", "2026-11-02"));
-});
-
-test("report handling only selects safe known fields, validates links, sorts and filters history", () => {
-  const alice = {handle:"Alice",issue_url:"https://github.com/example/club/issues/1",goal:"muscle-gain",sports:["strength","basketball","unknown"],completed:2,planned:3,total_points:7,notes:"NEVER_COPY_THIS",meals:[{calories:500}]};
-  const older = {...alice,issue_url:"https://github.com/example/club/issues/2",goal:"habit",sports:["walking"]};
-  const data = {schema_version:2,weeks:[{week_start:"2026-10-19",leaderboard:[older]},{week_start:"2026-10-26",leaderboard:[alice,{...alice,issue_url:"javascript:alert(1)"},{...alice,issue_url:"https://github.com.evil.example/a/b/issues/1"},{...alice,total_points:100},{...alice,completed:4}]}]};
-  const rows = tools.publicRows(data);
-  assert.equal(rows.length, 2);
-  assert.equal(rows[0].week, "2026-10-26");
-  assert(!JSON.stringify(rows).includes("NEVER_COPY_THIS"));
-  assert(!JSON.stringify(rows).includes("calories"));
-  assert.equal(tools.filterRows(rows,{handle:"@ali",sport:"basketball",goal:"muscle-gain"}).length, 1);
-  assert.equal(tools.filterRows(rows,{handle:"someone-else"}).length, 0);
-  for (const url of ["http://github.com/a/b/issues/1", "https://evil.example/a/b/issues/1", "https://github.com/a/b/issues/1?x=1", "https://user@github.com/a/b/issues/1", "https://github.com/a/b/issues/1#x"]) assert.equal(tools.safeIssueUrl(url), null);
-  assert.throws(() => tools.publicRows({weeks:[]}));
-});
-
-test("Monday defaults work across Sunday, Monday and year boundaries", () => {
-  assert.deepEqual(tools.weekDates(new Date(2026,9,25,12)), {current:"2026-10-19",next:"2026-10-26"});
-  assert.deepEqual(tools.weekDates(new Date(2026,9,26,12)), {current:"2026-10-26",next:"2026-11-02"});
-  assert.deepEqual(tools.weekDates(new Date(2027,0,1,12)), {current:"2026-12-28",next:"2027-01-04"});
-});
-
-function publicPlan(handle, rank, points, extra = {}) {
-  return {handle, rank, total_points:points, issue_url:"https://github.com/example/club/issues/1", planned:4, completed:2,
-    confirmed_planned:4, current_planned:4, plan_changed:false, completion_rate:0.5, execution_rate:0.625,
-    partial:1, skipped:0, plan_points:1, execution_points:3.75, review_points:2, contribution_points:0,
-    goal:"habit", sports:["running"], recorded_training_days:3, meal_days:2,
-    sessions:[{id:"S1", day:"Monday", sport:"running", status:"completed", date:"2026-10-26", used_fallback:false, confirmed:true}],
-    ...extra};
+function row(handle = "ExampleMember", overrides = {}) {
+  return {rank:1,handle,issue_number:12,issue_url:"https://github.com/example/club/issues/12",work_days:5,exercise_days:1,checkin_days:5,score:50,time_zone:"Asia/Shanghai",...overrides};
 }
+function week(weekStart = "2026-10-26", rows = [row()]) {
+  const end = new Date(weekStart + "T00:00:00Z"); end.setUTCDate(end.getUTCDate() + 6);
+  return {schema_version:3,scoring_version:3,week_start:weekStart,week_end:end.toISOString().slice(0,10),generated_at:"2026-11-02T01:15:00Z",participants_count:rows.length,leaderboard:rows};
+}
+function index(weeks = []) { return {schema_version:3,scoring_version:3,available_weeks:weeks.map(w=>w.week_start),weeks}; }
 
-test("weekly leaderboard preserves backend ties, score breakdown and confirmed-plan fields", () => {
-  const data = {schema_version:2, weeks:[{week_start:"2026-10-26", generated_at:"2026-11-01T12:00:00Z", leaderboard:[
-    publicPlan("Aaron", 3, 3),
-    publicPlan("Zulu", 1, 6.75, {plan_changed:true, current_planned:3}),
-    publicPlan("Bella", 1, 6.75),
-  ]}]};
-  const rows = tools.publicRows(data);
-  assert.deepEqual(rows.map(row => [row.handle,row.rank,row.points]), [["Bella",1,6.75],["Zulu",1,6.75],["Aaron",3,3]]);
-  const zulu = rows.find(row => row.handle === "Zulu");
-  assert.equal(zulu.plan_points,1);
-  assert.equal(zulu.execution_points,3.75);
-  assert.equal(zulu.review_points,2);
-  assert.equal(zulu.contribution_points,0);
-  assert.equal(zulu.confirmed_planned,4);
-  assert.equal(zulu.current_planned,3);
-  assert.equal(zulu.plan_changed,true);
-  assert.equal(zulu.execution_rate,0.625);
-  assert.equal(zulu.sessions[0].confirmed,true);
-  assert.equal(zulu.generated_at,"2026-11-01T12:00:00Z");
-  const filtered = tools.filterRows(rows,{week:"2026-10-26",handle:"Zulu",sport:"running"});
-  assert.equal(filtered[0].rank,1);
-  assert.equal(filtered[0].points,6.75);
+test("daily check-ins express all four work/exercise states without extra commands", () => {
+  for (const [work, exercise, expected] of [[false,false,"W=0 E=0"],[true,false,"W=1 E=0"],[false,true,"W=0 E=1"],[true,true,"W=1 E=1"]]) {
+    assert.equal(tools.buildComment({date:"2026-10-26",work,exercise}),"/checkin 2026-10-26 " + expected);
+  }
+  for (const input of [{work:1,exercise:true},{work:"0",exercise:false},{work:true,exercise:null},{work:true,exercise:true,date:"2026-10-26\n/checkin 2026-10-27 W=1 E=1"}]) {
+    assert.throws(()=>tools.buildComment({date:"2026-10-26",...input}));
+  }
 });
 
-test("week and sport filters retain original whole-week scores and ranks", () => {
-  const old = {week_start:"2026-10-19", leaderboard:[publicPlan("Alice",1,9)]};
-  const current = {week_start:"2026-10-26", leaderboard:[publicPlan("Alice",7,6,{sports:["strength","running"]}),publicPlan("Bob",1,9)]};
-  const rows = tools.publicRows({schema_version:2,weeks:[old,current]});
-  const matching = tools.filterRows(rows,{week:"2026-10-26",sport:"strength"});
-  assert.equal(matching.length,1);
-  assert.equal(matching[0].week,"2026-10-26");
-  assert.equal(matching[0].rank,7);
-  assert.equal(matching[0].points,6);
-  assert.deepEqual(tools.filterRows(rows,{week:"2026-11-02"}),[]);
+test("dates use the local calendar, including month/year boundaries and leap days", () => {
+  assert.equal(tools.localDate(new Date(2026,11,31,23,59)),"2026-12-31");
+  assert.equal(tools.localDate(new Date(2027,0,1,0,1)),"2027-01-01");
+  assert.equal(tools.isoDate("2028-02-29"),"2028-02-29");
+  for (const value of ["2026-02-29","2026-02-30","2026-13-01","0000-01-01","2026-1-1","tomorrow","2026-10-26\n"]) assert.throws(()=>tools.isoDate(value));
+  assert.throws(()=>tools.isoDate("2026-10-27",true));
 });
 
-test("personal summaries use exact public handles, distinct weeks and recorded day counts", () => {
-  const rows = tools.publicRows({schema_version:2,weeks:[
-    {week_start:"2026-10-26",leaderboard:[publicPlan("Alice",1,7,{recorded_training_days:3,meal_days:2}),publicPlan("Alice-2",2,6,{recorded_training_days:7,meal_days:7})]},
-    {week_start:"2026-10-19",leaderboard:[publicPlan("ALICE",2,6,{recorded_training_days:2,meal_days:0})]},
-  ]});
-  const summary = tools.memberSummary([...rows,rows[0]],"@aLiCe");
-  assert.equal(summary.weeks,2);
-  assert.equal(summary.training_days,5);
-  assert.equal(summary.meal_days,2);
-  assert.equal(summary.training_weeks_known,2);
-  assert.equal(summary.meal_weeks_known,2);
-  assert.deepEqual(summary.rows.map(row => row.week),["2026-10-26","2026-10-19"]);
-  assert.equal(tools.memberSummary(rows,"Ali").weeks,0);
-  assert.equal(tools.memberSummary(rows,"").training_days,null);
+test("journal search finds an author's unlabelled open and closed check-in issues", () => {
+  const url = new URL(tools.searchUrl("example/club","@Researcher-1"));
+  assert.equal(url.pathname,"/example/club/issues");
+  assert.equal(url.searchParams.get("q"),'is:issue author:Researcher-1 "[Check-in]" in:title -label:example -"Fictional example" -虚构 sort:created-desc');
+  assert(!/is:(open|closed)|label:daily-checkin|weekly-plan/.test(url.searchParams.get("q")));
+  const experience = new URL(tools.experienceSearchUrl("example/club")).searchParams.get("q");
+  assert(experience.includes('"[Experience]" in:title'));
+  assert(experience.includes('-label:example'));
 });
 
-test("legacy and missing report fields stay unknown instead of inventing counts or ranks", () => {
-  const legacy = {handle:"Alice",issue_url:"https://github.com/example/club/issues/1",planned:3,completed:2,total_points:7};
-  const rows = tools.publicRows({schema_version:2,weeks:[
-    {week_start:"2026-10-26",leaderboard:[publicPlan("Alice",1,7,{recorded_training_days:0,meal_days:0})]},
-    {week_start:"2026-10-19",leaderboard:[legacy]},
-  ]});
-  assert.equal(rows[1].rank,null);
-  assert.equal(rows[1].confirmed_planned,3);
-  assert.equal(rows[1].has_confirmed_plan,false);
-  assert.equal(rows[1].execution_rate,null);
-  assert.equal(rows[1].recorded_training_days,null);
-  assert.equal(rows[1].meal_days,null);
-  assert.equal(rows[1].execution_points,null);
-  const summary = tools.memberSummary(rows,"alice");
-  assert.equal(summary.weeks,2);
-  assert.equal(summary.training_days,0);
-  assert.equal(summary.meal_days,0);
-  assert.equal(summary.training_weeks_known,1);
-  assert.equal(summary.meal_weeks_known,1);
-  assert.equal(tools.memberSummary([rows[1]],"Alice").meal_days,null);
+test("repository, username and issue inputs cannot inject queries or redirect to another host", () => {
+  for (const value of ["https://github.com/a/b","a/b?x=1","a/b/extra","../b","a/..","a/b\n&labels=admin"]) assert.throws(()=>tools.repository(value));
+  for (const value of ["a author:Bob","@a label:admin","a\nb","-abc","<script>"]) assert.throws(()=>tools.handle(value));
+  for (const value of ["0","-1","1?x=1","9007199254740993","https://github.com/other/club/issues/12","https://github.com.evil.test/example/club/issues/12","https://user@github.com/example/club/issues/12","javascript:alert(1)","https://github.com/example/club/issues/12?labels=admin"]) assert.throws(()=>tools.issueUrl("example/club",value));
+  assert.equal(tools.issueUrl("example/club","https://github.com/example/club/issues/12#new_comment_field"),"https://github.com/example/club/issues/12");
+  assert.equal(tools.issueUrl("example/club","12"),"https://github.com/example/club/issues/12");
+  for (const value of ["javascript:alert(1)","https://github.com.evil.test/example/club/issues/12","https://github.com/example/club/issues/12?x=1","https://github.com/example/club/issues/12#x"]) assert.equal(tools.safeIssueUrl(value),null);
 });
 
-test("scoring versions follow each report without guessing legacy rules or relabeling future rules", () => {
-  const rows = tools.publicRows({schema_version:2,scoring_version:2,weeks:[
-    {week_start:"2026-10-26",scoring_version:2,leaderboard:[publicPlan("Alice",1,6.75)]},
-    {week_start:"2026-10-19",leaderboard:[publicPlan("Alice",1,6)]},
-    {week_start:"2026-10-12",scoring_version:3,leaderboard:[publicPlan("Alice",1,6)]},
-    {week_start:"2026-10-05",scoring_version:"2",leaderboard:[publicPlan("Alice",1,6)]},
-  ]});
-  assert.deepEqual(rows.map(row=>row.scoring_version),[2,null,3,null]);
-  assert.equal(tools.memberSummary(rows,"Alice").rows[1].scoring_version,null);
-  assert.match(tools.scoringLabel(2),/评分规则 v2/);
-  assert.match(tools.scoringExplanation(2),/0\.5 × 部分完成/);
-  assert.match(tools.scoringLabel(null),/规则版本未记录.*保留原分数/);
-  assert.match(tools.scoringExplanation(undefined),/未按当前公式重算/);
-  assert.match(tools.scoringLabel(3),/评分规则 v3/);
-  assert.match(tools.scoringExplanation(3),/尚无该版本的公式说明/);
-  for (const value of [true,0,-1,2.5,"2",{},null]) assert.equal(tools.scoringVersion(value),null);
+test("v3 reports preserve declared ranks, ties and scores while stripping arbitrary metadata", () => {
+  const report = week("2026-10-26",[row("Zulu",{rank:3,score:0,work_days:0,exercise_days:1,checkin_days:1}),row("Bob",{notes:"PRIVATE_NOTES",comments:["RAW_COMMENT"]}),row("Alice")]);
+  const reports = tools.reportWeeks(index([week("2026-10-19",[]),report]));
+  assert.deepEqual(reports.map(r=>r.week_start),["2026-10-26","2026-10-19"]);
+  assert.deepEqual(reports[0].leaderboard.map(r=>[r.handle,r.rank,r.score]),[["Alice",1,50],["Bob",1,50],["Zulu",3,0]]);
+  assert(!JSON.stringify(reports).includes("PRIVATE_NOTES"));
+  assert(!JSON.stringify(reports).includes("RAW_COMMENT"));
+  assert.deepEqual(report.leaderboard.map(r=>r.handle),["Zulu","Bob","Alice"],"reader must not mutate the supplied snapshot");
 });
 
-test("invalid archive weeks and injected details cannot enter the public record view", () => {
-  const row = publicPlan("Alice",1,7,{notes:"PRIVATE_NOTES",meal_days:99,recorded_training_days:-1,
-    sessions:[{id:"S1",day:"Monday",sport:"running",status:"completed",date:"2026-10-26",confirmed:false,notes:"PRIVATE_SESSION",calories:1234}]});
-  const data = {schema_version:2,weeks:[null,{week_start:"../../private",leaderboard:[row]},
-    {week_start:"2026-10-26",generated_at:"bad-time",leaderboard:[row,row]},
-    {week_start:"2026-10-26",leaderboard:[publicPlan("Someone",2,6)]}]};
-  const weeks = tools.reportWeeks(data);
-  assert.equal(weeks.length,1);
-  const rows = tools.publicRows(data);
-  assert.equal(rows.length,1);
-  assert.equal(rows[0].meal_days,null);
-  assert.equal(rows[0].recorded_training_days,null);
-  assert.equal(rows[0].generated_at,null);
-  assert.equal(rows[0].sessions[0].confirmed,false);
-  assert(!JSON.stringify(rows).includes("PRIVATE"));
-  assert(!JSON.stringify(rows).includes("calories"));
+test("old 10-point reports and mixed or malformed weekly snapshots cannot become a 100-point board", () => {
+  for (const changed of [{schema_version:2},{scoring_version:2},{scoring_version:"3"},{weeks:null}]) assert.throws(()=>tools.reportWeeks({...index([week()]),...changed}));
+  for (const changed of [{scoring_version:2},{schema_version:2},{week_start:"2026-10-27"},{week_end:"2026-11-02"},{generated_at:"not-a-date"},{generated_at:"2026-11-02T01:15:00"},{participants_count:3}]) {
+    assert.throws(()=>tools.reportWeeks(index([{...week(),...changed}])));
+  }
+  assert.throws(()=>tools.reportWeeks(index([week(),week()])));
+  assert.deepEqual(tools.reportWeeks(index()),[]);
 });
 
-// Minimal DOM at the page boundary: verifies the real mount handlers without a
-// browser dependency or requiring network access to community data.
+test("malicious or impossible report rows are rejected before DOM rendering", () => {
+  for (const changed of [{handle:'<img src=x onerror=alert(1)>'},{rank:0},{score:101},{score:"50"},{score:NaN},{work_days:8},{exercise_days:-1},{checkin_days:0},{work_days:6},{issue_url:"javascript:alert(1)"},{issue_number:13},{time_zone:"Asia/Fake"}]) assert.throws(()=>tools.reportWeeks(index([week("2026-10-26",[row("Alice",changed)])])));
+  assert.throws(()=>tools.reportWeeks(index([week("2026-10-26",[row("Alice"),row("alice")])])));
+  assert.equal(tools.reportWeeks(index([week("2026-10-26",[row("Capped",{work_days:7,exercise_days:7,checkin_days:7,score:100})])]))[0].leaderboard[0].score,100);
+});
+
+// Minimal page-boundary DOM. Test actual event handlers against the real HTML
+// without browser or network dependencies. Setting innerHTML is forbidden.
 class Element {
-  constructor() { this.children=[]; this.listeners={}; this.value=""; this.hidden=false; this.disabled=false; this.open=false; this.parentElement=null; this.tagName=""; this.attributes={}; this.text=""; this.classes=new Set(); this.classList={toggle:(name,on)=>on ? this.classes.add(name) : this.classes.delete(name)}; }
-  set textContent(text) { this.text=String(text); this.children=[]; }
-  get textContent() { return this.text + this.children.map(child=>child.textContent).join(""); }
-  setAttribute(name,value) { this.attributes[name]=String(value); }
-  append(...children) { this.children.push(...children); }
-  replaceChildren(...children) { this.text=""; this.children=[...children]; }
+  constructor(tag="") { this.tagName=tag.toUpperCase();this.children=[];this.listeners={};this.value="";this.href="";this.hidden=false;this.disabled=false;this.open=false;this.checked=false;this.parentElement=null;this.attributes={};this.text="";this.classes=new Set();this.classList={toggle:(name,on)=>on?this.classes.add(name):this.classes.delete(name)}; }
+  set textContent(value) { this.text=String(value);this.children=[]; }
+  get textContent() { return this.text+this.children.map(child=>child.textContent).join(""); }
+  set innerHTML(_) { throw new Error("Dynamic markup is not permitted"); }
+  setAttribute(name,value) { this.attributes[name]=String(value);if(name==="href")this.href=String(value); }
+  removeAttribute(name) { delete this.attributes[name];if(name==="href")this.href=""; }
+  append(...children) { children.forEach(child=>{child.parentElement=this;this.children.push(child);}); }
+  replaceChildren(...children) { this.text="";this.children=[];this.append(...children); }
   addEventListener(name,listener) { (this.listeners[name] ||= []).push(listener); }
-  async fire(name) { for (const listener of this.listeners[name] || []) await listener({preventDefault(){}}); }
-  focus() {}
-  select() {}
-  closest(tag) { return this.tagName === tag.toUpperCase() ? this : this.parentElement?.closest(tag) || null; }
+  async fire(name) { for(const listener of this.listeners[name]||[])await listener({preventDefault(){}}); }
+  focus() { this.focused=true; }
+  select() { this.selected=true; }
+  closest(tag) { return this.tagName===tag.toUpperCase()?this:this.parentElement?.closest(tag)||null; }
   scrollIntoView() { this.scrolled=true; }
 }
 function pageDocument() {
   const html=fs.readFileSync(path.join(__dirname,"../tools/index.html"),"utf8");
-  const elements=new Map();
-  const stack=[];
+  const elements=new Map(),stack=[];
   const voidTags=new Set(["META","LINK","INPUT","BR","IMG","HR"]);
-  for (const match of html.matchAll(/<\/?([a-z][a-z0-9-]*)\b[^>]*>/gi)) {
+  for(const match of html.matchAll(/<\/?([a-z][a-z0-9-]*)\b[^>]*>/gi)) {
     const tag=match[1].toUpperCase();
-    if (match[0].startsWith("</")) {
-      assert.equal(stack.pop()?.tagName,tag,"page tags must nest correctly");
-      continue;
-    }
-    const element=new Element();
-    element.tagName=tag;
-    element.parentElement=stack.at(-1) || null;
-    element.hidden=/\bhidden(?:\s|>)/.test(match[0]);
-    element.open=/\bopen(?:\s|>)/.test(match[0]);
-    element.value=/\bvalue="([^"]*)"/.exec(match[0])?.[1] || "";
-    element.href=/\bhref="([^"]*)"/.exec(match[0])?.[1] || "";
+    if(match[0].startsWith("</")){assert.equal(stack.pop()?.tagName,tag,"valid HTML nesting");continue;}
+    const el=new Element(tag);el.parentElement=stack.at(-1)||null;
+    el.hidden=/\bhidden(?:\s|>)/.test(match[0]);el.disabled=/\bdisabled(?:\s|>)/.test(match[0]);el.checked=/\bchecked(?:\s|>)/.test(match[0]);
+    el.value=/\bvalue="([^"]*)"/.exec(match[0])?.[1]||"";el.href=/\bhref="([^"]*)"/.exec(match[0])?.[1]||"";
     const id=/\bid="([^"]+)"/.exec(match[0])?.[1];
-    if (id) {
-      assert(!elements.has(id), "duplicate page ID " + id);
-      elements.set(id,element);
-    }
-    if (!voidTags.has(tag)) stack.push(element);
+    if(id){assert(!elements.has(id),"unique HTML id: "+id);elements.set(id,el);}
+    if(!voidTags.has(tag))stack.push(el);
   }
   assert.equal(stack.length,0);
-  elements.get("log-status").value="done";
-  return {getElementById:id=>elements.get(id),createElement:()=>new Element()};
+  return {getElementById:id=>elements.get(id),createElement:tag=>new Element(tag)};
 }
-async function mountedPage(index, archives={}, {openAdvanced=true, hash=""}={}) {
-  const originalFetch=globalThis.fetch;
-  const originalLocation=globalThis.location;
-  const calls=[];
-  globalThis.location={protocol:"https:",hash};
-  globalThis.fetch=async url=>{
-    calls.push(url);
-    const body=url==="../reports/index.json" ? index : archives[url];
-    return {ok:body!==undefined,json:async()=>body};
-  };
-  const doc=pageDocument();
-  const windowListeners={};
-  doc.defaultView={location:globalThis.location,addEventListener(name,listener){(windowListeners[name] ||= []).push(listener);}};
+async function mountedPage(body=index(), {protocol="https:",hash="",clipboard=null,fetcher=null}={}) {
+  const doc=pageDocument(),calls=[],listeners={};
+  doc.defaultView={location:{protocol,hash},navigator:{clipboard},addEventListener(name,listener){(listeners[name] ||= []).push(listener);},fetch:async(url,options)=>{calls.push({url,options});return fetcher?fetcher(url,options):{ok:body!==undefined,json:async()=>body};}};
   tools.mount(doc);
-  if (openAdvanced) {
-    doc.getElementById("advanced-tools").open=true;
-    await doc.getElementById("advanced-tools").fire("toggle");
-  }
   await new Promise(resolve=>setImmediate(resolve));
-  return {doc,calls,async navigate(hash){doc.defaultView.location.hash=hash;for(const listener of windowListeners.hashchange || [])listener();await new Promise(resolve=>setImmediate(resolve));},restore(){globalThis.fetch=originalFetch;if(originalLocation===undefined)delete globalThis.location;else globalThis.location=originalLocation;}};
+  return {doc,calls,async navigate(hash){doc.defaultView.location.hash=hash;for(const listener of listeners.hashchange||[])listener();}};
+}
+function enterDaily(page, {issue="12",date="2026-10-26",work=true,exercise=false}={}) {
+  const get=page.doc.getElementById;
+  get("log-issue").value=issue;get("log-date").value=date;get("log-work").checked=work;get("log-exercise").checked=exercise;
 }
 
-test("free-record entry links need no weekly plan and deployed helper links point to GitHub", () => {
+test("page prepares an exact daily comment locally and points at the chosen issue comment field", async()=>{
+  const page=await mountedPage(index([week()])),get=page.doc.getElementById;
+  enterDaily(page,{issue:"https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42#issuecomment-123",exercise:true});
+  await get("log-form").fire("submit");
+  assert.equal(get("log-output").value,"/checkin 2026-10-26 W=1 E=1");
+  assert.equal(get("log-link").href,"https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42#new_comment_field");
+  assert.equal(get("log-result").hidden,false);
+  assert.deepEqual(page.calls,[{url:"../reports/daily/index.json",options:undefined}],"drafting never submits or fetches member records");
+  get("log-work").checked=false;await get("log-work").fire("change");
+  assert.equal(get("log-result").hidden,true,"changed input cannot leave a stale draft ready to copy");
+});
+
+test("invalid dates and wrong-repository issue URLs hide a previous valid draft", async()=>{
+  const page=await mountedPage(),get=page.doc.getElementById;
+  enterDaily(page);await get("log-form").fire("submit");
+  get("log-date").value="2026-02-30";await get("log-form").fire("submit");
+  assert.equal(get("log-result").hidden,true);assert.match(get("log-message").textContent,/有效的日历日期/);
+  enterDaily(page,{issue:"https://github.com/wrong/club/issues/12"});await get("log-form").fire("submit");
+  assert.equal(get("log-result").hidden,true);assert.match(get("log-message").textContent,/当前仓库/);
+  const today=tools.localDate();get("log-date").value="2026-10-01";await get("log-today").fire("click");assert.equal(get("log-date").value,today);
+});
+
+test("copying is explicit, and denied clipboard access selects text for manual copying", async()=>{
+  const copied=[];
+  const page=await mountedPage(index(),{clipboard:{writeText:async value=>copied.push(value)}}),get=page.doc.getElementById;
+  await get("copy-log").fire("click");assert.deepEqual(copied,[]);
+  enterDaily(page,{work:false,exercise:false});await get("log-form").fire("submit");await get("copy-log").fire("click");
+  assert.deepEqual(copied,["/checkin 2026-10-26 W=0 E=0"]);assert.match(get("log-message").textContent,/已复制/);
+  page.doc.defaultView.navigator.clipboard={writeText:async()=>{throw new Error("denied");}};
+  await get("copy-log").fire("click");assert.equal(get("log-output").selected,true);assert.match(get("log-message").textContent,/手动复制/);
+  assert.equal(page.calls.length,1);
+});
+
+test("repository settings update all participation links and safely invalidate drafts and searches", async()=>{
+  const page=await mountedPage(),get=page.doc.getElementById;
+  get("find-handle").value="@Alice";await get("find-form").fire("submit");assert.equal(get("find-link").hidden,false);
+  enterDaily(page);await get("log-form").fire("submit");
+  get("repository").value="new-org/new-club";await get("repository").fire("input");
+  for(const id of ["create-journal","share-experience","join-community","browse-experiences"])assert.equal(new URL(get(id).href).pathname.startsWith("/new-org/new-club/"),true);
+  assert.equal(new URL(get("create-journal").href).searchParams.get("template"),"daily-checkin.yml");
+  assert.equal(get("log-result").hidden,true);assert.equal(get("find-link").hidden,true);
+  await get("find-form").fire("submit");assert.equal(new URL(get("find-link").href).pathname,"/new-org/new-club/issues");
+  get("repository").value="../secret";await get("repository").fire("change");
+  assert.equal(get("create-journal").href,"");assert.equal(get("create-journal").attributes["aria-disabled"],"true");
+  get("repository").value="example/club";await get("repository").fire("change");
+  assert.equal(get("create-journal").attributes["aria-disabled"],undefined);
+  get("find-handle").value="Alice author:Bob";await get("find-form").fire("submit");assert.equal(get("find-link").hidden,true);
+});
+
+test("the weekly board renders raw day counts, declared tie ranks and source links", async()=>{
+  const page=await mountedPage(index([week("2026-10-19",[]),week("2026-10-26",[row("Zulu",{rank:2}),row("Alice",{work_days:7,exercise_days:7,checkin_days:7,score:100})])])),get=page.doc.getElementById;
+  assert.equal(get("filter-week").value,"2026-10-26");assert.equal(get("ranking-table").hidden,false);
+  assert.equal(get("ranking-body").children.length,2);
+  const first=get("ranking-body").children[0];assert.equal(first.children[0].textContent,"#1");assert.equal(first.children[1].textContent,"@Alice");assert.equal(first.children[2].textContent,"7");assert.equal(first.children[4].textContent,"100.00");
+  assert.equal(first.children[5].children[0].href,"https://github.com/example/club/issues/12");
+  assert.match(get("report-snapshot").textContent,/2026-10-26 至 2026-11-01/);
+  get("filter-week").value="2026-10-19";await get("filter-week").fire("change");
+  assert.equal(get("ranking-table").hidden,true);assert.match(get("report-message").textContent,/本周还没有公开打卡记录/);
+});
+
+test("no-report, missing-report and incompatible-report states stay distinct and drafts still work", async()=>{
+  const empty=await mountedPage(index());assert.match(empty.doc.getElementById("report-message").textContent,/首次定时统计/);
+  const missing=await mountedPage(index(),{fetcher:async()=>({ok:false})});assert.match(missing.doc.getElementById("report-message").textContent,/尚未生成或暂时无法读取/);assert.equal(missing.doc.getElementById("retry-reports").hidden,false);
+  const old=await mountedPage({schema_version:2,weeks:[]});assert.match(old.doc.getElementById("report-message").textContent,/格式不兼容/);assert.equal(old.doc.getElementById("ranking-table").hidden,true);
+  enterDaily(old);await old.doc.getElementById("log-form").fire("submit");assert.equal(old.doc.getElementById("log-result").hidden,false);
+});
+
+test("a failed report fetch can be retried without reloading or making write requests", async()=>{
+  let attempt=0;
+  const page=await mountedPage(index(),{fetcher:async()=>{if(!attempt++)throw new Error("offline");return {ok:true,json:async()=>index([week()])};}}),get=page.doc.getElementById;
+  assert.equal(get("retry-reports").hidden,false);
+  await get("retry-reports").fire("click");assert.equal(get("ranking-table").hidden,false);assert.equal(get("retry-reports").hidden,true);
+  assert.deepEqual(page.calls,[{url:"../reports/daily/index.json",options:undefined},{url:"../reports/daily/index.json",options:undefined}]);
+});
+
+test("local file mode gives useful guidance and never tries to read reports", async()=>{
+  const page=await mountedPage(index(),{protocol:"file:"}),get=page.doc.getElementById;
+  assert.deepEqual(page.calls,[]);assert.match(get("report-message").textContent,/本地网页服务器/);
+  enterDaily(page);await get("log-form").fire("submit");assert.equal(get("log-result").hidden,false);
+});
+
+test("the existing history bookmark opens the journal finder; malformed fragments are harmless", async()=>{
+  const page=await mountedPage(index(),{hash:"#history-heading"}),get=page.doc.getElementById;
+  assert.equal(get("history-heading").closest("details").open,true);assert.equal(get("history-heading").scrolled,true);
+  await page.navigate("#%E0%A4%A");await page.navigate("#missing");
+});
+
+test("the page exposes only daily check-in, scoring and conversation features",()=>{
   const doc=pageDocument();
-  const repo="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club";
-  assert.equal(doc.getElementById("start-workout").href,repo + "/issues/new?template=activity-record.yml");
-  assert.equal(doc.getElementById("start-meal").href,repo + "/issues/new?template=meal-record.yml");
+  for(const id of ["log-heading","ranking-heading","experiences-heading","log-work","log-exercise","create-journal"])assert(doc.getElementById(id));
+  for(const id of ["carry-form","activity-form","log-session","log-notes","advanced-tools","filter-sport"])assert.equal(doc.getElementById(id),undefined);
   const html=fs.readFileSync(path.join(__dirname,"../tools/index.html"),"utf8");
-  assert.match(html,/自由记录不会自动进入周榜/);
-  assert.match(html,/不计入下方榜单的饮食日统计/);
-  assert(html.includes('class="brand" href="'+repo+'"'));
-  assert(html.includes('href="'+repo+'/blob/main/docs/SCORING.md"'));
-  assert(html.includes('href="'+repo+'/tree/main/examples"'));
-  assert(!html.includes('href="../docs/'));
-  assert(!html.includes('href="../examples/'));
-  assert(!html.includes('href="../"'));
-});
-
-test("page renders backend ranking and selected-week timestamp, then prepares a weekly-plan meal comment locally", async () => {
-  const page=await mountedPage({schema_version:2,weeks:[
-    {week_start:"2026-10-19",generated_at:"2026-10-25T12:00:00Z",leaderboard:[publicPlan("Alice",3,6)]},
-    {week_start:"2026-10-26",generated_at:"2026-11-01T12:00:00Z",leaderboard:[publicPlan("Aaron",3,3),publicPlan("Zulu",1,6.75)]},
-  ]});
-  try {
-    const get=page.doc.getElementById;
-    assert.equal(get("start-workout").listeners.click,undefined);
-    assert.equal(get("start-meal").listeners.click,undefined);
-    assert.equal(get("filter-week").value,"2026-10-26");
-    assert.match(get("ranking-body").children[0].textContent,/#1@Zulu/);
-    assert.match(get("ranking-body").textContent,/执行 3.75/);
-    assert.match(get("ranking-body").textContent,/2 整次 \+ 1 部分 \/ 4 已确认/);
-    get("filter-week").value="2026-10-19";
-    await get("filter-week").fire("change");
-    assert.match(get("ranking-body").textContent,/#3@Alice/);
-    assert.match(get("report-snapshot").textContent,/2026-10-19/);
-    assert.match(get("report-snapshot").textContent,/2026\/10\/25/);
-    assert(!get("report-snapshot").textContent.includes("2026/11/1"));
-    await get("plan-meal").fire("click");
-    assert.equal(get("log-status").value,"meal");
-    assert.equal(get("log-session").disabled,true);
-    assert.match(get("status-help").textContent,/不增加参与分/);
-    get("log-issue").value="123";
-    get("log-date").value="2026-10-26";
-    get("log-notes").value="午餐：米饭、鸡肉和青菜。";
-    await get("log-form").fire("submit");
-    assert.equal(get("log-output").value,"/meal 2026-10-26\n午餐：米饭、鸡肉和青菜。");
-    assert.equal(get("log-result").hidden,false);
-    assert.equal(page.calls.length,1,"preparing a comment must not write to GitHub");
-    await get("plan-workout").fire("click");
-    assert.equal(get("log-status").value,"done");
-    assert.equal(get("log-session").disabled,false);
-  } finally {page.restore();}
-});
-
-test("mobile form accepts a pasted plan link, resets the date and keeps publishing manual", async () => {
-  const page=await mountedPage({schema_version:2,weeks:[]});
-  try {
-    const get=page.doc.getElementById;
-    const today=get("log-date").value;
-    get("log-date").value="2026-10-21";
-    await get("log-today").fire("click");
-    assert.equal(get("log-date").value,today);
-    get("log-date").value="2026-10-21";
-    get("log-issue").value="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/123";
-    get("log-session").value="S2";
-    get("log-notes").value="周三晚上打了篮球。";
-    await get("log-form").fire("submit");
-    assert.equal(get("log-result").hidden,false);
-    assert.equal(get("log-link").href,get("log-issue").value);
-    assert.equal(get("log-output").value,"/done S2 2026-10-21\n周三晚上打了篮球。");
-    get("log-issue").value="https://github.com/other/club/issues/123";
-    await get("log-form").fire("submit");
-    assert.equal(get("log-result").hidden,true);
-    assert.match(get("log-message").textContent,/当前仓库/);
-    assert.deepEqual(page.calls,["../reports/index.json"],"drafting must not post or fetch member records");
-  } finally {page.restore();}
-});
-
-test("free-record review works without leaderboard data and follows repository and author changes", async () => {
-  const page=await mountedPage(undefined);
-  try {
-    const get=page.doc.getElementById;
-    assert.equal(get("free-record-links").hidden,true);
-    get("history-handle").value="@ALICE";
-    await get("history-handle").fire("input");
-    assert.equal(get("free-record-links").hidden,false);
-    assert.equal(get("member-stats").hidden,true,"free records do not create scored participation");
-    for (const [id,label] of [["free-activity-link","activity-record"],["free-meal-link","meal-record"]]) {
-      const url=new URL(get(id).href);
-      assert.equal(url.pathname,"/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues");
-      assert.equal(url.searchParams.get("q"),"is:issue label:"+label+" author:ALICE sort:created-desc");
-    }
-    get("repository").value="my-org/my-club";
-    await get("repository").fire("input");
-    assert.equal(new URL(get("free-meal-link").href).pathname,"/my-org/my-club/issues");
-    get("history-handle").value="Alice author:Bob";
-    await get("history-handle").fire("input");
-    assert.equal(get("free-record-links").hidden,true);
-    assert.match(get("free-record-message").textContent,/有效的 GitHub 用户名/);
-    get("history-handle").value="Bob";
-    get("repository").value="../private";
-    await get("repository").fire("change");
-    assert.equal(get("free-record-links").hidden,true);
-    get("repository").value="example/club";
-    await get("repository").fire("change");
-    assert.equal(get("free-record-links").hidden,false);
-    assert.match(new URL(get("free-activity-link").href).searchParams.get("q"),/author:Bob/);
-    get("history-handle").value="";
-    await get("history-handle").fire("input");
-    assert.equal(get("free-record-links").hidden,true);
-    assert.equal(page.calls.length,1,"preparing links must not fetch member records or write to GitHub");
-  } finally {page.restore();}
-});
-
-test("page explains only the selected report's declared scoring version and preserves historical points", async () => {
-  const page=await mountedPage({schema_version:2,weeks:[
-    {week_start:"2026-10-26",scoring_version:2,leaderboard:[publicPlan("Alice",1,6.75)]},
-    {week_start:"2026-10-19",leaderboard:[publicPlan("Alice",1,6,{execution_points:3,execution_rate:null})]},
-    {week_start:"2026-10-12",scoring_version:3,leaderboard:[publicPlan("Alice",1,6)]},
-  ]});
-  try {
-    const get=page.doc.getElementById;
-    assert.match(get("report-rules").textContent,/评分规则 v2：执行分 =/);
-    assert.equal(get("score-guide").hidden,false);
-    get("filter-week").value="2026-10-19";
-    await get("filter-week").fire("change");
-    assert.match(get("report-rules").textContent,/规则版本未记录/);
-    assert(!get("report-rules").textContent.includes("执行分 ="));
-    assert.equal(get("score-guide").hidden,true);
-    assert.match(get("ranking-body").textContent,/6 分/);
-    assert.match(get("ranking-body").textContent,/执行 3 ·/);
-    get("filter-week").value="2026-10-12";
-    await get("filter-week").fire("change");
-    assert.match(get("report-rules").textContent,/评分规则 v3/);
-    assert.match(get("report-rules").textContent,/尚无该版本的公式说明/);
-    assert.equal(get("score-guide").hidden,true);
-    get("history-handle").value="Alice";
-    await get("history-handle").fire("input");
-    const history=get("history-body").children;
-    assert.match(history[0].textContent,/评分规则 v2/);
-    assert.match(history[1].textContent,/规则版本未记录.*保留原分数/);
-    assert.equal(history[1].children[3].textContent,"6");
-    assert.match(history[2].textContent,/评分规则 v3/);
-  } finally {page.restore();}
-});
-
-test("personal history can load older public archives without losing the selected ranking week", async () => {
-  const older={schema_version:2,week_start:"2026-10-19",generated_at:"2026-10-25T12:00:00Z",leaderboard:[publicPlan("Alice",1,7,{recorded_training_days:2,meal_days:0})]};
-  const page=await mountedPage({schema_version:2,available_weeks:["2026-10-26","2026-10-19","../../invalid"],weeks:[
-    {week_start:"2026-10-26",generated_at:"2026-11-01T12:00:00Z",leaderboard:[publicPlan("Alice",1,7)]},
-  ]},{"../reports/2026-10-19.json":older});
-  try {
-    const get=page.doc.getElementById;
-    get("history-handle").value="@ALICE";
-    await get("history-handle").fire("input");
-    assert.equal(get("member-stats").children[0].children[0].textContent,"1");
-    assert.equal(get("load-older").hidden,false);
-    await get("load-older").fire("click");
-    assert.equal(get("filter-week").value,"2026-10-26");
-    assert.equal(get("load-older").hidden,true);
-    assert.equal(get("member-stats").children[0].children[0].textContent,"2");
-    assert.equal(get("member-stats").children[1].children[0].textContent,"5");
-    assert.equal(get("member-stats").children[2].children[0].textContent,"2");
-    assert.equal(get("history-body").children.length,2);
-    assert.deepEqual(page.calls,["../reports/index.json","../reports/2026-10-19.json"]);
-  } finally {page.restore();}
-});
-
-test("empty or unavailable public reports show honest empty states while local tools remain usable", async () => {
-  for (const [index,message] of [[{schema_version:2,weeks:[],available_weeks:[]},/还没有可展示的公开周报/],[undefined,/暂时无法读取公开报告/]]) {
-    const page=await mountedPage(index);
-    try {
-      const get=page.doc.getElementById;
-      assert.match(get("report-message").textContent,message);
-      assert.equal(get("ranking-table").hidden,true);
-      assert.equal(get("member-stats").hidden,true);
-      await get("plan-meal").fire("click");
-      assert.equal(get("log-status").value,"meal");
-    } finally {page.restore();}
-  }
-});
-
-test("quick activity form defaults to the local date and timezone, invalidates edited drafts and leaves publishing manual", async () => {
-  const page=await mountedPage(undefined);
-  try {
-    const get=page.doc.getElementById;
-    assert.equal(get("activity-date").value,tools.localDate());
-    assert.equal(get("activity-zone").value,Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
-    assert.equal(get("activity-sport").value,"walking");
-    get("activity-date").value="2026-10-21";
-    get("activity-zone").value="Asia/Shanghai";
-    get("activity-sport").value="basketball";
-    get("activity-text").value="今天打了篮球。";
-    await get("activity-form").fire("submit");
-    assert.equal(get("activity-result").hidden,false);
-    assert.equal(new URL(get("activity-link").href).searchParams.get("activity-date"),"2026-10-21");
-    assert.match(get("activity-output").value,/### What I did\n\n今天打了篮球。/);
-    assert.match(get("activity-message").textContent,/Sport.*篮球（basketball）/);
-    get("activity-text").value="修改后的真实记录。";
-    await get("activity-text").fire("input");
-    assert.equal(get("activity-result").hidden,true,"never leave an older publish link after editing");
-    await get("activity-today").fire("click");
-    assert.equal(get("activity-date").value,tools.localDate());
-    get("repository").value="other/club";
-    await get("repository").fire("change");
-    assert.equal(new URL(get("browse-community").href).pathname,"/other/club/issues");
-    assert.match(new URL(get("topic-experience").href).searchParams.get("q"),/Experience/);
-    await get("activity-form").fire("submit");
-    assert.equal(new URL(get("activity-link").href).pathname,"/other/club/issues/new");
-    get("activity-zone").value="not a timezone";
-    await get("activity-form").fire("submit");
-    assert.equal(get("activity-result").hidden,true);
-    assert.match(get("activity-message").textContent,/时区/);
-    assert.deepEqual(page.calls,["../reports/index.json"],"local drafting and browsing must not fetch or post member records");
-  } finally {page.restore();}
-});
-
-test("community aggregate view follows the selected report and leaves legacy or malformed counts unknown", async () => {
-  const activity={schema_version:1,timezone:"UTC",participants_count:2,posts_count:2,replies_count:1,responded_posts_count:1,activity_records:1,meal_records:0,experiences:1,conversations:0,weekly_plan_posts:0};
-  const page=await mountedPage({schema_version:2,weeks:[
-    {week_start:"2026-10-26",activity_updated_at:"2026-11-03T12:00:00Z",generated_at:"2026-11-01T12:00:00Z",community_activity:{...activity,private_note:"DO_NOT_RENDER"},leaderboard:[]},
-    {week_start:"2026-10-19",leaderboard:[]},
-    {week_start:"2026-10-12",community_activity:{...activity,participants_count:-1},leaderboard:[]},
-  ]});
-  try {
-    const get=page.doc.getElementById;
-    assert.equal(get("community-overview").hidden,false);
-    assert.equal(get("community-stats").children[0].children[0].textContent,"2");
-    assert.match(get("community-breakdown").textContent,/自由运动 1.*经验分享 1/);
-    assert.match(get("community-breakdown").textContent,/1 个新帖已得到其他成员回复/);
-    assert.match(get("community-week").textContent,/2026-10-26.*UTC/);
-    assert.match(get("community-week").textContent,/社区统计更新于.*2026\/11\/3/);
-    assert.match(get("report-snapshot").textContent,/2026\/11\/1/);
-    assert(!get("report-snapshot").textContent.includes("2026/11/3"));
-    assert(!get("community-breakdown").textContent.includes("DO_NOT_RENDER"));
-    assert.equal(get("ranking-table").hidden,true,"community posting never creates ranking rows");
-    for (const week of ["2026-10-19","2026-10-12"]) {
-      get("filter-week").value=week;
-      await get("filter-week").fire("change");
-      assert.equal(get("community-overview").hidden,true);
-      assert.equal(get("community-stats").children.length,0);
-    }
-    assert.equal(tools.communityActivity({...activity,timezone:"Asia/Shanghai"}),null);
-    assert.equal(tools.communityActivity({...activity,schema_version:2}),null);
-    assert.equal(tools.communityActivity({...activity,replies_count:"1"}),null);
-  } finally {page.restore();}
-});
-
-test("first visit offers two community actions and an existing topic without loading optional reports", async () => {
-  const page=await mountedPage(undefined,{}, {openAdvanced:false});
-  try {
-    const get=page.doc.getElementById;
-    const repo="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club";
-    const html=fs.readFileSync(path.join(__dirname,"../tools/index.html"),"utf8");
-    const hero=html.match(/<nav class="entry-grid community-entry"[^>]*>([\s\S]*?)<\/nav>/)[1];
-    assert.equal((hero.match(/<a\b/g) || []).length,2);
-    assert.equal(get("join-community").href,repo + "/issues/new?template=community-chat.yml");
-    const chatForm=fs.readFileSync(path.join(__dirname,"../.github/ISSUE_TEMPLATE/community-chat.yml"),"utf8");
-    assert.equal((chatForm.match(/type: textarea/g) || []).length,1);
-    assert.equal((chatForm.match(/required: true/g) || []).length,1);
-    assert(!/type: (?:input|dropdown|checkboxes)/.test(chatForm),"joining only requires the message, not dates, goals or plan choices");
-    assert.equal(get("reply-featured").href,repo + "/issues/35");
-    assert.equal(get("read-featured").href,repo + "/blob/main/docs/experiences/2026-10-24-rentainhe.md");
-    assert.equal(get("featured-topic").closest("details"),null,"a real member topic stays visible");
-    assert.equal(get("community-heading").closest("details"),null,"community conversation stays visible");
-    assert.equal(get("advanced-tools").open,false);
-    assert.equal(get("quick-record").open,false,"the dated activity form is optional");
-    for (const id of ["find-heading","log-heading","ranking-heading","history-heading","carry-heading"]) assert.equal(get(id).closest("details"),get("advanced-tools"),id + " is inside the advanced disclosure");
-    assert.deepEqual(page.calls,[],"reading community links needs no reports or member API requests");
-    get("repository").value="example/club";
-    await get("repository").fire("input");
-    assert.equal(get("join-community").href,"https://github.com/example/club/issues/new?template=community-chat.yml");
-    assert.equal(get("join-community-topic").href,get("join-community").href,"both community post links follow the selected repository");
-    assert.equal(new URL(get("browse-buddies").href).pathname,"/example/club/issues");
-    assert.equal(get("reply-featured").href,repo + "/issues/35","the curated source remains attributed to the original community");
-  } finally {page.restore();}
-});
-
-test("advanced reports load only on opening and successful snapshots are reused", async () => {
-  const page=await mountedPage({schema_version:2,weeks:[{week_start:"2026-10-26",leaderboard:[publicPlan("Alice",1,7)]}]},{},{openAdvanced:false});
-  try {
-    const get=page.doc.getElementById;
-    assert.deepEqual(page.calls,[]);
-    get("quick-record").open=true;
-    await get("quick-record").fire("toggle");
-    assert.deepEqual(page.calls,[],"quick free records do not need the weekly-plan data");
-    get("activity-text").value="今天出去走了一会。";
-    await get("activity-form").fire("submit");
-    assert.equal(get("activity-result").hidden,false);
-    assert.deepEqual(page.calls,[],"preparing a free record stays local");
-    get("advanced-tools").open=true;
-    await get("advanced-tools").fire("toggle");
-    assert.deepEqual(page.calls,["../reports/index.json"]);
-    assert.match(get("ranking-body").textContent,/@Alice/);
-    get("advanced-tools").open=false;
-    await get("advanced-tools").fire("toggle");
-    get("advanced-tools").open=true;
-    await get("advanced-tools").fire("toggle");
-    assert.equal(page.calls.length,1,"reopening does not refetch a successful snapshot");
-  } finally {page.restore();}
-});
-
-test("old deep links reveal the right optional section on arrival and subsequent navigation", async () => {
-  const page=await mountedPage({schema_version:2,weeks:[]},{},{openAdvanced:false,hash:"#activity-heading"});
-  try {
-    const get=page.doc.getElementById;
-    assert.equal(get("quick-record").open,true);
-    assert.equal(get("advanced-tools").open,false);
-    assert.equal(get("activity-heading").scrolled,true);
-    assert.deepEqual(page.calls,[]);
-    await page.navigate("#ranking-heading");
-    assert.equal(get("advanced-tools").open,true);
-    assert.equal(get("ranking-heading").scrolled,true);
-    assert.deepEqual(page.calls,["../reports/index.json"]);
-    get("advanced-tools").open=false;
-    await page.navigate("#log-heading");
-    assert.equal(get("advanced-tools").open,true);
-    assert.equal(get("log-heading").scrolled,true);
-    assert.equal(page.calls.length,1);
-    await page.navigate("#%invalid");
-    await page.navigate("#missing-section");
-    assert.equal(page.calls.length,1);
-  } finally {page.restore();}
-  const direct=await mountedPage({schema_version:2,weeks:[]},{},{openAdvanced:false,hash:"#history-heading"});
-  try {
-    assert.equal(direct.doc.getElementById("advanced-tools").open,true);
-    assert.deepEqual(direct.calls,["../reports/index.json"]);
-  } finally {direct.restore();}
+  for(const number of [35,44,42,41])assert(html.includes('/issues/'+number+'"'));
+  assert(!html.includes("weekly-plan.yml"));assert(!html.includes("meal-record.yml"));assert(!html.includes("points-approved"));
+  assert(!html.includes("href=\"../docs/"),"deployed links point to documents on GitHub");
 });

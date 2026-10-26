@@ -1,6 +1,8 @@
-# Fictional demo leaderboard — week of 2026-10-12
+# Historical 10-point fictional board — week of 2026-10-12
 
 [简体中文](demo-board.md) | **English**
+
+Historical example. See the [member guide](../docs/MEMBER_GUIDE.md) for current check-ins.
 
 **Static fictional examples, not real members, check-ins, or results. These do not enter the live community counts or standings.** The demo cutoff is 2026-10-19 12:00 UTC, with six ranked fictional members and one fictional Recovery member from offline sample data.
 

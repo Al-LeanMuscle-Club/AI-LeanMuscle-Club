@@ -1,5 +1,7 @@
 # Fictional training records / 虚拟用户训练记录
 
+**Historical 10-point examples / 旧版 10 分制历史示例。** [Current check-ins / 当前打卡方式](../docs/MEMBER_GUIDE.zh-CN.md).
+
 > **Synthetic demo only / 仅为虚构演示。** These people, plans, meals, and reflections are invented. They are not real members or activity and never enter live community statistics. 人物、计划、餐食和复盘均属虚构，不是真实成员或活动，不写入真实周报或统计。
 
 Demo week / 演示周：**2026-10-12** · Cutoff / 截止：**2026-10-19 12:00 UTC**
@@ -12,7 +14,7 @@ Full/fallback = 1, partial = 0.5, skipped/unrecorded = 0. Execution points = `6 
 
 完整或替代完成计 1 次额度，部分完成计 0.5，跳过或尚未记录计 0。执行积分按已确认活动数计算；部分完成不计作完整完成。饮食天数按不同日期统计，不加分。
 
-[Fixture / 原始虚构数据](demo-training-records.json) · [Computed board / 计算结果](demo-leaderboard.json) · [Scoring rules / 积分规则](../docs/SCORING.md)
+[Fixture / 原始虚构数据](demo-training-records.json) · [Computed board / 计算结果](demo-leaderboard.json) · [Historical scoring rules / 历史积分规则](../docs/SCORING.v2.md)
 
 ## demo-aurora
 

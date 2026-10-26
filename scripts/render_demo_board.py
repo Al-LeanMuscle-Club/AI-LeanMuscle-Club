@@ -113,15 +113,17 @@ def score(records: list[dict[str, Any]]) -> dict[str, Any]:
 
 def demo_board(board: dict[str, Any], chinese: bool) -> str:
     if chinese:
-        lines = ["# 虚拟用户演示榜 — 2026-10-12 周", "",
+        lines = ["# 旧版 10 分制虚构演示榜 — 2026-10-12 周", "",
                  "**简体中文** | [English](demo-board.en.md)", "",
+                 "历史示例，当前打卡方式见[成员指南](../docs/MEMBER_GUIDE.zh-CN.md)。", "",
                  "**以下是静态虚构演示，不是真实成员、打卡或成绩，不计入真实社区人数或排名。** "
                  "演示截止时间为 2026-10-19 12:00 UTC；六位参榜虚拟用户和一位恢复周虚拟用户均来自离线示例。", "",
                  "| 名次 | 虚拟用户 | 运动项目 | 完整 / 计划 | 部分完成 | 训练日 | 饮食日 | 参与分 / 10 |",
                  "| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
     else:
-        lines = ["# Fictional demo leaderboard — week of 2026-10-12", "",
+        lines = ["# Historical 10-point fictional board — week of 2026-10-12", "",
                  "[简体中文](demo-board.md) | **English**", "",
+                 "Historical example. See the [member guide](../docs/MEMBER_GUIDE.md) for current check-ins.", "",
                  "**Static fictional examples, not real members, check-ins, or results. These do not enter the live community counts or standings.** "
                  "The demo cutoff is 2026-10-19 12:00 UTC, with six ranked fictional members and one fictional Recovery member from offline sample data.", "",
                  "| Rank | Fictional member | Sports | Full / planned | Partial | Training days | Meal days | Points / 10 |",
@@ -153,6 +155,8 @@ def session_details(raw: str) -> dict[str, tuple[str, str]]:
 
 def record_markdown(records: list[dict[str, Any]], board: dict[str, Any]) -> str:
     lines = ["# Fictional training records / 虚拟用户训练记录", "",
+             "**Historical 10-point examples / 旧版 10 分制历史示例。** "
+             "[Current check-ins / 当前打卡方式](../docs/MEMBER_GUIDE.zh-CN.md).", "",
              "> **Synthetic demo only / 仅为虚构演示。** These people, plans, meals, and reflections are invented. "
              "They are not real members or activity and never enter live community statistics. "
              "人物、计划、餐食和复盘均属虚构，不是真实成员或活动，不写入真实周报或统计。", "",
@@ -168,7 +172,7 @@ def record_markdown(records: list[dict[str, Any]], board: dict[str, Any]) -> str
              "完整或替代完成计 1 次额度，部分完成计 0.5，跳过或尚未记录计 0。"
              "执行积分按已确认活动数计算；部分完成不计作完整完成。饮食天数按不同日期统计，不加分。", "",
              "[Fixture / 原始虚构数据](demo-training-records.json) · [Computed board / 计算结果](demo-leaderboard.json) · "
-             "[Scoring rules / 积分规则](../docs/SCORING.md)", ""]
+             "[Historical scoring rules / 历史积分规则](../docs/SCORING.v2.md)", ""]
     by_handle = {issue["user"]["login"]: issue for issue in records}
     for row in board["leaderboard"]:
         handle = row["handle"]

@@ -1,10 +1,12 @@
 [简体中文](nutrition.md) | English
 
+> Historical example from the retired workflow. Use the [current member guide](../docs/MEMBER_GUIDE.md) for daily check-ins and the new 100-point board.
+
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, standings, or prescribed training schedules. These examples do not earn points. Do not submit an entire example as a real community post; use only the format that suits you.
 
 # Meal records and sharing / Nutrition
 
-Use the [nutrition-sharing Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=nutrition.yml) for conversations, with the `[Food]` title prefix, and a [Meal record Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml) for a record. If you already have a weekly plan, you can also post a `/meal` comment on that plan’s Issue. Community sharing and standalone meal records do not automatically earn points.
+Use the [nutrition-sharing Issue form](../docs/legacy-issue-templates/nutrition.yml) for conversations, with the `[Food]` title prefix, and a [Meal record Issue](../docs/legacy-issue-templates/meal-record.yml) for a record. If you already have a weekly plan, you can also post a `/meal` comment on that plan’s Issue. Community sharing and standalone meal records do not automatically earn points.
 
 ## Example 1: Lunch without calorie numbers
 

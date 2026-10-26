@@ -1,0 +1,33 @@
+name: "每日打卡 / Daily check-in journal"
+description: "每人建立一个长期打卡帖，每天在评论中记录工作和运动。"
+title: "[Check-in] 我的打卡"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        这个 Issue 长期使用，不必每周重建。保留标题的 [Check-in] 前缀。
+        创建后，每天由你本人评论一行，例如：
+        /checkin 2026-10-26 W=1 E=0
+        W 表示当天是否工作，E 表示是否运动；1 是，0 否。日期按下方时区填写。
+        每周按工作天数和运动天数评分。只有选择 Yes 才公开进入周榜；无论选择什么，原帖和评论都公开。
+        Keep this one journal across weeks. Post your own daily comment with W=work and E=exercise, each 0 or 1.
+  - type: input
+    id: time-zone
+    attributes:
+      label: Time zone
+      description: "打卡日期所属的时区。旅行或更改时区前，请注意旧日期也会按此设置解释。"
+      value: "Asia/Shanghai"
+      placeholder: "Asia/Shanghai, America/Los_Angeles, UTC"
+    validations:
+      required: true
+  - type: dropdown
+    id: public-leaderboard
+    attributes:
+      label: Public leaderboard
+      description: "是否同意在周榜公开用户名、工作天数、运动天数和分数？No 也可以保留自己的打卡记录。"
+      options:
+        - "No"
+        - "Yes"
+      default: 0
+    validations:
+      required: true
