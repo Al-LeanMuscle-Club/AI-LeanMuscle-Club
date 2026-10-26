@@ -1,49 +1,38 @@
-name: Experience sharing / 经验分享
-description: 分享有具体背景和实际体会的经验，可申请每周贡献认可。
+name: "经验分享 / Experience sharing"
+description: "分享运动、科研与生活中的亲身尝试，邀请大家交流。"
 title: "[Experience] "
-labels: ["experience"]
 body:
   - type: markdown
     attributes:
       value: |
-        分享训练安排、饮食记录方法、找搭子或科研与 Agent 经验。所有内容公开。
-        普通经验分享不要求选择周次；申请每周贡献认可时再补充归属周一。
-        发帖本身不加分；贡献分需要维护者审核、points-approved 标签及匹配当前正文的仓库审批记录，每人每周最多 1 分。
-        随意交流也欢迎选择社区 Issue 表单，无需周计划且不计分；不要提交虚构经历作为真实活动。
-        For casual conversation, use a community Issue form; no weekly plan is needed and these posts earn no points. Do not submit fictional experiences as real activity.
-  - type: input
-    id: week-starting
-    attributes:
-      label: Week starting
-      description: 普通分享可以留空。只有申请每周贡献认可时，才填写希望归属的周一（YYYY-MM-DD）；不是今天的日期。
-      placeholder: "2026-10-26"
-    validations:
-      required: false
+        分享实际做过的事、效果和局限。无需选择周次或申请贡献分，经验分享不影响打卡榜单。
+        所有内容公开；如果只想问一句话，也可以选择“我也参与 / Join the conversation”。
+        Share your own experience and what happened. Experiences and replies do not add leaderboard points.
   - type: textarea
     id: context
     attributes:
       label: Context
-      description: 遇到什么问题？当时有什么时间或场景限制？
+      description: "遇到什么问题？当时有什么时间或场景限制？"
     validations:
       required: true
   - type: textarea
     id: approach
     attributes:
       label: What I tried
-      description: 实际采用了什么做法？可以附原始讨论或记录链接。
+      description: "实际采用了什么做法？可以附原始讨论或记录链接。"
     validations:
       required: true
   - type: textarea
     id: observation
     attributes:
       label: What happened
-      description: 实际效果、没有奏效的地方，以及适用条件。Agent 经验请计入设置、检查和返工的时间。
+      description: "实际效果、没有奏效的地方，以及适用条件。"
     validations:
       required: true
   - type: textarea
     id: limitations
     attributes:
       label: Limits and sources
-      description: 可选局限、来源和不确定性。区分亲身观察与一般性结论。
+      description: "选填局限、来源和不确定性。区分亲身观察与一般性结论。"
     validations:
       required: false

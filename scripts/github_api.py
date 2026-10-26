@@ -175,6 +175,32 @@ class GitHubReader:
             issue["comments_data"] = list(self._pages(f"issues/{number}/comments"))
         return issue
 
+    def daily_checkins(self) -> list[dict]:
+        """Read a complete snapshot of personal journals, including closed ones.
+
+        No labels, week field, or incremental cache is required. Reading every
+        comment on each journal makes edits and deletions visible on the next
+        scheduled run. Closed/private-ranking journals must remain in the input
+        so the scorer cannot silently fall back to an older public journal.
+        """
+        from club.daily_checkins import is_journal
+
+        journals = []
+        for issue in self._pages("issues", {"state": "all"}):
+            if not isinstance(issue, dict):
+                raise RuntimeError("Malformed GitHub issue response; reports were not replaced.")
+            # A damaged response is not evidence that a member deleted their
+            # journal. Fail before filtering so it cannot withdraw history.
+            number = _number(issue)
+            if not is_journal(issue):
+                continue
+            record = dict(issue)
+            record["comments_data"] = list(self._pages(f"issues/{number}/comments"))
+            if any(not isinstance(comment, dict) for comment in record["comments_data"]):
+                raise RuntimeError("Malformed GitHub comment response; reports were not replaced.")
+            journals.append(record)
+        return journals
+
     def records(self, weeks: list[str], cache_path: Path | None = None, refresh: bool = False,
                 deleted_issue: int | None = None, include_community: bool = False) -> list[dict]:
         """Read metadata and selected-week comments, optionally using a local cache.

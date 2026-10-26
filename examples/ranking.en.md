@@ -1,12 +1,14 @@
 [简体中文](ranking.md) | English
 
+> Historical example from the retired workflow. Use the [current member guide](../docs/MEMBER_GUIDE.md) for daily check-ins and the new 100-point board.
+
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, rankings, or prescribed training plans. These examples earn no points and do not enter live rankings. Do not post these examples as real community activity; borrow only the format that suits you.
 
 # Ranking examples
 
 **This file is an offline demonstration, not a community weekly report.** The fictional names do not correspond to members or link to real Issues. Its data is not written to `reports/` or the homepage participation counts.
 
-For real scored records, use the [weekly-plan Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=weekly-plan.yml); for casual records, use an [Activity record Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml). Do not post the fictional activities below as your own actual check-ins.
+For real scored records, use the [weekly-plan Issue form](../docs/legacy-issue-templates/weekly-plan.yml); for casual records, use an [Activity record Issue](../docs/legacy-issue-templates/activity-record.yml). Do not post the fictional activities below as your own actual check-ins.
 
 The current weekly **participation score** has a maximum of 10: plan 1, execution 0–6, reflection 2, and approved contribution 0–1. Scores do not compare fitness, training difficulty, or body changes.
 
@@ -41,7 +43,7 @@ S5 can still be recorded, but it does not add execution points for this week. Th
 
 Scores start afresh each week. The number of participation weeks in recent history is for looking back; participation does not have to be uninterrupted. Contribution points require both the `points-approved` label and a trusted approval record matching the body, author, and week. A label alone does not automatically award points to this demonstration or a real post.
 
-See [SCORING](../docs/SCORING.md) for the full boundaries and correction rules.
+See [SCORING](../docs/SCORING.v2.md) for the full boundaries and correction rules.
 
 ## Running a separate synthetic-data demonstration
 

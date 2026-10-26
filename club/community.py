@@ -24,7 +24,7 @@ _FORMS = {
     "announcements": ("[Club]", {"Announcement", "What members need to do"}),
 }
 _EXAMPLE_PREFIX = re.compile(
-    r"^\s*(?:\[(?:Plan|Activity|Meal|Experience|Hello|Training|Food|Buddies|Research / Agent|Club|Chat)\]\s*)?"
+    r"^\s*(?:\[(?:Plan|Activity|Meal|Experience|Hello|Training|Food|Buddies|Research / Agent|Club|Chat|Check-in)\]\s*)?"
     r"(?:\[Fictional example(?:\s*\||\])|[\[【〖](?:虚构示例|虚构演示)(?:[｜|\]】〗]))",
     re.IGNORECASE,
 )

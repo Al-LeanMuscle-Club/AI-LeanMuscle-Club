@@ -1,10 +1,12 @@
 [简体中文](training-and-recovery.md) | English
 
+> Historical example from the retired workflow. Use the [current member guide](../docs/MEMBER_GUIDE.md) for daily check-ins and the new 100-point board.
+
 > **Fictional examples.** The people, activities, and numbers below illustrate formats only. They do not represent real members, check-ins, standings, or prescribed training schedules. These examples do not earn points. Do not submit an entire example as a real community post; use only the format that suits you.
 
 # Training conversations and records / Training and recovery
 
-Use the [training and recovery Issue form](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=training-and-recovery.yml) for conversations, with the `[Training]` title prefix. Community conversation does not automatically earn points. For a casual check-in, use an [Activity record Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml); for a scored record, comment on your own weekly plan.
+Use the [training and recovery Issue form](../docs/legacy-issue-templates/training-and-recovery.yml) for conversations, with the `[Training]` title prefix. Community conversation does not automatically earn points. For a casual check-in, use an [Activity record Issue](../docs/legacy-issue-templates/activity-record.yml); for a scored record, comment on your own weekly plan.
 
 ## Example 1: Recording without a plan
 
@@ -44,4 +46,4 @@ I left a separate comment on my existing weekly plan:
 Next week, I will first write a workable busy-week alternative for this session.
 ```
 
-The updated rules give a partial record half a unit of execution credit, while keeping it separate from a full completion. Only confirmed scored sessions enter the calculation. Comment text is for personal records; see the [scoring rules](../docs/SCORING.md) for details.
+The updated rules give a partial record half a unit of execution credit, while keeping it separate from a full completion. Only confirmed scored sessions enter the calculation. Comment text is for personal records; see the [scoring rules](../docs/SCORING.v2.md) for details.

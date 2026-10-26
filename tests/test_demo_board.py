@@ -25,6 +25,9 @@ class StandaloneDemoTests(unittest.TestCase):
             }
             for name, text in homes.items():
                 (root / name).write_text(text)
+            (root / "docs").mkdir()
+            for name in ("MEMBER_GUIDE.md", "MEMBER_GUIDE.zh-CN.md"):
+                copyfile(SOURCE_ROOT / "docs" / name, root / "docs" / name)
             outputs = generated_files(root)
             self.assertEqual(set(outputs), {
                 Path("examples/demo-training-records.md"), Path("examples/demo-leaderboard.json"),

@@ -1,10 +1,12 @@
 [English](research-and-agents.en.md) | 简体中文
 
+> 旧流程的历史示例，以下格式不再用于新榜。每日打卡和 100 分制请看[当前成员指南](../docs/MEMBER_GUIDE.zh-CN.md)。
+
 > **虚构示例 / Fictional examples.** 下列人物、活动和数字仅演示格式，不代表真实成员、打卡、排名或规定训练安排。请勿把整份示例发成真实社区帖子；只借用适合自己的格式。
 
 # 科研与 Agent / Research and Agents
 
-发布位置：[科研与 Agent Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=research-and-agents.yml)，标题使用 `[Research / Agent]` 前缀。此类社区 Issue 不自动计分。复用价值明确时，可另用 [Experience sharing 经验 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) 整理并链接原帖；贡献积分仍需 `points-approved` 标签和匹配正文、作者、周次的可信审批 ledger，由维护者按现有流程审核。
+发布位置：[科研与 Agent Issue](../docs/legacy-issue-templates/research-and-agents.yml)，标题使用 `[Research / Agent]` 前缀。此类社区 Issue 不自动计分。复用价值明确时，可另用 [Experience sharing 经验 Issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) 整理并链接原帖；贡献积分仍需 `points-approved` 标签和匹配正文、作者、周次的可信审批 ledger，由维护者按现有流程审核。
 
 ## 示例一：整理公开实验结果表
 

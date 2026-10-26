@@ -7,11 +7,38 @@
 
 **Train model and train body. Just for fun and health.**
 
-A community for AI researchers to talk about movement during busy weeks, find activity buddies, and share life beyond research.
+A community for AI researchers: record work and exercise, follow a weekly board, and exchange real experiences.
 
-**[See the community](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=is%3Aissue%20is%3Aopen%20-label%3Aexample%20-%22Fictional%20example%22%20-%E8%99%9A%E6%9E%84%20in%3Atitle%20sort%3Aupdated-desc) · [Join the conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)**
+**[Start my check-in journal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml) · [Share an experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [Start a conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)**
 
-Read a story, leave a reply, or share something from your day. No plan, commands, or check-in commitment is needed. Anything you post here is public.
+## Daily check-ins
+
+1. Create one long-running Issue and choose its time zone. Select **Yes** for **Public leaderboard** to appear on the board; the default is No.
+2. Comment on your own Issue each day. `W` means work, `E` means exercise; `1` means yes and `0` means no:
+
+   ```text
+   /checkin 2026-10-26 W=1 E=0
+   ```
+
+3. The board updates daily at **01:15 UTC / 09:15 Beijing time**. Each Monday–Sunday week counts distinct work and exercise dates. The latest valid check-in replaces earlier ones for the same date.
+
+<a id="member-helper"></a>
+
+The [check-in helper][member-helper] finds your journal, prepares comment text, and displays standings. Review and post the text yourself; the page never posts for you.
+
+## Weekly board
+
+<a id="weekly-community-board"></a>
+
+For weekly work days $W$ and exercise days $E$:
+
+$$
+S = 100 \sqrt{\min(W/5, 1) \cdot \min(E/4, 1)}
+$$
+
+Five work days and four exercise days reach 100 points. Either count at zero makes the score zero. This measures self-reported participation, not work hours, exercise volume, or physical condition. [Full rules](docs/SCORING.md)
+
+[See the latest board](README.md#周榜) · [Weekly reports](reports/daily/README.md). The first report will appear after the new daily calculation runs.
 
 <a id="news"></a>
 
@@ -24,30 +51,8 @@ Personal experiences from community members. Follow a title to read the full sto
 - **[Early Bird: the idea and the practice · #42](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)** — [@ChawDoe](https://github.com/ChawDoe) describes the EarlyBird community's shared breakfasts and group check-ins as a way to build regular daily routines.
 - **[Finding work–life balance while chasing deadlines · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888) shares attempts to keep some movement, meals, and rest in busy weeks, then gradually return to a regular rhythm afterward.
 
-## A conversation to join
+Reply in these threads or [share your own experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml). Experiences and conversations do not add points.
 
-What makes you want to return to an activity you enjoy? The featured story welcomes questions, and your own experience is welcome too.
-
-[Read the original post and reply](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35#new_comment_field), or start another topic with “Join the conversation” above. A short note is enough.
-
-## Find someone to join you
-
-[Browse existing buddy invitations](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues?q=is%3Aissue%20is%3Aopen%20%22%5BBuddies%5D%22%20in%3Atitle%20-label%3Aexample%20-%22Fictional%20example%22%20-%E8%99%9A%E6%9E%84%20sort%3Aupdated-desc) or [write your own invitation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=buddies-and-events.yml). Describe the activity and roughly when you are available; interested members can reply first.
-
-## Weekly community board
-
-[See the latest community overview](README.md#每周社区概况) · [Full weekly reports](reports/README.md). Community conversations and optional weekly-plan participation are counted separately.
-
-## At your own pace
-
-<a id="member-helper"></a>
-
-Want to keep a record? [Member helper][member-helper] · [Free activity record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=activity-record.yml) · [Meal record](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=meal-record.yml).
-
-Want a weekly plan or optional standings? [Optional advanced features](docs/ADVANCED.md) cover plans, check-ins, reflections, and participation points.
-
-[Member guide](docs/MEMBER_GUIDE.md) · [About the club](docs/ABOUT.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)
-
-The [WeChat invitation poster](assets/club-poster.png) is marked valid **before October 29, 2026**. After it expires, ask an existing member for a current invitation.
+All Issues and comments are public, including journals outside the board. [Member guide](docs/MEMBER_GUIDE.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)
 
 [member-helper]: docs/SETUP.md#9-optional-browser-helper-and-pages-deployment
