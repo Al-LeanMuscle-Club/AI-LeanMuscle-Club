@@ -27,7 +27,7 @@
 - **[Early Bird 理论概述与实践 · #42](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)** — [@ChawDoe](https://github.com/ChawDoe)：从结伴吃早餐和群内接龙出发，讲述 EarlyBird 社团帮助成员建立规律作息的实践。
 - **[赶 DDL 过程中如何 WLB · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888)：分享忙周保留少量活动、照顾吃饭与休息，以及忙完后逐步找回生活节奏的尝试。
 
-欢迎直接在这些原帖下回复，也可以[分享自己的经历](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml)。经验分享与交流不额外加分。
+欢迎直接在这些原帖下回复，也可以[分享自己的经历](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml)。
 
 <a id="周榜"></a>
 
