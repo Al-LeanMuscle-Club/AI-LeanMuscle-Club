@@ -34,6 +34,7 @@ _COMMAND = re.compile(
 _COMMAND_LINE = re.compile(r"^/checkin(?:\s|$)", re.IGNORECASE)
 _ACTIVITY_IMPORT = "<!-- club-import:activity-v1 -->"
 _WORK_IMPORT = "<!-- club-import:work-v1 -->"
+_EXERCISE_IMPORT = "<!-- club-import:exercise-v1 -->"
 
 
 @dataclass(frozen=True)
@@ -240,14 +241,40 @@ def _imported_work_dates(journal: _Journal, zone: ZoneInfo, exercise_date: date,
     return dates
 
 
+def _imported_exercise_dates(journal: _Journal, zone: ZoneInfo, original: date,
+                             as_of: datetime) -> set[date]:
+    fallback = {original}
+    fields = _form_fields(journal.issue)
+    if fields is None or _EXERCISE_IMPORT not in {
+            line.strip() for line in fields.get("Migration notes", "").splitlines()}:
+        return fallback
+    updated = _timestamp(journal.issue.get("updated_at"))
+    if updated is None or not journal.created <= updated <= as_of:
+        return fallback
+    values = [line.strip() for line in fields.get("Imported exercise dates", "").splitlines()
+              if line.strip()]
+    if not 1 <= len(values) <= 7:
+        return fallback
+    dates = {_date(value) for value in values}
+    if None in dates or len(dates) != len(values):
+        return fallback
+    start = original - timedelta(days=original.weekday())
+    end = start + timedelta(days=6)
+    updated_day = updated.astimezone(zone).date()
+    today = as_of.astimezone(zone).date()
+    if any(not start <= day <= end or day > updated_day or day > today for day in dates):
+        return fallback
+    return dates
+
+
 def _checkins(journal: _Journal, zone: ZoneInfo, start: date, end: date,
               as_of: datetime) -> dict[date, tuple[int, int]]:
     days = {}
     imported = _imported_exercise_date(journal, zone, start, end, as_of)
     if imported is not None:
-        # Legacy Activity forms establish exercise only. Zero here grants no
-        # work credit; it does not claim that the member did not work that day.
-        days[imported] = (0, 1)
+        # A valid explicit exercise list replaces the original single date.
+        # No work credit is inferred from either source of exercise dates.
+        days.update({day: (0, 1) for day in _imported_exercise_dates(journal, zone, imported, as_of)})
         for day in _imported_work_dates(journal, zone, imported, as_of):
             days[day] = (1, days.get(day, (0, 0))[1])
     comments = journal.issue.get("comments_data")
@@ -296,7 +323,7 @@ def build_week(records: Iterable[object], week_start: str, as_of: datetime,
 
     Dates refer to each journal's chosen IANA time zone. Latest valid state for
     a given day replaces both W and E, so corrections can also remove credit.
-    Imports credit only their explicit exercise date and marked work dates.
+    Imports credit only their explicit exercise and marked work dates.
     Old 10-point plans and experience approval labels never enter this score.
     """
     start = _date(week_start)

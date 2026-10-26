@@ -66,6 +66,17 @@ def imported_work_activity(work_dates=None, exercise_date="2026-10-28", **overri
     return issue
 
 
+def imported_exercise_activity(exercise_dates=None, **overrides):
+    if exercise_dates is None:
+        exercise_dates = ["2026-10-26", "2026-10-28", "2026-10-30", "2026-10-31"]
+    issue = imported_work_activity(**{"updated_at": "2026-11-02T10:00:00Z", **overrides})
+    issue["body"] = issue["body"].replace(
+        "### Migration notes", "### Imported exercise dates\n\n" + "\n".join(exercise_dates) + "\n\n### Migration notes")
+    issue["body"] = issue["body"].replace(
+        "<!-- club-import:activity-v1 -->", "<!-- club-import:activity-v1 -->\n<!-- club-import:exercise-v1 -->")
+    return issue
+
+
 class DailyScoreTests(unittest.TestCase):
     def test_formula_examples_and_independent_caps(self):
         for work, exercise, expected in [
@@ -590,6 +601,128 @@ class ImportedWorkTests(unittest.TestCase):
         self.assertEqual(issue, original)
         serialized = json.dumps(board)
         for private in ("SYNTHETIC_PRIVATE_NOTE", "Imported work dates", "club-import:work-v1", "2026-10-27", "body"):
+            self.assertNotIn(private, serialized)
+
+
+class ImportedExerciseListTests(unittest.TestCase):
+    def test_multiple_exercise_dates_keep_work_and_produce_expected_scores(self):
+        cases = [(["2026-10-26", "2026-10-28", "2026-10-30", "2026-10-31"], 4, 6, 100),
+                 (["2026-10-28", "2026-10-31", "2026-11-01"], 3, 7, 86.60),
+                 (["2026-10-28", "2026-10-30"], 2, 5, 70.71)]
+        for dates, exercise_days, checkin_days, score in cases:
+            with self.subTest(dates=dates):
+                row = build_week([imported_exercise_activity(dates)], WEEK, AS_OF)["leaderboard"][0]
+                self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"], row["score"]),
+                                 (5, exercise_days, checkin_days, score))
+
+    def test_complete_exercise_list_replaces_instead_of_adding_the_original_day(self):
+        issue = imported_exercise_activity(["2026-10-26", "2026-10-28"], exercise_date="2026-10-31")
+        row = build_week([issue], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"]), (5, 2, 5))
+
+    def test_missing_marker_or_field_falls_back_to_original_exercise_and_keeps_work(self):
+        body = imported_exercise_activity()["body"]
+        marker = "<!-- club-import:exercise-v1 -->"
+        variants = [body.replace(marker, ""), body.replace(marker, "<!-- club-import:exercise-v2 -->"),
+                    body.replace(marker, "Example: " + marker),
+                    body.replace("### Imported exercise dates", "### Exercise dates in prose"),
+                    body.replace(marker, "") + "\n### Other notes\n\n" + marker]
+        for value in variants:
+            with self.subTest(body=value):
+                issue = imported_exercise_activity()
+                issue["body"] = value
+                row = build_week([issue], WEEK, AS_OF)["leaderboard"][0]
+                self.assertEqual((row["work_days"], row["exercise_days"], row["score"]), (5, 1, 50))
+
+    def test_invalid_duplicate_cross_week_or_oversized_list_falls_back_as_a_whole(self):
+        cases = [[], ["2026-10-26", "bad"], ["2026-02-30"], ["2026-1-1"],
+                 ["2026-10-26", "2026-10-26"], ["2026-10-26", "2026-10-25"],
+                 ["2026-10-26", "2026-11-02"], ["2026-10-26, 2026-10-27"],
+                 ["- 2026-10-26"], ["2026-10-26T12:00:00Z"], ["2026-10-26"] * 8]
+        for dates in cases:
+            with self.subTest(dates=dates):
+                row = build_week([imported_exercise_activity(dates)], WEEK, AS_OF)["leaderboard"][0]
+                self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"]), (5, 1, 5))
+        dates = ["2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29",
+                 "2026-10-30", "2026-10-31", "2026-11-01", "", " "]
+        issue = imported_exercise_activity(dates)
+        issue["body"] = issue["body"].replace("\n", "\r\n")
+        row = build_week([issue], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"], row["score"]), (5, 7, 7, 100))
+
+    def test_list_requires_valid_aware_update_between_creation_and_cutoff(self):
+        invalid = [None, "not-a-time", "2026-11-02T10:00:00", "2026-10-30T12:00:00Z",
+                   "2026-11-02T12:00:01Z", "2026-11-03T10:00:00Z"]
+        for updated in invalid:
+            with self.subTest(updated_at=updated):
+                row = build_week([imported_exercise_activity(updated_at=updated)], WEEK, AS_OF)["leaderboard"][0]
+                self.assertEqual((row["work_days"], row["exercise_days"]), (5, 1))
+        issue = imported_exercise_activity()
+        del issue["updated_at"]
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"][0]["exercise_days"], 1)
+        for updated in ("2026-10-31T12:00:00Z", "2026-11-02T12:00:00Z"):
+            self.assertEqual(build_week([imported_exercise_activity(updated_at=updated)], WEEK, AS_OF)
+                             ["leaderboard"][0]["exercise_days"], 4)
+
+    def test_after_creation_exercise_requires_an_update_on_or_after_the_exercise_day(self):
+        dates = ["2026-10-28", "2026-10-31", "2026-11-01"]
+        issue = imported_exercise_activity(dates, updated_at="2026-10-31T18:00:00Z")
+        # A later synchronization cannot unlock a date that was future-dated
+        # when the explicit replacement list was last updated.
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"][0]["exercise_days"], 1)
+        issue["updated_at"] = "2026-11-01T18:00:00Z"
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"][0]["exercise_days"], 3)
+
+    def test_exercise_update_boundaries_follow_the_members_local_calendar(self):
+        instant = datetime(2026, 10, 26, 13, tzinfo=timezone.utc)
+        issue = imported_exercise_activity(["2026-10-26", "2026-10-27"], exercise_date=WEEK,
+                                          work_dates=[WEEK], zone="Pacific/Kiritimati",
+                                          created_at="2026-10-26T00:00:00Z", updated_at="2026-10-26T12:00:00Z")
+        self.assertEqual(build_week([issue], WEEK, instant)["leaderboard"][0]["exercise_days"], 2)
+        issue["body"] = issue["body"].replace("Pacific/Kiritimati", "UTC")
+        self.assertEqual(build_week([issue], WEEK, instant)["leaderboard"][0]["exercise_days"], 1)
+        issue = imported_exercise_activity(["2026-10-26", "2026-10-27"], exercise_date=WEEK,
+                                          work_dates=[WEEK], zone="America/Los_Angeles",
+                                          created_at="2026-10-26T12:00:00Z", updated_at="2026-10-27T00:30:00Z")
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"][0]["exercise_days"], 1)
+        issue["body"] = issue["body"].replace("America/Los_Angeles", "UTC")
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"][0]["exercise_days"], 2)
+
+    def test_owner_corrections_override_both_flags_even_before_the_import_edit(self):
+        comment = checkin("2026-10-26", work=0, exercise=0)
+        issue = imported_exercise_activity(comments_data=[comment, deepcopy(comment)])
+        row = build_week([issue, deepcopy(issue)], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"], row["score"]), (4, 3, 6, 77.46))
+        issue["comments_data"] = [checkin("2026-10-26", work=0, exercise=0, handle="stranger"),
+                                  checkin("2026-11-01", handle="stranger")]
+        row = build_week([issue], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"]), (5, 4, 6))
+
+    def test_exercise_update_does_not_relax_original_activity_or_work_creation_limits(self):
+        issue = imported_exercise_activity(["2026-11-01"], work_dates=["2026-11-01"])
+        row = build_week([issue], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"]), (0, 1, 1))
+        issue = imported_exercise_activity(exercise_date="2026-11-01")
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"], [])
+        issue = imported_exercise_activity()
+        issue["body"] = issue["body"].replace("<!-- club-import:activity-v1 -->", "")
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"], [])
+
+    def test_exercise_lists_preserve_optout_canonical_example_and_bot_exclusions(self):
+        for overrides in ({"public": "No"}, {"state": "closed"}, {"zone": "Unknown/Zone"},
+                          {"labels": [{"name": "example"}]}, {"user": {"login": "robot", "type": "Bot"}}):
+            with self.subTest(overrides=overrides):
+                self.assertEqual(build_week([imported_exercise_activity(**overrides)], WEEK, AS_OF)["leaderboard"], [])
+        newer = journal(number=2, created_at="2026-11-02T11:00:00Z", public="No")
+        self.assertEqual(build_week([imported_exercise_activity(), newer], WEEK, AS_OF)["leaderboard"], [])
+
+    def test_exercise_lists_publish_only_aggregates_without_mutating_the_source(self):
+        issue = imported_exercise_activity()
+        original = deepcopy(issue)
+        board = build_week([issue], WEEK, AS_OF)
+        self.assertEqual(issue, original)
+        serialized = json.dumps(board)
+        for private in ("SYNTHETIC_PRIVATE_NOTE", "Imported exercise dates", "club-import:exercise-v1", "2026-10-30", "body"):
             self.assertNotIn(private, serialized)
 
 
