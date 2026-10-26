@@ -11,7 +11,7 @@
       "scoring_version": 3,
       "week_start": "2026-10-26",
       "week_end": "2026-11-01",
-      "generated_at": "2026-10-26T06:22:58.969195Z",
+      "generated_at": "2026-10-26T06:32:11.356774Z",
       "participants_count": 0,
       "leaderboard": []
     },
@@ -20,7 +20,7 @@
       "scoring_version": 3,
       "week_start": "2026-10-19",
       "week_end": "2026-10-25",
-      "generated_at": "2026-10-26T06:22:58.969195Z",
+      "generated_at": "2026-10-26T06:32:11.356774Z",
       "participants_count": 6,
       "leaderboard": [
         {
@@ -39,10 +39,10 @@
           "handle": "Aaronhuang-778",
           "issue_number": 43,
           "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/43",
-          "work_days": 0,
+          "work_days": 5,
           "exercise_days": 1,
-          "checkin_days": 1,
-          "score": 0.0,
+          "checkin_days": 6,
+          "score": 50.0,
           "time_zone": "Asia/Shanghai"
         },
         {
@@ -50,10 +50,10 @@
           "handle": "EasonXiao-888",
           "issue_number": 40,
           "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/40",
-          "work_days": 0,
+          "work_days": 5,
           "exercise_days": 1,
-          "checkin_days": 1,
-          "score": 0.0,
+          "checkin_days": 6,
+          "score": 50.0,
           "time_zone": "Asia/Shanghai"
         },
         {
@@ -61,10 +61,10 @@
           "handle": "kcz358",
           "issue_number": 37,
           "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/37",
-          "work_days": 0,
+          "work_days": 5,
           "exercise_days": 1,
-          "checkin_days": 1,
-          "score": 0.0,
+          "checkin_days": 5,
+          "score": 50.0,
           "time_zone": "Asia/Shanghai"
         },
         {
@@ -72,10 +72,10 @@
           "handle": "notnotMyself",
           "issue_number": 29,
           "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/29",
-          "work_days": 0,
+          "work_days": 5,
           "exercise_days": 1,
-          "checkin_days": 1,
-          "score": 0.0,
+          "checkin_days": 5,
+          "score": 50.0,
           "time_zone": "Asia/Shanghai"
         },
         {
@@ -83,10 +83,10 @@
           "handle": "YixunLiang",
           "issue_number": 38,
           "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/38",
-          "work_days": 0,
+          "work_days": 5,
           "exercise_days": 1,
-          "checkin_days": 1,
-          "score": 0.0,
+          "checkin_days": 5,
+          "score": 50.0,
           "time_zone": "Asia/Shanghai"
         }
       ]
