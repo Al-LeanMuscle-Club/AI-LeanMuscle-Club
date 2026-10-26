@@ -52,7 +52,7 @@ $$
 
 ## 浏览器辅助页
 
-[打卡辅助页](../README.md#member-helper)可以查找自己的打卡帖、生成每天的打卡文字，并查看已发布的周榜。它不会代你发布或索取 GitHub Token。日期默认按设备填写，请确认与打卡帖时区一致。
+[打卡辅助页](../README.zh-CN.md#member-helper)可以查找自己的打卡帖、生成每天的打卡文字，并查看已发布的周榜。它不会代你发布或索取 GitHub Token。日期默认按设备填写，请确认与打卡帖时区一致。
 
 在本地预览时，于仓库目录运行 `python -m http.server 8000`，再打开 `http://localhost:8000/tools/`。托管页面要由维护者先[启用 GitHub Pages](PAGES_QUICKSTART.zh-CN.md)。
 

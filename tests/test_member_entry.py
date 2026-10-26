@@ -1,6 +1,9 @@
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
-from scripts.member_entry import helper_url, update_entry
+from scripts.member_entry import helper_url, main, update_entry
 
 
 class MemberEntryTests(unittest.TestCase):
@@ -26,6 +29,47 @@ class MemberEntryTests(unittest.TestCase):
         for text in ("no reference", "[member-helper]: a\n[member-helper]: b\n"):
             with self.assertRaises(ValueError):
                 update_entry(text, "https://club.github.io/tools/")
+
+    def test_main_updates_both_full_homepages_and_leaves_compatibility_page_untouched(self):
+        originals = {
+            "README.md": "# Club\n[Helper][member-helper]\n\n[member-helper]: docs/SETUP.md\n"
+                         "<!-- CLUB:START -->English board<!-- CLUB:END -->\n",
+            "README.zh-CN.md": "# 俱乐部\n[辅助页][member-helper]\n\n[member-helper]: docs/PAGES_QUICKSTART.zh-CN.md\n"
+                               "<!-- CLUB:START -->中文榜单<!-- CLUB:END -->\n",
+            "README.en.md": "# Navigation\n[English home](README.md)\n",
+        }
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name, text in originals.items():
+                (root / name).write_text(text, encoding="utf-8")
+            with patch.dict("os.environ", {"MEMBER_PAGE_URL": "https://members.example.org/club/"}), \
+                    patch("sys.argv", ["member_entry.py", "--root", str(root)]):
+                self.assertEqual(main(), 0)
+            url = "https://members.example.org/club/tools/"
+            for name, previous in (("README.md", "docs/SETUP.md"),
+                                   ("README.zh-CN.md", "docs/PAGES_QUICKSTART.zh-CN.md")):
+                self.assertEqual((root / name).read_text(encoding="utf-8"),
+                                 originals[name].replace(previous, url))
+            self.assertEqual((root / "README.en.md").read_text(encoding="utf-8"), originals["README.en.md"])
+
+    def test_main_validates_both_homepages_before_writing_either(self):
+        for bad_name in ("README.md", "README.zh-CN.md"):
+            for invalid in (None, "No helper definition\n", "[member-helper]: a\n[member-helper]: b\n"):
+                with self.subTest(file=bad_name, content=invalid), TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    for name in ("README.md", "README.zh-CN.md"):
+                        (root / name).write_text("Keep this board.\n[member-helper]: docs/setup.md\n", encoding="utf-8")
+                    if invalid is None:
+                        (root / bad_name).unlink()
+                    else:
+                        (root / bad_name).write_text(invalid, encoding="utf-8")
+                    before = {path.name: path.read_bytes() for path in root.iterdir()}
+                    error = FileNotFoundError if invalid is None else ValueError
+                    with patch.dict("os.environ", {"MEMBER_PAGE_URL": "https://members.example.org/"}), \
+                            patch("sys.argv", ["member_entry.py", "--root", str(root)]), \
+                            self.assertRaises(error):
+                        main()
+                    self.assertEqual({path.name: path.read_bytes() for path in root.iterdir()}, before)
 
 
 if __name__ == "__main__":

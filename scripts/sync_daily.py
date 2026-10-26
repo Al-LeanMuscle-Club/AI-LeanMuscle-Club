@@ -25,6 +25,7 @@ from scripts.github_api import GitHubReader, validate_repository  # noqa: E402
 
 START = "<!-- CLUB:START -->"
 END = "<!-- CLUB:END -->"
+LANGUAGE = re.compile(r"^<!-- README:LANG=([^\r\n]+) -->\r?$", re.MULTILINE)
 VERSION = 3
 WINDOW = 12
 HOME_ROWS = 10
@@ -126,6 +127,15 @@ def board_markdown(board: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _readme_language(text: str) -> str:
+    markers = LANGUAGE.findall(text)
+    if not markers:
+        return "zh-CN"
+    if len(markers) != 1 or markers[0] not in {"en", "zh-CN"}:
+        raise ValueError("README must have at most one supported language marker.")
+    return markers[0]
+
+
 def replace_readme(text: str, board: dict, *, latest_week: str | None = None) -> str:
     if text.count(START) != 1 or text.count(END) != 1 or text.index(START) > text.index(END):
         raise ValueError("README must retain exactly one correctly ordered CLUB marker pair.")
@@ -137,24 +147,37 @@ def replace_readme(text: str, board: dict, *, latest_week: str | None = None) ->
     updated = generated.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     week = board["week_start"]
     rows = board["leaderboard"]
-    lines = [f"**{week} — {board['week_end']}** · **{board['participants_count']}** 位成员", ""]
+    english = _readme_language(text) == "en"
+    member_label = ("member" if board["participants_count"] == 1 else "members") if english else "位成员"
+    lines = [f"**{week} — {board['week_end']}** · **{board['participants_count']}** {member_label}", ""]
     if latest_week is not None and latest_week != week:
         latest_start = monday(latest_week).isoformat()
-        lines += [f"<sub>最新统计周 {latest_start} 起暂无公开记录，现展示最近有记录的一周。</sub>", ""]
-    lines += ["| 排名 | 成员 | W | E | 得分 | 打卡 |",
+        notice = (f"No public records for the latest reporting week starting {latest_start}; "
+                  "showing the most recent week with records." if english else
+                  f"最新统计周 {latest_start} 起暂无公开记录，现展示最近有记录的一周。")
+        lines += [f"<sub>{notice}</sub>", ""]
+    lines += ["| Rank | Member | W | E | Score | Check-in |" if english else "| 排名 | 成员 | W | E | 得分 | 打卡 |",
               "| ---: | --- | ---: | ---: | ---: | --- |"]
     for row in rows[:HOME_ROWS]:
         lines.append(f"| {row['rank']} | [@{row['handle']}](https://github.com/{row['handle']}) | "
                      f"{row['work_days']} | {row['exercise_days']} | {row['score']:.2f} | "
                      f"[#{row['issue_number']}]({row['issue_url']}) |")
     if not rows:
-        lines += ["", "暂无有效公开记录。"]
+        lines += ["", "No valid public records yet." if english else "暂无有效公开记录。"]
     elif len(rows) > HOME_ROWS:
-        lines += ["", f"展示前 {HOME_ROWS} 位，同分并列；全部成员见完整周榜。"]
-    lines += ["", "已登记天数：W 工作 · E 运动。满分 100。", "",
-              f"[完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md) · "
-              "[打卡指南](docs/MEMBER_GUIDE.zh-CN.md)", "",
-              f"<sub>每日更新 · 更新于 {updated}</sub>"]
+        lines += ["", (f"Showing the first {HOME_ROWS} members; equal scores share a rank. "
+                       "See the full weekly board for everyone." if english else
+                       f"展示前 {HOME_ROWS} 位，同分并列；全部成员见完整周榜。")]
+    if english:
+        lines += ["", "Recorded days: W = work · E = exercise. Maximum score: 100.", "",
+                  f"[Full weekly board (Chinese)](reports/daily/{week}.md) · "
+                  "[Past weeks (Chinese)](reports/daily/README.md) · [Check-in guide](docs/MEMBER_GUIDE.md)", "",
+                  f"<sub>Updated daily · Last update: {updated}</sub>"]
+    else:
+        lines += ["", "已登记天数：W 工作 · E 运动。满分 100。", "",
+                  f"[完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md) · "
+                  "[打卡指南](docs/MEMBER_GUIDE.zh-CN.md)", "",
+                  f"<sub>每日更新 · 更新于 {updated}</sub>"]
     block = "\n".join(lines) + "\n"
     return text[:text.index(START) + len(START)] + "\n\n" + block + "\n" + text[text.index(END):]
 
@@ -185,13 +208,23 @@ def write_reports(root: Path, boards: list[dict], records: list[dict], repositor
     # Choose after withdrawal filtering so old, opted-out rows cannot revive the
     # homepage. A valid zero-point check-in still makes a week nonempty.
     home_board = next((snapshots[week] for week in weeks if snapshots[week]["leaderboard"]), snapshots[weeks[0]])
-    readme = replace_readme((root / "README.md").read_text(encoding="utf-8"), home_board, latest_week=weeks[0])
+    homepages = {root / "README.md": replace_readme(
+        (root / "README.md").read_text(encoding="utf-8"), home_board, latest_week=weeks[0])}
+    chinese_path = root / "README.zh-CN.md"
+    if chinese_path.exists():
+        chinese_text = chinese_path.read_text(encoding="utf-8")
+        # Only a marker-free navigation stub may be skipped. A damaged full
+        # page must not retain withdrawn members while the English page updates.
+        if "README:LANG" in chinese_text or "CLUB:" in chinese_text:
+            if LANGUAGE.findall(chinese_text) != ["zh-CN"]:
+                raise ValueError("README.zh-CN.md must declare exactly one zh-CN language marker.")
+            homepages[chinese_path] = replace_readme(chinese_text, home_board, latest_week=weeks[0])
     archive = ["# 每周打卡榜 · 100 分制", "",
                "按个人打卡帖中的日期统计自然周；每天由 GitHub Actions 更新本周与上周。", "",
                "[计分规则](../../docs/SCORING.md) · [返回首页](../../README.md)", ""]
     archive += [f"- [{week} 起的一周]({week}.md)" for week in weeks]
     archive += ["", "旧的 10 分制报告单独保留为[历史档案](../README.md)，与新榜不混算。"]
-    outputs = {root / "README.md": readme, reports / "README.md": "\n".join(archive) + "\n",
+    outputs = {**homepages, reports / "README.md": "\n".join(archive) + "\n",
                reports / "index.json": json.dumps(index, ensure_ascii=False, indent=2) + "\n"}
     for week, board in snapshots.items():
         outputs[reports / f"{week}.json"] = json.dumps(board, ensure_ascii=False, indent=2) + "\n"

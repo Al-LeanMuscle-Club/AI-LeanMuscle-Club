@@ -41,6 +41,18 @@ def prepare(root):
     return home
 
 
+def prepare_bilingual(root):
+    home = prepare(root)
+    pages = {
+        "README.md": "<!-- README:LANG=en -->\n" + home,
+        "README.zh-CN.md": "<!-- README:LANG=zh-CN -->\n" + home.replace("Keep these real stories.", "保留中文精选经验。"),
+        "README.en.md": "# English\n\n[Read the English homepage](README.md).\n",
+    }
+    for name, text in pages.items():
+        (root / name).write_text(text)
+    return pages
+
+
 class SnapshotReader(GitHubReader):
     def __init__(self, issues, comments):
         super().__init__(REPO, "synthetic-test-token")
@@ -140,6 +152,114 @@ class DailyPublicationTests(unittest.TestCase):
             for path in (root / "reports/daily").iterdir():
                 self.assertNotIn("PRIVATE_NOTE", path.read_text())
                 self.assertNotIn("synthetic-test-token", path.read_text())
+
+    def test_explicit_english_homepage_localizes_populated_capped_and_empty_boards(self):
+        for count in (0, 1, 12):
+            with self.subTest(count=count):
+                records = [journal(number, f"synthetic-{number:02}") for number in range(1, count + 1)]
+                board = build_week(records, WEEK, AS_OF, repository=REPO)
+                home = replace_readme("<!-- README:LANG=en -->\n<!-- CLUB:START --><!-- CLUB:END -->", board)
+                self.assertIn("| Rank | Member | W | E | Score | Check-in |", home)
+                self.assertIn(f"**{count}** " + ("member\n" if count == 1 else "members\n"), home)
+                self.assertIn("W = work · E = exercise. Maximum score: 100", home)
+                self.assertIn("[Full weekly board (Chinese)](reports/daily/2026-10-26.md)", home)
+                self.assertIn("[Past weeks (Chinese)](reports/daily/README.md)", home)
+                self.assertIn("[Check-in guide](docs/MEMBER_GUIDE.md)", home)
+                self.assertIn("Last update: 2026-11-02 12:00 UTC", home)
+                self.assertNotRegex(home, r"[\u4e00-\u9fff]")
+                self.assertNotIn("PRIVATE_NOTE", home)
+                if count == 0:
+                    self.assertIn("No valid public records yet.", home)
+                    self.assertNotIn("| 1 |", home)
+                elif count == 12:
+                    self.assertIn("first 10 members; equal scores share a rank", home)
+                    self.assertEqual(home.count("| 1 | [@synthetic-"), 10)
+                    self.assertNotIn("synthetic-11", home)
+
+    def test_bilingual_refresh_uses_the_same_fallback_rows_and_preserves_editorial_pages(self):
+        records = [journal(), journal(2, "synthetic-two")]
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            originals = prepare_bilingual(root)
+            boards = [build_week(records, week, AS_OF, repository=REPO) for week in ("2026-11-02", WEEK)]
+            write_reports(root, boards, records, REPO)
+            english = (root / "README.md").read_text()
+            chinese = (root / "README.zh-CN.md").read_text()
+            self.assertIn("latest reporting week starting 2026-11-02", english)
+            self.assertIn("showing the most recent week with records", english)
+            self.assertIn("最新统计周 2026-11-02", chinese)
+            for name, home in (("README.md", english), ("README.zh-CN.md", chinese)):
+                self.assertIn("**2026-10-26 — 2026-11-01**", home)
+                self.assertIn("2026-11-02 12:00 UTC", home)
+                self.assertIn("[#1](https://github.com/sample/club/issues/1)", home)
+                self.assertTrue(home.startswith(originals[name].split("<!-- CLUB:START -->")[0]))
+                self.assertTrue(home.endswith("<!-- CLUB:END -->\nFooter\n"))
+                self.assertNotIn("PRIVATE_NOTE", home)
+                self.assertNotIn("/checkin", home)
+            self.assertEqual([line for line in english.splitlines() if line.startswith("| 1 |")],
+                             [line for line in chinese.splitlines() if line.startswith("| 1 |")])
+            self.assertEqual((root / "README.en.md").read_text(), originals["README.en.md"])
+            report = (root / "reports/daily/2026-10-26.md").read_text()
+            self.assertIn("# 每周打卡榜", report)
+            self.assertIn("2026-11-02T12:00:00Z", report)
+            index = json.loads((root / "reports/daily/index.json").read_text())
+            self.assertEqual(index["available_weeks"], ["2026-11-02", WEEK])
+
+    def test_bilingual_withdrawal_clears_both_homepages_and_saved_history(self):
+        for withdrawal in ("no", "closed"):
+            with self.subTest(withdrawal=withdrawal), TemporaryDirectory() as directory:
+                root = Path(directory)
+                originals = prepare_bilingual(root)
+                records = [journal()]
+                write_reports(root, [build_week(records, WEEK, AS_OF, repository=REPO)], records, REPO)
+                if withdrawal == "no":
+                    records[0]["body"] = records[0]["body"].replace("Yes", "No")
+                else:
+                    records[0]["state"] = "closed"
+                write_reports(root, [build_week(records, "2026-11-02", AS_OF, repository=REPO)], records, REPO)
+                for name in ("README.md", "README.zh-CN.md"):
+                    home = (root / name).read_text()
+                    self.assertIn("**2026-11-02 — 2026-11-08**", home)
+                    self.assertNotIn("synthetic-one", home)
+                    self.assertNotIn("most recent week with records", home)
+                    self.assertNotIn("现展示最近有记录的一周", home)
+                self.assertIn("No valid public records yet.", (root / "README.md").read_text())
+                self.assertIn("暂无有效公开记录。", (root / "README.zh-CN.md").read_text())
+                for path in (root / "reports/daily").iterdir():
+                    self.assertNotIn("synthetic-one", path.read_text())
+                self.assertEqual((root / "README.en.md").read_text(), originals["README.en.md"])
+
+    def test_invalid_declared_chinese_homepage_prevents_every_output_write(self):
+        variants = ["<!-- README:LANG=zh-CN -->\nMissing CLUB markers",
+                    "<!-- CLUB:START -->Stale member table<!-- CLUB:END -->",
+                    "<!-- README:LANG=zh-CN -->\n<!-- CLUB:START -->Missing end",
+                    "<!-- README:LANG=zh-CN -->\n<!-- CLUB:END --><!-- CLUB:START -->",
+                    "<!-- README:LANG=zh-CN -->\n<!-- CLUB:START --><!-- CLUB:START --><!-- CLUB:END -->",
+                    "<!-- README:LANG=zh-CN -->\n<!-- README:LANG=en -->\n<!-- CLUB:START --><!-- CLUB:END -->"]
+        for chinese in variants:
+            with self.subTest(chinese=chinese), TemporaryDirectory() as directory:
+                root = Path(directory)
+                prepare_bilingual(root)
+                records = [journal()]
+                write_reports(root, [build_week(records, WEEK, AS_OF, repository=REPO)], records, REPO)
+                (root / "README.zh-CN.md").write_text(chinese)
+                before = {str(path.relative_to(root)): path.read_bytes() for path in root.rglob("*") if path.is_file()}
+                with self.assertRaises(ValueError):
+                    write_reports(root, [build_week(records, "2026-11-02", AS_OF, repository=REPO)], records, REPO)
+                after = {str(path.relative_to(root)): path.read_bytes() for path in root.rglob("*") if path.is_file()}
+                self.assertEqual(before, after)
+
+    def test_unmarked_chinese_navigation_stub_is_not_treated_as_generated_content(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            originals = prepare_bilingual(root)
+            stub = "[Read the homepage](README.md).\n"
+            (root / "README.zh-CN.md").write_text(stub)
+            records = [journal()]
+            write_reports(root, [build_week(records, WEEK, AS_OF, repository=REPO)], records, REPO)
+            self.assertIn("| Rank | Member |", (root / "README.md").read_text())
+            self.assertEqual((root / "README.zh-CN.md").read_text(), stub)
+            self.assertEqual((root / "README.en.md").read_text(), originals["README.en.md"])
 
     def test_empty_and_fictional_only_input_show_an_empty_real_table(self):
         inputs = [[], [journal(title="[Check-in] [虚构演示｜打卡] Synthetic example")],
@@ -402,7 +522,7 @@ class DailyPublicationTests(unittest.TestCase):
         self.assertIn("workflow_dispatch:", workflow)
         self.assertIn("ref: ${{ github.event.repository.default_branch }}", workflow)
         self.assertIn("python scripts/sync_daily.py", workflow)
-        self.assertIn("git add -- README.md reports/daily/", workflow)
+        self.assertIn("git add -- README.md README.zh-CN.md reports/daily/", workflow)
         for excluded in ("pull_request:", "issue_comment:", "data/ranking-state.json", "--fixture", "actions/cache"):
             self.assertNotIn(excluded, workflow)
         self.assertFalse((root / ".github/workflows/check-submission.yml").exists())

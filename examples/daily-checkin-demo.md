@@ -42,4 +42,4 @@ S = 100 × sqrt(min(5 / 5, 1) × min(4 / 4, 1)) = 100.00
 
 不要把本示例的虚构安排复制为自己的真实打卡。只有真实、本人填写并明确同意公开排名的记录，才进入真实周榜。
 
-[打卡与计分说明](../docs/MEMBER_GUIDE.zh-CN.md) · [返回首页](../README.md)
+[打卡与计分说明](../docs/MEMBER_GUIDE.zh-CN.md) · [返回首页](../README.zh-CN.md)
