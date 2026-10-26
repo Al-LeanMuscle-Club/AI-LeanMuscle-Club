@@ -22,16 +22,6 @@ A community for AI researchers: record work and exercise, follow a weekly board,
 
 [See the latest board](README.md#周榜) · [Weekly reports](reports/daily/README.md).
 
-### Example standings (fictional; excluded from the real board)
-
-Invented records for 2026-10-19 — 2026-10-25, shown only to demonstrate the format.
-
-| Rank | Example member | Work days W | Exercise days E | Score / 100 | Records |
-| ---: | --- | ---: | ---: | ---: | --- |
-| 1 | Fictional demo member | 5 | 4 | 100.00 | [Example Issue #48](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/48) |
-
-[View all seven example days](examples/daily-checkin-demo.md). This is not any member's real result.
-
 <a id="news"></a>
 
 ## News · Featured member experiences
