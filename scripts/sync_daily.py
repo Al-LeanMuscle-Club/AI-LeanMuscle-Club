@@ -125,16 +125,20 @@ def board_markdown(board: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def replace_readme(text: str, board: dict) -> str:
+def replace_readme(text: str, board: dict, *, latest_week: str | None = None) -> str:
     if text.count(START) != 1 or text.count(END) != 1 or text.index(START) > text.index(END):
         raise ValueError("README must retain exactly one correctly ordered CLUB marker pair.")
     if board.get("schema_version") != VERSION or board.get("scoring_version") != VERSION:
         raise ValueError("The homepage board must use the v3 100-point schema.")
     week = board["week_start"]
     rows = board["leaderboard"]
-    lines = [f"**{week} — {board['week_end']}** · **{board['participants_count']}** 位成员进入公开打卡榜。", "",
-             "| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |",
-             "| ---: | --- | ---: | ---: | ---: | --- |"]
+    lines = []
+    if latest_week is not None and latest_week != week:
+        latest_end = (monday(latest_week) + timedelta(days=6)).isoformat()
+        lines += [f"最新统计周（{latest_week} — {latest_end}）暂无有效公开打卡；以下展示最近有记录的一周。", ""]
+    lines += [f"**{week} — {board['week_end']}** · **{board['participants_count']}** 位成员进入公开打卡榜。", "",
+              "| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |",
+              "| ---: | --- | ---: | ---: | ---: | --- |"]
     for row in rows[:HOME_ROWS]:
         lines.append(f"| {row['rank']} | [@{row['handle']}](https://github.com/{row['handle']}) | "
                      f"{row['work_days']} | {row['exercise_days']} | {row['score']:.2f} | "
@@ -172,7 +176,10 @@ def write_reports(root: Path, boards: list[dict], records: list[dict], repositor
     weeks = sorted(snapshots, reverse=True)
     index = {"schema_version": VERSION, "scoring_version": VERSION,
              "available_weeks": weeks, "weeks": [snapshots[week] for week in weeks[:WINDOW]]}
-    readme = replace_readme((root / "README.md").read_text(encoding="utf-8"), snapshots[weeks[0]])
+    # Choose after withdrawal filtering so old, opted-out rows cannot revive the
+    # homepage. A valid zero-point check-in still makes a week nonempty.
+    home_board = next((snapshots[week] for week in weeks if snapshots[week]["leaderboard"]), snapshots[weeks[0]])
+    readme = replace_readme((root / "README.md").read_text(encoding="utf-8"), home_board, latest_week=weeks[0])
     archive = ["# 每周打卡榜 · 100 分制", "",
                "按个人打卡帖中的日期统计自然周；每天由 GitHub Actions 更新本周与上周。", "",
                "[计分规则](../../docs/SCORING.md) · [返回首页](../../README.md)", ""]

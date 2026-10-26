@@ -177,6 +177,87 @@ class DailyPublicationTests(unittest.TestCase):
             snapshot = json.loads((root / "reports/daily/2026-10-26.json").read_text())
             self.assertEqual(len(snapshot["leaderboard"]), 12)
 
+    def test_homepage_prefers_latest_nonempty_week_even_with_zero_points(self):
+        records = [journal(), journal(2, "synthetic-two")]
+        records[1]["comments_data"][0].update(
+            created_at="2026-11-02T10:00:00Z", body="/checkin 2026-11-02 W=0 E=0")
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            prepare(root)
+            boards = [build_week(records, week, AS_OF, repository=REPO)
+                      for week in ("2026-11-02", WEEK)]
+            write_reports(root, boards, records, REPO)
+            home = (root / "README.md").read_text()
+            self.assertIn("**2026-11-02 — 2026-11-08**", home)
+            self.assertIn("[@synthetic-two]", home)
+            self.assertIn("| 0 | 0 | 0.00 | [#2]", home)
+            self.assertNotIn("synthetic-one", home)
+            self.assertNotIn("以下展示最近有记录的一周", home)
+            self.assertIn("reports/daily/2026-11-02.md", home)
+
+    def test_empty_latest_week_displays_most_recent_nonempty_week(self):
+        records = [journal()]
+        records[0]["comments_data"].append({
+            "id": 10, "user": {"login": "synthetic-one", "id": 1},
+            "created_at": "2026-10-20T12:00:00Z", "body": "/checkin 2026-10-20 W=1 E=0"})
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            before = prepare(root)
+            boards = [build_week(records, week, AS_OF, repository=REPO)
+                      for week in ("2026-11-02", WEEK, "2026-10-19")]
+            write_reports(root, boards, records, REPO)
+            home = (root / "README.md").read_text()
+            self.assertIn("最新统计周（2026-11-02 — 2026-11-08）暂无有效公开打卡；以下展示最近有记录的一周。", home)
+            self.assertIn("**2026-10-26 — 2026-11-01**", home)
+            self.assertIn("| 1 | [@synthetic-one]", home)
+            self.assertIn("[#1](https://github.com/sample/club/issues/1)", home)
+            self.assertIn("reports/daily/2026-10-26.md", home)
+            self.assertIn("2026-11-02T12:00:00Z", home)
+            self.assertNotIn("2026-10-19", home)
+            self.assertNotIn("PRIVATE_NOTE", home)
+            self.assertNotIn("/checkin", home)
+            self.assertTrue(home.startswith(before.split("<!-- CLUB:START -->")[0]))
+            self.assertTrue(home.endswith("<!-- CLUB:END -->\nFooter\n"))
+            index = json.loads((root / "reports/daily/index.json").read_text())
+            self.assertEqual(index["available_weeks"], ["2026-11-02", WEEK, "2026-10-19"])
+            self.assertEqual([board["week_start"] for board in index["weeks"]], index["available_weeks"])
+            self.assertEqual(index["weeks"][0]["leaderboard"], [])
+            self.assertIn("本周暂无选择公开排名", (root / "reports/daily/2026-11-02.md").read_text())
+
+    def test_all_empty_weeks_keep_the_latest_week_empty_state(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            prepare(root)
+            boards = [build_week([], week, AS_OF, repository=REPO) for week in (WEEK, "2026-11-02")]
+            write_reports(root, boards, [], REPO)
+            home = (root / "README.md").read_text()
+            self.assertIn("**2026-11-02 — 2026-11-08**", home)
+            self.assertIn("**0** 位成员", home)
+            self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
+            self.assertIn("本周暂无选择公开排名且有有效真实打卡", home)
+            self.assertIn("reports/daily/2026-11-02.md", home)
+            self.assertNotIn("以下展示最近有记录的一周", home)
+
+    def test_withdrawn_saved_rows_cannot_trigger_homepage_fallback(self):
+        for withdrawal in ("no", "closed"):
+            with self.subTest(withdrawal=withdrawal), TemporaryDirectory() as directory:
+                root = Path(directory)
+                prepare(root)
+                records = [journal()]
+                write_reports(root, [build_week(records, WEEK, AS_OF, repository=REPO)], records, REPO)
+                if withdrawal == "no":
+                    records[0]["body"] = records[0]["body"].replace("Yes", "No")
+                else:
+                    records[0]["state"] = "closed"
+                write_reports(root, [build_week(records, "2026-11-02", AS_OF, repository=REPO)], records, REPO)
+                home = (root / "README.md").read_text()
+                self.assertIn("**2026-11-02 — 2026-11-08**", home)
+                self.assertIn("本周暂无选择公开排名且有有效真实打卡", home)
+                self.assertNotIn("以下展示最近有记录的一周", home)
+                self.assertNotIn("synthetic-one", home)
+                for path in (root / "reports/daily").iterdir():
+                    self.assertNotIn("synthetic-one", path.read_text())
+
     def test_current_table_withdraws_no_and_closed_members_and_preserves_other_sections(self):
         for withdrawal in ("no", "closed"):
             with self.subTest(withdrawal=withdrawal), TemporaryDirectory() as directory:
