@@ -17,6 +17,15 @@ Read a story, leave a reply, or share something from your day. No plan, commands
 
 - **2026-10-24 · Member spotlight**: [@rentainhe](https://github.com/rentainhe) shares how basketball became a starting point for lasting exercise habits. **[Read the edited story (Chinese)](docs/experiences/2026-10-24-rentainhe.md)** · [Original post and discussion #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35).
 
+## Featured member experiences
+
+Personal experiences from community members. Follow a title to read the full story in Chinese, ask questions, or share your own approach in the original thread.
+
+- **[Lessons from losing 30 kg · #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)** — [@rentainhe](https://github.com/rentainhe) shares how enjoying basketball became a starting point for gradually building exercise and eating habits.
+- **[Let the agent run experiments; head downstairs for a workout · #44](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)** — [@Aaronhuang-778](https://github.com/Aaronhuang-778) describes using time while an agent runs tasks to exercise, while also making room for rest.
+- **[Early Bird: the idea and the practice · #42](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)** — [@ChawDoe](https://github.com/ChawDoe) describes the EarlyBird community's shared breakfasts and group check-ins as a way to build regular daily routines.
+- **[Finding work–life balance while chasing deadlines · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888) shares attempts to keep some movement, meals, and rest in busy weeks, then gradually return to a regular rhythm afterward.
+
 ## A conversation to join
 
 What makes you want to return to an activity you enjoy? The featured story welcomes questions, and your own experience is welcome too.
