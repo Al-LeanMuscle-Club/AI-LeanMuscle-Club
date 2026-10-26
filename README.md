@@ -35,16 +35,6 @@
 
 <!-- CLUB:END -->
 
-### 示例榜单（虚构，不计入真实周榜）
-
-2026-10-19 — 2026-10-25 的虚构记录，仅用于展示榜单效果。
-
-| 名次 | 示例成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 记录 |
-| ---: | --- | ---: | ---: | ---: | --- |
-| 1 | 演示用户（虚构） | 5 | 4 | 100.00 | [示例 Issue #48](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/48) |
-
-[查看七天示例记录](examples/daily-checkin-demo.md)。这不是任何成员的真实成绩。
-
 <a id="news"></a>
 
 ## News · 精选经验分享
