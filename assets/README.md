@@ -4,6 +4,8 @@
 
 - Tool: built-in `imagegen`, new image generation, opaque background.
 - Format: PNG, 2172 × 724 pixels.
+- Compression: `pngquant 2.17.0`, 80-color palette quantization with dithering (`--strip --speed 1`); original dimensions and composition retained. Palette quantization is lossy.
+- File size: 478,426 bytes, down from 1,914,686 bytes (24.99% of the original; 75.01% smaller).
 - Direction: warm neutral sports editorial photography with a restrained cobalt accent; no text or logos.
 
 ## Generation prompt

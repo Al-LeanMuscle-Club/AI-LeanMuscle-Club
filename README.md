@@ -21,6 +21,8 @@
 
 社区成员的亲身实践。点击标题，到原帖接着聊。
 
+**[程序员到底怎么练？万字健身指南](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/57)**<br>[@orange90](https://github.com/orange90) · 从个人健身经历出发，聊正反馈与忙碌工作中的训练安排。
+
 **[减肥 30 kg：从喜欢的运动开始](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)**<br>[@rentainhe](https://github.com/rentainhe) · 从篮球开始，逐步建立运动和饮食习惯。[阅读整理](docs/experiences/2026-10-24-rentainhe.md)
 
 **[让 agent 跑实验，我下楼练一会](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)**<br>[@Aaronhuang-778](https://github.com/Aaronhuang-778) · 利用任务运行的间隙运动，也给休息留些时间。
@@ -39,24 +41,17 @@
 
 <!-- CLUB:START -->
 
-**2026-10-19 — 2026-10-25** · **6** 位成员
-
-<sub>最新统计周 2026-10-26 起暂无公开记录，现展示最近有记录的一周。</sub>
+**2026-10-26 — 2026-11-01** · **1** 位成员
 
 | 排名 | 成员 | W | E | 得分 | 打卡 |
 | ---: | --- | ---: | ---: | ---: | --- |
-| 1 | [@Aaronhuang-778](https://github.com/Aaronhuang-778) | 5 | 4 | 100.00 | [#43](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/43) |
-| 1 | [@yukang2017](https://github.com/yukang2017) | 5 | 4 | 100.00 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
-| 3 | [@notnotMyself](https://github.com/notnotMyself) | 5 | 3 | 86.60 | [#29](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/29) |
-| 4 | [@kcz358](https://github.com/kcz358) | 5 | 2 | 70.71 | [#37](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/37) |
-| 5 | [@EasonXiao-888](https://github.com/EasonXiao-888) | 5 | 1 | 50.00 | [#40](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/40) |
-| 5 | [@YixunLiang](https://github.com/YixunLiang) | 5 | 1 | 50.00 | [#38](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/38) |
+| 1 | [@StiphyJay](https://github.com/StiphyJay) | 1 | 1 | 22.36 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
 
 已登记天数：W 工作 · E 运动。满分 100。
 
-[完整周榜](reports/daily/2026-10-19.md) · [历史周榜](reports/daily/README.md) · [打卡指南](docs/MEMBER_GUIDE.zh-CN.md)
+[完整周榜](reports/daily/2026-10-26.md) · [历史周榜](reports/daily/README.md) · [打卡指南](docs/MEMBER_GUIDE.zh-CN.md)
 
-<sub>每日更新 · 更新于 2026-10-26 06:47 UTC</sub>
+<sub>每日更新 · 更新于 2026-10-26 12:13 UTC</sub>
 
 <!-- CLUB:END -->
 

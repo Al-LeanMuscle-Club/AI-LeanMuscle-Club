@@ -3,7 +3,19 @@
   "scoring_version": 3,
   "week_start": "2026-10-26",
   "week_end": "2026-11-01",
-  "generated_at": "2026-10-26T06:47:32.228183Z",
-  "participants_count": 0,
-  "leaderboard": []
+  "generated_at": "2026-10-26T12:13:09.073639Z",
+  "participants_count": 1,
+  "leaderboard": [
+    {
+      "rank": 1,
+      "handle": "StiphyJay",
+      "issue_number": 58,
+      "issue_url": "https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58",
+      "work_days": 1,
+      "exercise_days": 1,
+      "checkin_days": 1,
+      "score": 22.36,
+      "time_zone": "Asia/Shanghai"
+    }
+  ]
 }
