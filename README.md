@@ -13,9 +13,16 @@
 
 先看一篇分享、回复一句话，或者写下今天的小事就可以。无需周计划、命令或打卡承诺；在这里发布的内容会公开。
 
-## News
+<a id="news"></a>
 
-- **2026-10-24 · 成员精选**：[@rentainhe](https://github.com/rentainhe) 分享从篮球起步、逐渐建立运动习惯的经历。**[阅读经验整理：从喜欢的运动开始](docs/experiences/2026-10-24-rentainhe.md)** · [原帖与交流 #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)。
+## News · 精选经验分享
+
+来自社区成员的亲身尝试。点击标题阅读完整经历，也欢迎在原帖下提问、交流自己的做法。
+
+- **[减肥 30kg 的经验分享 · #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)** — [@rentainhe](https://github.com/rentainhe)：从喜欢的篮球开始，分享逐渐建立运动和饮食习惯的经历。另有[经验整理：从喜欢的运动开始](docs/experiences/2026-10-24-rentainhe.md)。
+- **[让 agent 跑实验，我下楼练一会 · #44](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)** — [@Aaronhuang-778](https://github.com/Aaronhuang-778)：分享如何利用 Agent 运行任务的间隙去运动，并为休息保留空间。
+- **[Early Bird 理论概述与实践 · #42](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)** — [@ChawDoe](https://github.com/ChawDoe)：从结伴吃早餐和群内接龙出发，讲述 EarlyBird 社团帮助成员建立规律作息的实践。
+- **[赶 DDL 过程中如何 WLB · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888)：分享忙周保留少量活动、照顾吃饭与休息，以及忙完后逐步找回生活节奏的尝试。
 
 ## 正在聊什么
 
