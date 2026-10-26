@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 from club.daily_checkins import build_week
 from scripts.github_api import GitHubReader
-from scripts.sync_daily import main, public_snapshot, reporting_weeks, write_reports
+from scripts.sync_daily import main, public_snapshot, replace_readme, reporting_weeks, write_reports
 
 REPO = "sample/club"
 WEEK = "2026-10-26"
@@ -124,6 +124,14 @@ class DailyPublicationTests(unittest.TestCase):
             self.assertTrue(home.startswith(before.split("<!-- CLUB:START -->")[0]))
             self.assertTrue(home.endswith("<!-- CLUB:END -->\nFooter\n"))
             self.assertIn("reports/daily/2026-10-26.md", home)
+            self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
+            self.assertIn("| 1 | [@synthetic-one](https://github.com/synthetic-one) | 1 | 1 | 22.36 | "
+                          "[#1](https://github.com/sample/club/issues/1) |", home)
+            self.assertIn("2026-10-26 — 2026-11-01", home)
+            self.assertIn("2026-11-02T12:00:00Z", home)
+            self.assertNotIn("PRIVATE_NOTE", home)
+            self.assertNotIn("/checkin", home)
+            self.assertNotIn("2026-10-27", home)
             self.assertEqual((root / "reports/index.json").read_text(), "LEGACY_REPORT_UNCHANGED")
             self.assertEqual((root / "data/ranking-state.json").read_text(), "LEGACY_LEDGER_UNCHANGED")
             index = json.loads((root / "reports/daily/index.json").read_text())
@@ -132,6 +140,68 @@ class DailyPublicationTests(unittest.TestCase):
             for path in (root / "reports/daily").iterdir():
                 self.assertNotIn("PRIVATE_NOTE", path.read_text())
                 self.assertNotIn("synthetic-test-token", path.read_text())
+
+    def test_empty_and_fictional_only_input_show_an_empty_real_table(self):
+        inputs = [[], [journal(title="[Check-in] [虚构演示｜打卡] Synthetic example")],
+                  [journal(public="No")]]
+        for records in inputs:
+            with self.subTest(records=records), TemporaryDirectory() as directory:
+                root = Path(directory)
+                prepare(root)
+                board = build_week(records, WEEK, AS_OF, repository=REPO)
+                write_reports(root, [board], records, REPO)
+                home = (root / "README.md").read_text()
+                self.assertIn("**0** 位成员", home)
+                self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
+                self.assertIn("暂无选择公开排名且有有效真实打卡", home)
+                self.assertIn("示例记录不计入此榜", home)
+                self.assertNotIn("synthetic-one", home)
+                self.assertNotIn("| 1 |", home)
+
+    def test_homepage_limits_rows_without_truncating_reports_or_changing_tied_ranks(self):
+        records = [journal(number, f"synthetic-{number:02}") for number in range(1, 13)]
+        board = build_week(records, WEEK, AS_OF, repository=REPO)
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            prepare(root)
+            write_reports(root, [board], records, REPO)
+            home = (root / "README.md").read_text()
+            self.assertIn("**12** 位成员", home)
+            self.assertIn("首页展示前 10 位成员，同分并列", home)
+            self.assertEqual(home.count("| 1 | [@synthetic-"), 10)
+            self.assertNotIn("synthetic-11", home)
+            self.assertNotIn("synthetic-12", home)
+            complete = (root / "reports/daily/2026-10-26.md").read_text()
+            self.assertIn("synthetic-11", complete)
+            self.assertIn("synthetic-12", complete)
+            snapshot = json.loads((root / "reports/daily/2026-10-26.json").read_text())
+            self.assertEqual(len(snapshot["leaderboard"]), 12)
+
+    def test_current_table_withdraws_no_and_closed_members_and_preserves_other_sections(self):
+        for withdrawal in ("no", "closed"):
+            with self.subTest(withdrawal=withdrawal), TemporaryDirectory() as directory:
+                root = Path(directory)
+                before = prepare(root)
+                records = [journal(), journal(2, "synthetic-two")]
+                write_reports(root, [build_week(records, WEEK, AS_OF, repository=REPO)], records, REPO)
+                self.assertIn("@synthetic-one", (root / "README.md").read_text())
+                if withdrawal == "no":
+                    records[0]["body"] = records[0]["body"].replace("Yes", "No")
+                else:
+                    records[0]["state"] = "closed"
+                write_reports(root, [build_week(records, WEEK, AS_OF, repository=REPO)], records, REPO)
+                home = (root / "README.md").read_text()
+                self.assertNotIn("synthetic-one", home)
+                self.assertIn("| 1 | [@synthetic-two]", home)
+                self.assertIn("**1** 位成员", home)
+                self.assertTrue(home.startswith(before.split("<!-- CLUB:START -->")[0]))
+                self.assertTrue(home.endswith("<!-- CLUB:END -->\nFooter\n"))
+
+    def test_homepage_rejects_legacy_score_schema(self):
+        board = build_week([journal()], WEEK, AS_OF, repository=REPO)
+        board["scoring_version"] = 2
+        with self.assertRaisesRegex(ValueError, "v3"):
+            replace_readme("<!-- CLUB:START --><!-- CLUB:END -->", board)
 
     def test_optout_withdraws_saved_history_and_reranks_without_touching_legacy(self):
         records = [journal(), journal(2, "synthetic-two")]

@@ -1,5 +1,7 @@
 # Historical examples
 
+Current format: [fictional seven-day check-in example](daily-checkin-demo.md), excluded from real standings.
+
 [简体中文](README.md) | **English**
 
 These fictional examples describe the retired workflow. For current daily check-ins and the 100-point board, use the [member guide](../docs/MEMBER_GUIDE.md).

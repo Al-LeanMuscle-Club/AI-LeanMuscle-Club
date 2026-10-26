@@ -1,5 +1,7 @@
 # 历史示例
 
+当前格式：[七天打卡虚构示例](daily-checkin-demo.md)，不计入真实榜单。
+
 **简体中文** | [English](README.en.md)
 
 这些虚构示例保留旧流程的写法，不进入真实统计。当前每日打卡和 100 分制周榜请看[成员指南](../docs/MEMBER_GUIDE.zh-CN.md)。
