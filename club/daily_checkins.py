@@ -1,8 +1,9 @@
 """Deterministic weekly scores from an owner's daily work/exercise check-ins.
 
-This module interprets one explicit command, never prose or model output. Only
-weekly counts from currently opted-in journals leave the calculation; bodies,
-notes, individual dates and comment metadata are not part of public reports.
+This module interprets explicit check-in commands and marked legacy exercise
+dates, never prose or model output. Only weekly counts from publicly enabled
+journals leave the calculation; bodies, notes, individual dates and comment
+metadata are not part of public reports.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ _COMMAND = re.compile(
     re.IGNORECASE,
 )
 _COMMAND_LINE = re.compile(r"^/checkin(?:\s|$)", re.IGNORECASE)
+_ACTIVITY_IMPORT = "<!-- club-import:activity-v1 -->"
 
 
 @dataclass(frozen=True)
@@ -101,7 +103,7 @@ def is_journal(issue: object) -> bool:
                 or "daily-checkin" in label_names(issue))
 
 
-def _configuration(issue: Mapping[str, Any]) -> tuple[ZoneInfo, bool] | None:
+def _form_fields(issue: Mapping[str, Any]) -> dict[str, str] | None:
     body = issue.get("body")
     if not isinstance(body, str):
         return None
@@ -114,6 +116,13 @@ def _configuration(issue: Mapping[str, Any]) -> tuple[ZoneInfo, bool] | None:
             return None
         end = matches[index + 1].start() if index + 1 < len(matches) else len(body)
         fields[heading] = body[match.end():end].strip()
+    return fields
+
+
+def _configuration(issue: Mapping[str, Any]) -> tuple[ZoneInfo, bool] | None:
+    fields = _form_fields(issue)
+    if fields is None:
+        return None
     public = fields.get("Public leaderboard", "").casefold()
     if public not in {"yes", "no"}:
         return None
@@ -158,7 +167,7 @@ def _canonical_journals(records: Iterable[object]) -> list[_Journal]:
 
 
 def public_handles(records: Iterable[object]) -> set[str]:
-    """Current consenting owners, including those without a check-in this week.
+    """Current publicly enabled owners, including those without a check-in this week.
 
     Report writers use this allowlist to remove withdrawn members from stored
     public snapshots. Closing a journal or changing Yes to No withdraws it.
@@ -193,11 +202,32 @@ def _owned_comment(comment: Mapping[str, Any], owner: _User) -> bool:
     return owner.handle.casefold() == author.handle.casefold()
 
 
+def _imported_exercise_date(journal: _Journal, zone: ZoneInfo, start: date,
+                            end: date, as_of: datetime) -> date | None:
+    fields = _form_fields(journal.issue)
+    if fields is None or _ACTIVITY_IMPORT not in {
+            line.strip() for line in fields.get("Migration notes", "").splitlines()}:
+        return None
+    imported = _date(fields.get("Imported exercise date"))
+    original = _date(fields.get("Activity date"))
+    if (imported is None or imported != original or not start <= imported <= end
+            or imported > journal.created.astimezone(zone).date()
+            or imported > as_of.astimezone(zone).date()):
+        return None
+    return imported
+
+
 def _checkins(journal: _Journal, zone: ZoneInfo, start: date, end: date,
               as_of: datetime) -> dict[date, tuple[int, int]]:
+    days = {}
+    imported = _imported_exercise_date(journal, zone, start, end, as_of)
+    if imported is not None:
+        # Legacy Activity forms establish exercise only. Zero here grants no
+        # work credit; it does not claim that the member did not work that day.
+        days[imported] = (0, 1)
     comments = journal.issue.get("comments_data")
     if not isinstance(comments, list):
-        return {}
+        return days
     latest: dict[date, tuple[tuple, int, int]] = {}
     today = as_of.astimezone(zone).date()
     for comment in comments:
@@ -229,16 +259,20 @@ def _checkins(journal: _Journal, zone: ZoneInfo, start: date, end: date,
         previous = latest.get(day)
         if previous is None or key > previous[0]:
             latest[day] = key, work, exercise
-    return {day: (work, exercise) for day, (_, work, exercise) in latest.items()}
+    # The owner's explicit daily flags always supersede the imported exercise,
+    # including E=0 corrections, without counting the same local date twice.
+    days.update({day: (work, exercise) for day, (_, work, exercise) in latest.items()})
+    return days
 
 
 def build_week(records: Iterable[object], week_start: str, as_of: datetime,
                repository: str = DEFAULT_REPOSITORY) -> dict:
-    """Build a public Monday–Sunday board from explicit owner check-ins only.
+    """Build a public board from owner check-ins and marked Activity imports.
 
     Dates refer to each journal's chosen IANA time zone. Latest valid state for
     a given day replaces both W and E, so corrections can also remove credit.
-    Old 10-point plans and experience approval labels never enter this score.
+    Imported exercise dates grant no work credit. Old 10-point plans and
+    experience approval labels never enter this score.
     """
     start = _date(week_start)
     if start is None or start.weekday() != 0:

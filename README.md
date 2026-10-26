@@ -16,28 +16,6 @@
 
 [打卡与计分说明](docs/MEMBER_GUIDE.zh-CN.md) · [打卡辅助页][member-helper]
 
-## 周榜
-
-按成员提交的 W/E 标记计算，记录背景及来源见各打卡帖。
-
-<a id="每周社区概况"></a>
-
-<!-- CLUB:START -->
-
-最新统计周（2026-10-26 — 2026-11-01）暂无有效公开打卡；以下展示最近有记录的一周。
-
-**2026-10-19 — 2026-10-25** · **1** 位成员进入公开打卡榜。
-
-| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |
-| ---: | --- | ---: | ---: | ---: | --- |
-| 1 | [@yukang2017](https://github.com/yukang2017) | 5 | 4 | 100.00 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
-
-[查看完整周榜](reports/daily/2026-10-19.md) · [历史周榜](reports/daily/README.md)
-
-每日定时更新；数据更新：2026-10-26T06:05:25.144593Z。
-
-<!-- CLUB:END -->
-
 <a id="news"></a>
 
 ## News · 精选经验分享
@@ -50,6 +28,37 @@
 - **[赶 DDL 过程中如何 WLB · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888)：分享忙周保留少量活动、照顾吃饭与休息，以及忙完后逐步找回生活节奏的尝试。
 
 欢迎直接在这些原帖下回复，也可以[分享自己的经历](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml)。经验分享与交流不额外加分。
+
+<a id="周榜"></a>
+
+## 工作运动双修榜单
+
+按已登记的工作与运动日期计分，记录详情见各打卡帖。
+
+<a id="每周社区概况"></a>
+
+<!-- CLUB:START -->
+
+最新统计周（2026-10-26 — 2026-11-01）暂无有效公开打卡；以下展示最近有记录的一周。
+
+**2026-10-19 — 2026-10-25** · **6** 位成员进入公开打卡榜。
+
+| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | [@yukang2017](https://github.com/yukang2017) | 5 | 4 | 100.00 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
+| 2 | [@Aaronhuang-778](https://github.com/Aaronhuang-778) | 0 | 1 | 0.00 | [#43](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/43) |
+| 2 | [@EasonXiao-888](https://github.com/EasonXiao-888) | 0 | 1 | 0.00 | [#40](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/40) |
+| 2 | [@kcz358](https://github.com/kcz358) | 0 | 1 | 0.00 | [#37](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/37) |
+| 2 | [@notnotMyself](https://github.com/notnotMyself) | 0 | 1 | 0.00 | [#29](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/29) |
+| 2 | [@YixunLiang](https://github.com/YixunLiang) | 0 | 1 | 0.00 | [#38](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/38) |
+
+W、E 只累计已登记的工作和运动日期；缺少工作补记时 W 暂为 0。
+
+[查看完整周榜](reports/daily/2026-10-19.md) · [历史周榜](reports/daily/README.md)
+
+每日定时更新；数据更新：2026-10-26T06:18:28.578890Z。
+
+<!-- CLUB:END -->
 
 所有 Issue 和评论都公开；不上榜也不会隐藏原帖。[成员指南](docs/MEMBER_GUIDE.zh-CN.md) · [参与原则](CODE_OF_CONDUCT.md) · [维护者设置](docs/SETUP.md)
 

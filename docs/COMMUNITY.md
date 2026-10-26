@@ -10,7 +10,7 @@ There are two ways to take part: keep a daily journal and follow the weekly boar
 | A personal experience others may find useful | [Experience sharing](../.github/ISSUE_TEMPLATE/experience.yml) | `[Experience]` |
 | A short question, note, or invitation | [Conversation](../.github/ISSUE_TEMPLATE/community-chat.yml) | `[Chat]` |
 
-The forms become available when merged into the repository's default branch. No weekly plan or contribution approval is needed. Only valid daily check-in comments affect the weekly score; experience posts and all ordinary replies earn no points.
+The forms become available when merged into the repository's default branch. No weekly plan or contribution approval is needed. Valid daily check-in comments supply the normal scoring inputs; [authorized imports of existing public Activity posts](SCORING.md#authorized-legacy-activity-import) can also register their original exercise date. Experience posts and all ordinary replies earn no points.
 
 ## Share something real
 

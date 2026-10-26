@@ -44,6 +44,8 @@ $$
 
 周榜每天北京时间 **09:15** 定时更新，GitHub 有时会延迟。默认刷新本周和上周，可以补记这两周的真实记录；更早的修正可请维护者手动刷新对应周。[周榜与历史](../reports/daily/README.md)
 
+已有的公开 Activity 运动记录，经维护者授权迁移后也可以进入周榜，按原日期计一次运动，不推断工作天数。工作天数为 0 表示尚未登记工作记录，因此最初得分可能是 0；你可以在自己的打卡帖下补记实际工作和运动情况，下次统计会更新，同日打卡会替换导入记录的两个状态。迁移说明会注明由哪位维护者开启上榜，你仍可选 No 或关闭打卡帖退出。
+
 ## 分享经验与交流
 
 [经验分享](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml)可以写遇到的问题、实际尝试、效果和局限。短问题或近况用[随便聊聊](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)，也欢迎直接回复已有帖子。分享和回复不影响周榜分数。

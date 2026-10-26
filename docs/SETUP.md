@@ -6,7 +6,7 @@ The active workflow has three Issue forms, a deterministic daily-check-in score,
 
 Merge the new code and `.github/ISSUE_TEMPLATE/` files into the repository's default branch, and enable **Settings → General → Features → Issues**. Members then choose **Daily check-in**, **Experience sharing**, or **Conversation**.
 
-The journal and current reporter do not depend on special labels. Members create their own long-running journal and explicitly choose **Yes** for public standings. The default is **No**. Do not create check-ins or opt members in on their behalf.
+The journal and current reporter do not depend on special labels. Members normally create their own long-running journal and explicitly choose **Yes** for public standings. The default is **No**. The narrow exception is an [explicitly authorized migration of existing public Activity posts](SCORING.md#authorized-legacy-activity-import): identify the maintainer who enabled standings in the migration note, preserve the original record, and do not present this as the author's own confirmation. This does not authorize creating new member activity or unrelated opt-ins; a later No or closure still withdraws the member.
 
 `README.md` is the Chinese homepage and `README.en.md` is English. Preserve the language and community markers, the paired `CLUB` markers in the Chinese homepage, and the single `[member-helper]:` definition in each README. The reporter replaces only the live board block; curated stories stay outside it.
 
@@ -14,9 +14,9 @@ The journal and current reporter do not depend on special labels. Members create
 
 Enable GitHub Actions, allowing the actions referenced by the repository workflows. **Update weekly participation reports** runs at **01:15 UTC daily / 09:15 Beijing time** and can be started manually. Its name is retained so the existing optional Pages workflow can follow successful report runs.
 
-The job uses GitHub's built-in token with `issues: read` and `contents: write`, reads members' journals and comments, and runs `scripts/sync_daily.py`. It refreshes the current and preceding report week, chosen using the Asia/Shanghai calendar. Individual comment dates are validated in each journal's own time zone. Only aggregate, opted-in v3 rows are written under `reports/daily/`; raw Issue bodies are not committed. The old ranking ledger is never updated.
+The job uses GitHub's built-in token with `issues: read` and `contents: write`, reads members' journals and comments, and runs `scripts/sync_daily.py`. It refreshes the current and preceding report week, chosen using the Asia/Shanghai calendar. Individual comment dates are validated in each journal's own time zone. Only aggregate v3 rows with public standings enabled are written under `reports/daily/`; raw Issue bodies are not committed. The old ranking ledger is never updated.
 
-After merging, run the workflow manually once and check its output. An empty report is expected until a member with an open journal, public opt-in, and a valid check-in appears. Do not fill an empty board with fictional examples. GitHub schedules can be delayed; manual runs are available.
+After merging, run the workflow manually once and check its output. An empty report is expected until an open journal with public standings enabled has a valid check-in or validated imported exercise date. Do not fill an empty board with fictional examples. GitHub schedules can be delayed; manual runs are available.
 
 For a correction older than the previous week, set the workflow's optional `week_start` input to that week's Monday in `YYYY-MM-DD` format. The script's `--week` option provides the same selection locally.
 
