@@ -41,17 +41,18 @@
 
 <!-- CLUB:START -->
 
-**2026-10-26 — 2026-11-01** · **1** 位成员
+**2026-10-26 — 2026-11-01** · **2** 位成员
 
 | 排名 | 成员 | W | E | 得分 | 打卡 |
 | ---: | --- | ---: | ---: | ---: | --- |
 | 1 | [@StiphyJay](https://github.com/StiphyJay) | 1 | 1 | 22.36 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
+| 1 | [@yukang2017](https://github.com/yukang2017) | 1 | 1 | 22.36 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
 
 已登记天数：W 工作 · E 运动。满分 100。
 
 [完整周榜](reports/daily/2026-10-26.md) · [历史周榜](reports/daily/README.md) · [打卡指南](docs/MEMBER_GUIDE.zh-CN.md)
 
-<sub>每日更新 · 更新于 2026-10-26 12:13 UTC</sub>
+<sub>每日更新 · 更新于 2026-10-26 12:59 UTC</sub>
 
 <!-- CLUB:END -->
 
