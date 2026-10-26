@@ -21,6 +21,8 @@
 
 Community stories, in Chinese. Follow a title to join the conversation.
 
+**[A programmer's guide to fitness](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/57)**<br>[@orange90](https://github.com/orange90) · Personal training experience, positive feedback, and adapting workouts to busy weeks.
+
 **[Losing 30 kg, starting with a sport you enjoy](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)**<br>[@rentainhe](https://github.com/rentainhe) · Starting with basketball, then building exercise and eating habits. [Edited story (Chinese)](docs/experiences/2026-10-24-rentainhe.md)
 
 **[Let the agent run experiments. Head out for a workout.](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)**<br>[@Aaronhuang-778](https://github.com/Aaronhuang-778) · Making room for exercise and rest while an agent runs tasks.
