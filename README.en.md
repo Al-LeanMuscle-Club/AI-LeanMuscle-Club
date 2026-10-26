@@ -18,6 +18,8 @@ A community for AI researchers: record work and exercise, follow a weekly board,
 
 ## Weekly board
 
+Scores use members’ submitted W/E flags; see each journal for the context and source of its records.
+
 <a id="weekly-community-board"></a>
 
 [See the latest board](README.md#周榜) · [Weekly reports](reports/daily/README.md).
