@@ -30,7 +30,7 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
     url = helper_url(os.environ.get("MEMBER_PAGE_URL", ""))
-    paths = [args.root / "README.md", args.root / "README.en.md"]
+    paths = [args.root / "README.md", args.root / "README.zh-CN.md"]
     # Validate both before changing either README.
     updates = [(path, update_entry(path.read_text(encoding="utf-8"), url)) for path in paths]
     for path, text in updates:

@@ -52,7 +52,7 @@ Use [experience sharing](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Clu
 
 ## Browser helper
 
-The [check-in helper](../README.en.md#member-helper) finds your journal, prepares comment text, and displays published standings. It never posts for you or requests a GitHub token. Its date defaults to your device's local date; check that it matches your journal's time zone.
+The [check-in helper](../README.md#member-helper) finds your journal, prepares comment text, and displays published standings. It never posts for you or requests a GitHub token. Its date defaults to your device's local date; check that it matches your journal's time zone.
 
 For local preview, run `python -m http.server 8000` from the repository root and open `http://localhost:8000/tools/`. A hosted version needs [Pages setup](SETUP.md#9-optional-browser-helper-and-pages-deployment) first.
 

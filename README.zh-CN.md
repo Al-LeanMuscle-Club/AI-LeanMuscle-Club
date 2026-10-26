@@ -1,7 +1,65 @@
-# 文档入口 / README navigation
+<!-- README:LANG=zh-CN -->
+<!-- README:COMMUNITY-FIRST -->
 
-[中文主页](README.md) · [English](README.en.md)
+<p align="center"><strong>简体中文</strong> · <a href="README.md">English</a></p>
 
-中文说明已移至默认 [README.md](README.md)，此页保留为旧链接的兼容入口。
+<h1 align="center">AI 薄肌俱乐部</h1>
 
-The Chinese guide now lives in the default [README.md](README.md). This page preserves older links.
+<p align="center"><strong>练模型，也练身体。</strong><br>一个面向 AI 科研人员的打卡与经验交流社区。</p>
+
+![暖白背景上的笔记本电脑、篮球和哑铃](assets/club-cover.png)
+
+**[开始打卡 →](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml)** · [分享经验](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [随便聊聊](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)
+
+<a id="怎么打卡"></a><a id="member-helper"></a>
+
+[打卡与计分说明](docs/MEMBER_GUIDE.zh-CN.md) · [打卡辅助页][member-helper]
+
+<a id="news"></a>
+
+## News · 精选经验分享
+
+社区成员的亲身实践。点击标题，到原帖接着聊。
+
+**[程序员到底怎么练？万字健身指南](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/57)**<br>[@orange90](https://github.com/orange90) · 从个人健身经历出发，聊正反馈与忙碌工作中的训练安排。
+
+**[减肥 30 kg：从喜欢的运动开始](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)**<br>[@rentainhe](https://github.com/rentainhe) · 从篮球开始，逐步建立运动和饮食习惯。[阅读整理](docs/experiences/2026-10-24-rentainhe.md)
+
+**[让 agent 跑实验，我下楼练一会](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)**<br>[@Aaronhuang-778](https://github.com/Aaronhuang-778) · 利用任务运行的间隙运动，也给休息留些时间。
+
+**[Early Bird：从一起吃早餐开始](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)**<br>[@ChawDoe](https://github.com/ChawDoe) · 结伴早餐与群内接龙，让规律作息有个伴。
+
+**[赶 DDL，也给生活留点空间](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)**<br>[@EasonXiao-888](https://github.com/EasonXiao-888) · 忙周里保留活动、吃饭与休息，再慢慢找回节奏。
+
+<a id="周榜"></a>
+
+## 工作运动双修榜单
+
+按已登记的工作与运动日期计分，记录详情见各打卡帖。
+
+<a id="每周社区概况"></a>
+
+<!-- CLUB:START -->
+
+**2026-10-26 — 2026-11-01** · **2** 位成员
+
+| 排名 | 成员 | W | E | 得分 | 打卡 |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | [@StiphyJay](https://github.com/StiphyJay) | 1 | 1 | 22.36 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
+| 1 | [@yukang2017](https://github.com/yukang2017) | 1 | 1 | 22.36 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
+
+已登记天数：W 工作 · E 运动。满分 100。
+
+[完整周榜](reports/daily/2026-10-26.md) · [历史周榜](reports/daily/README.md) · [打卡指南](docs/MEMBER_GUIDE.zh-CN.md)
+
+<sub>每日更新 · 更新于 2026-10-26 12:59 UTC</sub>
+
+<!-- CLUB:END -->
+
+---
+
+所有 Issue 和评论都公开；不上榜也不会隐藏原帖。
+
+[成员指南](docs/MEMBER_GUIDE.zh-CN.md) · [参与原则](CODE_OF_CONDUCT.md) · [维护者设置](docs/SETUP.md)
+
+[member-helper]: docs/PAGES_QUICKSTART.zh-CN.md

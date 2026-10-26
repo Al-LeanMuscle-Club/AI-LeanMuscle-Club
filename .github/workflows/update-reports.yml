@@ -42,7 +42,7 @@ jobs:
         # GITHUB_TOKEN pushes do not trigger push workflows. The optional
         # Pages workflow listens for this workflow's successful completion.
         run: |
-          git add -- README.md reports/daily/
+          git add -- README.md README.zh-CN.md reports/daily/
           if git diff --cached --quiet; then
             exit 0
           fi

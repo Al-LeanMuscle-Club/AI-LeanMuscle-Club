@@ -8,7 +8,7 @@ Merge the new code and `.github/ISSUE_TEMPLATE/` files into the repository's def
 
 The journal and current reporter do not depend on special labels. Members normally create their own long-running journal and explicitly choose **Yes** for public standings. The default is **No**. The narrow exception is an [explicitly authorized migration of existing public Activity posts](SCORING.md#authorized-legacy-activity-import): identify the maintainer who enabled standings in the migration note, preserve the original record, and do not present this as the author's own confirmation. Specific [work dates](SCORING.md#explicit-work-date-backfill) or [exercise dates](SCORING.md#explicit-exercise-date-backfill) may also be backfilled with explicit information and authorization, identifying the information source and executing maintainer. This does not authorize invented activity, removal of dates without a requested correction, or unrelated opt-ins; a later No or closure still withdraws the member.
 
-`README.md` is the Chinese homepage and `README.en.md` is English. Preserve the language and community markers, the paired `CLUB` markers in the Chinese homepage, and the single `[member-helper]:` definition in each README. The reporter replaces only the live board block; curated stories stay outside it.
+`README.md` is the default English homepage and `README.zh-CN.md` is the full Chinese homepage. `README.en.md` is a navigation-only compatibility page for old links. Preserve the language and community markers, one paired `CLUB` block, and a single `[member-helper]:` definition in each full homepage. The reporter automatically updates the live board block in both languages; curated stories stay outside it.
 
 ## 2. Enable daily reports
 
@@ -51,10 +51,10 @@ At each sync, reconcile saved v3 rows with the current journal's open state and 
 
 In **Settings → Pages**, choose **GitHub Actions** as the publishing source. Manually run **Publish optional member helper**, confirm build and deploy succeeded, and use the real URL returned by the deployment. The site root leads to `/tools/`.
 
-The helper prepares check-in text, finds journals, and shows `reports/daily/index.json`. It never submits member records. Before the first successful deployment, README helper links lead to setup instructions. The deployment's `update-entry` job changes them only after a real Pages URL is available.
+The helper prepares check-in text, finds journals, and shows `reports/daily/index.json`. It never submits member records. Before the first successful deployment, README helper links lead to setup instructions. Once a real Pages URL is available, the deployment's `update-entry` job validates both full homepages before updating their helper links: `README.md` and `README.zh-CN.md`.
 
 For automatic publication after successful report jobs and relevant default-branch changes, set the Actions repository variable `PUBLISH_MEMBER_HELPER=true`. Keep it unset if publication should remain manual. Repositories without this setting do not publish automatically.
 
-Only static tools and public report artifacts belong on the site; never publish the legacy ranking ledger, raw source data, or credentials. If deployment succeeds but branch protection blocks the README link update, copy the deployment's returned helper URL into each README's `[member-helper]:` definition through the normal reviewed change process.
+Only static tools and public report artifacts belong on the site; never publish the legacy ranking ledger, raw source data, or credentials. If deployment succeeds but branch protection blocks the README link update, copy the deployment's returned helper URL into both full homepages' `[member-helper]:` definitions through the normal reviewed change process.
 
 [Chinese Pages walkthrough](PAGES_QUICKSTART.zh-CN.md) · [Historical features and automation](LEGACY.md)

@@ -23,4 +23,4 @@
 
 作者在原帖欢迎大家提问。可以围绕“最初怎样找到喜欢的运动”“忙碌时怎样维持习惯”“搭子提供了什么帮助”继续讨论。
 
-[阅读完整分享并向作者提问 →](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35) · [返回首页 News](../../README.md#news)
+[阅读完整分享并向作者提问 →](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35) · [返回首页 News](../../README.zh-CN.md#news)
