@@ -124,11 +124,11 @@ class DailyPublicationTests(unittest.TestCase):
             self.assertTrue(home.startswith(before.split("<!-- CLUB:START -->")[0]))
             self.assertTrue(home.endswith("<!-- CLUB:END -->\nFooter\n"))
             self.assertIn("reports/daily/2026-10-26.md", home)
-            self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
+            self.assertIn("| 排名 | 成员 | W | E | 得分 | 打卡 |", home)
             self.assertIn("| 1 | [@synthetic-one](https://github.com/synthetic-one) | 1 | 1 | 22.36 | "
                           "[#1](https://github.com/sample/club/issues/1) |", home)
             self.assertIn("2026-10-26 — 2026-11-01", home)
-            self.assertIn("2026-11-02T12:00:00Z", home)
+            self.assertIn("2026-11-02 12:00 UTC", home)
             self.assertNotIn("PRIVATE_NOTE", home)
             self.assertNotIn("/checkin", home)
             self.assertNotIn("2026-10-27", home)
@@ -152,9 +152,8 @@ class DailyPublicationTests(unittest.TestCase):
                 write_reports(root, [board], records, REPO)
                 home = (root / "README.md").read_text()
                 self.assertIn("**0** 位成员", home)
-                self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
-                self.assertIn("暂无已开启公开榜单且有有效记录", home)
-                self.assertIn("示例记录不计入此榜", home)
+                self.assertIn("| 排名 | 成员 | W | E | 得分 | 打卡 |", home)
+                self.assertIn("暂无有效公开记录", home)
                 self.assertNotIn("synthetic-one", home)
                 self.assertNotIn("| 1 |", home)
 
@@ -167,7 +166,7 @@ class DailyPublicationTests(unittest.TestCase):
             write_reports(root, [board], records, REPO)
             home = (root / "README.md").read_text()
             self.assertIn("**12** 位成员", home)
-            self.assertIn("首页展示前 10 位成员，同分并列", home)
+            self.assertIn("展示前 10 位，同分并列", home)
             self.assertEqual(home.count("| 1 | [@synthetic-"), 10)
             self.assertNotIn("synthetic-11", home)
             self.assertNotIn("synthetic-12", home)
@@ -192,7 +191,7 @@ class DailyPublicationTests(unittest.TestCase):
             self.assertIn("[@synthetic-two]", home)
             self.assertIn("| 0 | 0 | 0.00 | [#2]", home)
             self.assertNotIn("synthetic-one", home)
-            self.assertNotIn("以下展示最近有记录的一周", home)
+            self.assertNotIn("现展示最近有记录的一周", home)
             self.assertIn("reports/daily/2026-11-02.md", home)
 
     def test_empty_latest_week_displays_most_recent_nonempty_week(self):
@@ -207,12 +206,12 @@ class DailyPublicationTests(unittest.TestCase):
                       for week in ("2026-11-02", WEEK, "2026-10-19")]
             write_reports(root, boards, records, REPO)
             home = (root / "README.md").read_text()
-            self.assertIn("最新统计周（2026-11-02 — 2026-11-08）暂无有效公开打卡；以下展示最近有记录的一周。", home)
+            self.assertIn("最新统计周 2026-11-02 起暂无公开记录，现展示最近有记录的一周。", home)
             self.assertIn("**2026-10-26 — 2026-11-01**", home)
             self.assertIn("| 1 | [@synthetic-one]", home)
             self.assertIn("[#1](https://github.com/sample/club/issues/1)", home)
             self.assertIn("reports/daily/2026-10-26.md", home)
-            self.assertIn("2026-11-02T12:00:00Z", home)
+            self.assertIn("2026-11-02 12:00 UTC", home)
             self.assertNotIn("2026-10-19", home)
             self.assertNotIn("PRIVATE_NOTE", home)
             self.assertNotIn("/checkin", home)
@@ -233,10 +232,10 @@ class DailyPublicationTests(unittest.TestCase):
             home = (root / "README.md").read_text()
             self.assertIn("**2026-11-02 — 2026-11-08**", home)
             self.assertIn("**0** 位成员", home)
-            self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
-            self.assertIn("本周暂无已开启公开榜单且有有效记录", home)
+            self.assertIn("| 排名 | 成员 | W | E | 得分 | 打卡 |", home)
+            self.assertIn("暂无有效公开记录", home)
             self.assertIn("reports/daily/2026-11-02.md", home)
-            self.assertNotIn("以下展示最近有记录的一周", home)
+            self.assertNotIn("现展示最近有记录的一周", home)
 
     def test_withdrawn_saved_rows_cannot_trigger_homepage_fallback(self):
         for withdrawal in ("no", "closed"):
@@ -252,8 +251,8 @@ class DailyPublicationTests(unittest.TestCase):
                 write_reports(root, [build_week(records, "2026-11-02", AS_OF, repository=REPO)], records, REPO)
                 home = (root / "README.md").read_text()
                 self.assertIn("**2026-11-02 — 2026-11-08**", home)
-                self.assertIn("本周暂无已开启公开榜单且有有效记录", home)
-                self.assertNotIn("以下展示最近有记录的一周", home)
+                self.assertIn("暂无有效公开记录", home)
+                self.assertNotIn("现展示最近有记录的一周", home)
                 self.assertNotIn("synthetic-one", home)
                 for path in (root / "reports/daily").iterdir():
                     self.assertNotIn("synthetic-one", path.read_text())
@@ -282,6 +281,24 @@ class DailyPublicationTests(unittest.TestCase):
         board = build_week([journal()], WEEK, AS_OF, repository=REPO)
         board["scoring_version"] = 2
         with self.assertRaisesRegex(ValueError, "v3"):
+            replace_readme("<!-- CLUB:START --><!-- CLUB:END -->", board)
+
+    def test_homepage_uses_utc_minutes_while_reports_retain_timestamp_precision(self):
+        records = [journal()]
+        board = build_week(records, WEEK, AS_OF, repository=REPO)
+        board["generated_at"] = "2026-11-02T00:15:59.123456+08:00"
+        home = replace_readme("<!-- CLUB:START --><!-- CLUB:END -->", board)
+        self.assertIn("2026-11-01 16:15 UTC", home)
+        self.assertNotIn("59.123456", home)
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            prepare(root)
+            write_reports(root, [board], records, REPO)
+            snapshot = json.loads((root / "reports/daily/2026-10-26.json").read_text())
+            self.assertEqual(snapshot["generated_at"], "2026-11-01T16:15:59.123456Z")
+            self.assertIn(snapshot["generated_at"], (root / "reports/daily/2026-10-26.md").read_text())
+        board["generated_at"] = "2026-11-02T00:15:59"
+        with self.assertRaisesRegex(ValueError, "time zone"):
             replace_readme("<!-- CLUB:START --><!-- CLUB:END -->", board)
 
     def test_optout_withdraws_saved_history_and_reranks_without_touching_legacy(self):

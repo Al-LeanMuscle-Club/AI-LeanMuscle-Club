@@ -1,18 +1,17 @@
-# AI Lean Muscle Club 💪🤖
-
-**English** | [简体中文](README.md)
-
 <!-- README:LANG=en -->
 <!-- README:COMMUNITY-FIRST -->
 
-**Train model and train body. Just for fun and health.**
+<p align="center"><a href="README.md">简体中文</a> · <strong>English</strong></p>
 
-A community for AI researchers: record work and exercise, follow a weekly board, and exchange real experiences.
+<h1 align="center">AI Lean Muscle Club</h1>
 
-**[Start my check-in journal](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml) · [Share an experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [Start a conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)**
+<p align="center"><strong>Train models. Train your body.</strong><br>A community for AI researchers to check in and share experiences.</p>
 
-<a id="daily-check-ins"></a>
-<a id="member-helper"></a>
+![A laptop, basketball, and dumbbell against a warm neutral background](assets/club-cover.png)
+
+**[Start checking in →](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml)** · [Share an experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [Start a conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)
+
+<a id="daily-check-ins"></a><a id="member-helper"></a>
 
 [Check-in and scoring guide](docs/MEMBER_GUIDE.md) · [Check-in helper][member-helper]
 
@@ -20,14 +19,15 @@ A community for AI researchers: record work and exercise, follow a weekly board,
 
 ## News · Featured member experiences
 
-Personal experiences from community members. Follow a title to read the full story in Chinese, ask questions, or share your own approach in the original thread.
+Community stories, in Chinese. Follow a title to join the conversation.
 
-- **[Lessons from losing 30 kg · #35](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)** — [@rentainhe](https://github.com/rentainhe) shares how enjoying basketball became a starting point for gradually building exercise and eating habits. Also available as an [edited story (Chinese)](docs/experiences/2026-10-24-rentainhe.md).
-- **[Let the agent run experiments; head downstairs for a workout · #44](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)** — [@Aaronhuang-778](https://github.com/Aaronhuang-778) describes using time while an agent runs tasks to exercise, while also making room for rest.
-- **[Early Bird: the idea and the practice · #42](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)** — [@ChawDoe](https://github.com/ChawDoe) describes the EarlyBird community's shared breakfasts and group check-ins as a way to build regular daily routines.
-- **[Finding work–life balance while chasing deadlines · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888) shares attempts to keep some movement, meals, and rest in busy weeks, then gradually return to a regular rhythm afterward.
+**[Losing 30 kg, starting with a sport you enjoy](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)**<br>[@rentainhe](https://github.com/rentainhe) · Starting with basketball, then building exercise and eating habits. [Edited story (Chinese)](docs/experiences/2026-10-24-rentainhe.md)
 
-Reply in these threads or [share your own experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml). Experiences and conversations do not add points.
+**[Let the agent run experiments. Head out for a workout.](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/44)**<br>[@Aaronhuang-778](https://github.com/Aaronhuang-778) · Making room for exercise and rest while an agent runs tasks.
+
+**[Early Bird: start with breakfast together](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/42)**<br>[@ChawDoe](https://github.com/ChawDoe) · Shared breakfasts and group check-ins for a steadier daily routine.
+
+**[Making room for life around deadlines](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)**<br>[@EasonXiao-888](https://github.com/EasonXiao-888) · Keeping movement, meals, and rest in busy weeks, then finding a rhythm again.
 
 <a id="weekly-board"></a>
 
@@ -39,6 +39,10 @@ Scores count registered work and exercise dates; see each journal for its record
 
 [See the latest board](README.md#工作运动双修榜单) · [Weekly reports](reports/daily/README.md).
 
-All Issues and comments are public, including journals outside the board. [Member guide](docs/MEMBER_GUIDE.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)
+---
+
+All Issues and comments are public, including journals outside the board.
+
+[Member guide](docs/MEMBER_GUIDE.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)
 
 [member-helper]: docs/SETUP.md#9-optional-browser-helper-and-pages-deployment
