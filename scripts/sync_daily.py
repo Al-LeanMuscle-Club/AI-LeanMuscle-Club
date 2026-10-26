@@ -1,7 +1,7 @@
 """Publish the 100-point daily-check-in board from a complete GitHub snapshot.
 
-Only self-reported work/exercise flags are counted. No model, raw member text,
-plan ledger, or legacy 10-point report is used to calculate these reports.
+Owner check-in flags and explicitly imported activity dates supply the counts.
+No model, raw member prose, plan ledger, or legacy 10-point score is used.
 """
 
 from __future__ import annotations
@@ -118,9 +118,10 @@ def board_markdown(board: dict) -> str:
         lines.append(f"| {row['rank']} | @{row['handle']} | {row['work_days']} | {row['exercise_days']} | "
                      f"{row['score']:.2f} | [#{row['issue_number']}]({row['issue_url']}) |")
     if not board["leaderboard"]:
-        lines += ["", "本周暂无选择公开排名且有有效打卡的成员。"]
-    lines += ["", f"数据更新：{board['generated_at']}。日期按各成员打卡帖所填时区解释。", "",
-              "仅展示明确选择 Yes 的成员；经验交流不加分。原始 Issue 和评论始终公开。", "",
+        lines += ["", "本周暂无已开启公开榜单且有有效记录的成员。"]
+    lines += ["", "W、E 只累计已登记的工作和运动日期；缺少工作补记时 W 暂为 0。", "",
+              f"数据更新：{board['generated_at']}。日期按各成员打卡帖所填时区解释。", "",
+              "仅展示 Public leaderboard 为 Yes 的打卡帖；经验交流不加分。原始 Issue 和评论始终公开。", "",
               "[计分规则](../../docs/SCORING.md) · [历史周榜](README.md) · [返回首页](../../README.md)"]
     return "\n".join(lines) + "\n"
 
@@ -144,10 +145,11 @@ def replace_readme(text: str, board: dict, *, latest_week: str | None = None) ->
                      f"{row['work_days']} | {row['exercise_days']} | {row['score']:.2f} | "
                      f"[#{row['issue_number']}]({row['issue_url']}) |")
     if not rows:
-        lines += ["", "本周暂无选择公开排名且有有效真实打卡的成员；示例记录不计入此榜。"]
+        lines += ["", "本周暂无已开启公开榜单且有有效记录的成员；示例记录不计入此榜。"]
     elif len(rows) > HOME_ROWS:
         lines += ["", f"首页展示前 {HOME_ROWS} 位成员，同分并列；全部成员见完整周榜。"]
-    lines += ["", f"[查看完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md)", "",
+    lines += ["", "W、E 只累计已登记的工作和运动日期；缺少工作补记时 W 暂为 0。", "",
+              f"[查看完整周榜](reports/daily/{week}.md) · [历史周榜](reports/daily/README.md)", "",
               f"每日定时更新；数据更新：{board['generated_at']}。"]
     block = "\n".join(lines) + "\n"
     return text[:text.index(START) + len(START)] + "\n\n" + block + "\n" + text[text.index(END):]

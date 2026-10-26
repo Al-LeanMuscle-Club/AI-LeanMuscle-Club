@@ -1,6 +1,6 @@
 # Daily check-in scoring · v3
 
-The weekly board counts self-reported work days and exercise days from each member's own daily check-in comments. It measures participation, not hours worked, exercise intensity, physical condition, or productivity. Experience posts and replies do not add points.
+The weekly board counts recorded work days and exercise days from each member's own daily check-in comments, with the narrow legacy Activity import described below. It measures participation, not hours worked, exercise intensity, physical condition, or productivity. Experience posts and replies do not add points.
 
 ## The 100-point formula
 
@@ -28,9 +28,19 @@ Create a long-running Issue with the [daily check-in form](../.github/ISSUE_TEMP
 - **Time zone**: a valid IANA time zone, such as `Asia/Shanghai`, `America/Los_Angeles`, or `UTC`.
 - **Public leaderboard**: `Yes` or `No`. The default is `No`.
 
-Only an open journal whose author explicitly selected `Yes` can appear on the board. At least one valid check-in in the selected week is needed. An empty journal is not evidence of work or exercise.
+Only an open journal with `Public leaderboard` set to `Yes` can appear on the board. The author normally makes this choice; an explicit maintainer instruction may authorize it for the existing public Activity posts being migrated below. At least one valid check-in or validated imported exercise record in the selected week is needed. An empty journal is not evidence of work or exercise.
 
 If an author creates several journals, the one with the latest creation time is used; Issue number breaks a creation-time tie. Closing that journal, selecting `No`, or leaving its settings invalid does not reactivate an older journal. Edit or reopen the current journal, or intentionally create a replacement. Renaming a journal outside the accepted form can stop it being recognized; use `No` or close the Issue to withdraw clearly.
+
+## Authorized legacy Activity import
+
+An explicit maintainer instruction may migrate specified existing public Activity posts into their original authors' `[Check-in]` journals and enable public standings. Preserve the original post and its time zone, and include a migration note identifying the maintainer who enabled public standings. This does not represent confirmation by the original author. It is a narrow import of an exercise record already supplied by that author, not permission to generate new member activity or work records.
+
+An imported journal must contain `<!-- club-import:activity-v1 -->` as a standalone line under `### Migration notes` and exactly one `### Imported exercise date` field. Its date must exactly match the preserved original `### Activity date`, be valid, and be no later than the original Issue's creation date in its original time zone. Bots, fictional examples, malformed imports, and future records are excluded.
+
+The valid imported date contributes **one exercise day** to its week. No work day is inferred: $W$ counts only registered work days, so an absent work record contributes zero to the count without asserting that the author did not work. The formula stays unchanged; a journal with an imported exercise day and no work record is visible with a score of **0.00**.
+
+A valid check-in comment by the author for the imported date overrides both daily flags, including a `W=0 E=0` correction. Duplicate dates never add extra days. The usual latest-journal selection, `No`, and closed-journal withdrawal rules still apply.
 
 ## A daily comment
 
@@ -54,6 +64,6 @@ All comments are read again at each calculation. Members can backfill or correct
 
 The scheduled calculation runs at 01:15 UTC each day, or 09:15 Beijing time, and refreshes the current and preceding week. GitHub can delay scheduled runs. Maintainers can also run it manually. The job reads GitHub records and computes the formula with fixed code; no LLM decides whether a member worked, exercised, or deserves points.
 
-Published v3 reports live in [`reports/daily/`](../reports/daily/README.md). They contain opted-in usernames, source journal links, weekly counts, scores, and report timestamps; they do not copy comment bodies or daily notes. Selecting `No` or closing the current journal removes the member from later generated v3 reports, including saved v3 history when the next sync reconciles visibility. Previously committed Git history, the source Issue, and its comments remain public.
+Published v3 reports live in [`reports/daily/`](../reports/daily/README.md). They contain usernames with public standings enabled, source journal links, weekly counts, scores, and report timestamps; they do not copy comment bodies or daily notes. Selecting `No` or closing the current journal removes the member from later generated v3 reports, including saved v3 history when the next sync reconciles visibility. Previously committed Git history, the source Issue, and its comments remain public.
 
 Old 10-point reports retain their original scores and are never recalculated with this formula. See [historical rules](SCORING.v2.md), [migration notes](UPGRADE.md), and [maintainer setup](SETUP.md).

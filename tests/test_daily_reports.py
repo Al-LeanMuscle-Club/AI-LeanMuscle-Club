@@ -153,7 +153,7 @@ class DailyPublicationTests(unittest.TestCase):
                 home = (root / "README.md").read_text()
                 self.assertIn("**0** 位成员", home)
                 self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
-                self.assertIn("暂无选择公开排名且有有效真实打卡", home)
+                self.assertIn("暂无已开启公开榜单且有有效记录", home)
                 self.assertIn("示例记录不计入此榜", home)
                 self.assertNotIn("synthetic-one", home)
                 self.assertNotIn("| 1 |", home)
@@ -222,7 +222,7 @@ class DailyPublicationTests(unittest.TestCase):
             self.assertEqual(index["available_weeks"], ["2026-11-02", WEEK, "2026-10-19"])
             self.assertEqual([board["week_start"] for board in index["weeks"]], index["available_weeks"])
             self.assertEqual(index["weeks"][0]["leaderboard"], [])
-            self.assertIn("本周暂无选择公开排名", (root / "reports/daily/2026-11-02.md").read_text())
+            self.assertIn("本周暂无已开启公开榜单", (root / "reports/daily/2026-11-02.md").read_text())
 
     def test_all_empty_weeks_keep_the_latest_week_empty_state(self):
         with TemporaryDirectory() as directory:
@@ -234,7 +234,7 @@ class DailyPublicationTests(unittest.TestCase):
             self.assertIn("**2026-11-02 — 2026-11-08**", home)
             self.assertIn("**0** 位成员", home)
             self.assertIn("| 名次 | 成员 | 工作天数 W | 运动天数 E | 分数 / 100 | 打卡帖 |", home)
-            self.assertIn("本周暂无选择公开排名且有有效真实打卡", home)
+            self.assertIn("本周暂无已开启公开榜单且有有效记录", home)
             self.assertIn("reports/daily/2026-11-02.md", home)
             self.assertNotIn("以下展示最近有记录的一周", home)
 
@@ -252,7 +252,7 @@ class DailyPublicationTests(unittest.TestCase):
                 write_reports(root, [build_week(records, "2026-11-02", AS_OF, repository=REPO)], records, REPO)
                 home = (root / "README.md").read_text()
                 self.assertIn("**2026-11-02 — 2026-11-08**", home)
-                self.assertIn("本周暂无选择公开排名且有有效真实打卡", home)
+                self.assertIn("本周暂无已开启公开榜单且有有效记录", home)
                 self.assertNotIn("以下展示最近有记录的一周", home)
                 self.assertNotIn("synthetic-one", home)
                 for path in (root / "reports/daily").iterdir():

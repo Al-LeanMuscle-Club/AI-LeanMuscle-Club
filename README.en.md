@@ -16,14 +16,6 @@ A community for AI researchers: record work and exercise, follow a weekly board,
 
 [Check-in and scoring guide](docs/MEMBER_GUIDE.md) · [Check-in helper][member-helper]
 
-## Weekly board
-
-Scores use members’ submitted W/E flags; see each journal for the context and source of its records.
-
-<a id="weekly-community-board"></a>
-
-[See the latest board](README.md#周榜) · [Weekly reports](reports/daily/README.md).
-
 <a id="news"></a>
 
 ## News · Featured member experiences
@@ -36,6 +28,16 @@ Personal experiences from community members. Follow a title to read the full sto
 - **[Finding work–life balance while chasing deadlines · #41](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/41)** — [@EasonXiao-888](https://github.com/EasonXiao-888) shares attempts to keep some movement, meals, and rest in busy weeks, then gradually return to a regular rhythm afterward.
 
 Reply in these threads or [share your own experience](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml). Experiences and conversations do not add points.
+
+<a id="weekly-board"></a>
+
+## Work & Exercise Leaderboard
+
+Scores count registered work and exercise dates; see each journal for its records.
+
+<a id="weekly-community-board"></a>
+
+[See the latest board](README.md#工作运动双修榜单) · [Weekly reports](reports/daily/README.md).
 
 All Issues and comments are public, including journals outside the board. [Member guide](docs/MEMBER_GUIDE.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Maintainer setup](docs/SETUP.md)
 

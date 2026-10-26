@@ -46,6 +46,15 @@ def records_for(work_days, exercise_days, handle="member-one", number=1):
     ])
 
 
+def imported_activity(day=WEEK, **overrides):
+    issue = journal(**{"created_at": "2026-10-26T12:00:00Z", **overrides})
+    issue["body"] += (
+        f"\n### Activity date\n\n{day}\n\n### Activity details\n\nSYNTHETIC_PRIVATE_NOTE\n"
+        f"\n### Imported exercise date\n\n{day}\n\n### Migration notes\n\n"
+        "<!-- club-import:activity-v1 -->\n\nImport of the explicit exercise date only.\n")
+    return issue
+
+
 class DailyScoreTests(unittest.TestCase):
     def test_formula_examples_and_independent_caps(self):
         for work, exercise, expected in [
@@ -337,6 +346,124 @@ class DailyScoreTests(unittest.TestCase):
         for repo in ("https://github.com/example/club", "example/club/extra", "example/club?x=1", None):
             with self.assertRaises(ValueError):
                 build_week([], WEEK, AS_OF, repository=repo)
+
+
+class ImportedActivityTests(unittest.TestCase):
+    def test_marked_activity_without_comments_adds_exercise_but_no_work_credit(self):
+        issue = imported_activity()
+        del issue["comments_data"]
+        original = deepcopy(issue)
+        result = build_week([issue], WEEK, AS_OF, repository="example/club")
+        self.assertEqual(issue, original)
+        self.assertEqual(result["participants_count"], 1)
+        row = result["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"], row["score"]),
+                         (0, 1, 1, 0))
+        self.assertEqual(row["issue_url"], "https://github.com/example/club/issues/1")
+        for private in ("SYNTHETIC_PRIVATE_NOTE", "Activity date", "Imported exercise date", "Migration notes", "body"):
+            self.assertNotIn(private, json.dumps(result))
+
+    def test_import_requires_exact_standalone_marker_in_migration_notes_and_matching_dates(self):
+        body = imported_activity()["body"]
+        marker = "<!-- club-import:activity-v1 -->"
+        invalid = [
+            body.replace(marker, ""),
+            body.replace(marker, "<!-- club-import:activity-v2 -->"),
+            body.replace(marker, "Example: " + marker),
+            body.replace("### Migration notes", "### Other notes"),
+            body.replace("### Activity date", "### Some date"),
+            body.replace("### Imported exercise date", "### Some imported date"),
+            body.replace("### Imported exercise date\n\n2026-10-26", "### Imported exercise date\n\n2026-10-25"),
+            body.replace("### Imported exercise date\n\n2026-10-26", "### Imported exercise date\n\n2026-10-26 extra"),
+            body + "\n### Imported exercise date\n\n2026-10-26\n",
+            body + "\n### Activity date\n\n2026-10-26\n",
+        ]
+        for value in invalid:
+            with self.subTest(body=value):
+                issue = imported_activity()
+                issue["body"] = value
+                self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"], [])
+        issue = imported_activity()
+        issue["body"] = issue["body"].replace("\n", "\r\n")
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["participants_count"], 1)
+
+    def test_invalid_out_of_week_and_future_activity_dates_never_import(self):
+        for day in ("2026-02-30", "2026-1-1", "2026-10-25", "2026-11-02", "2026-10-27"):
+            with self.subTest(day=day):
+                # October 27 is within the week, but is later than the original
+                # Issue's October 26 creation day even after the sync advances.
+                self.assertEqual(build_week([imported_activity(day)], WEEK, AS_OF)["leaderboard"], [])
+        future = imported_activity("2026-11-03", created_at="2026-11-03T12:00:00Z")
+        self.assertEqual(build_week([future], "2026-11-02", AS_OF)["leaderboard"], [])
+        before_creation = datetime(2026, 10, 26, 11, tzinfo=timezone.utc)
+        self.assertEqual(build_week([imported_activity()], WEEK, before_creation)["leaderboard"], [])
+
+    def test_creation_day_and_cutoff_use_the_members_local_calendar(self):
+        instant = datetime(2026, 10, 25, 12, tzinfo=timezone.utc)
+        issue = imported_activity(zone="Pacific/Kiritimati", created_at="2026-10-25T10:30:00Z")
+        self.assertEqual(build_week([issue], WEEK, instant)["participants_count"], 1)
+        issue["body"] = issue["body"].replace("Pacific/Kiritimati", "UTC")
+        self.assertEqual(build_week([issue], WEEK, instant)["leaderboard"], [])
+        issue = imported_activity(zone="America/Los_Angeles", created_at="2026-10-26T00:30:00Z")
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"], [])
+        issue = imported_activity("2026-10-25", zone="America/Los_Angeles", created_at="2026-10-26T00:30:00Z")
+        instant = datetime(2026, 10, 26, 1, tzinfo=timezone.utc)
+        self.assertEqual(build_week([issue], "2026-10-19", instant)["participants_count"], 1)
+
+    def test_owner_comment_replaces_both_imported_flags_and_never_duplicates_the_date(self):
+        for work, exercise in ((0, 0), (1, 0), (1, 1)):
+            with self.subTest(work=work, exercise=exercise):
+                issue = imported_activity(comments_data=[
+                    checkin(work=0, exercise=1, id=1, created_at="2026-10-26T18:00:00Z"),
+                    checkin(work=work, exercise=exercise, id=2, created_at="2026-10-26T19:00:00Z"),
+                ])
+                row = build_week([issue], WEEK, AS_OF)["leaderboard"][0]
+                self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"]),
+                                 (work, exercise, 1))
+                self.assertEqual(row["score"], score_days(work, exercise))
+
+    def test_other_days_combine_with_import_and_repeated_input_cannot_add_credit(self):
+        issue = imported_activity(comments_data=[checkin(day="2026-10-27")])
+        issue["comments_data"].append(deepcopy(issue["comments_data"][0]))
+        row = build_week([issue, deepcopy(issue)], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"], row["score"]),
+                         (1, 2, 2, 31.62))
+
+    def test_stranger_bot_and_invalid_comments_cannot_override_or_extend_import(self):
+        comments = [checkin(work=1, exercise=0, handle="other-member"),
+                    checkin(day="2026-10-27", handle="other-member"),
+                    checkin(user={"login": "member-one", "type": "Bot"}),
+                    checkin(body="/checkin 2026-10-26 W=2 E=0"),
+                    checkin(created_at="2026-10-26T11:00:00Z"),
+                    checkin(updated_at="2026-11-03T00:00:00Z")]
+        row = build_week([imported_activity(comments_data=comments)], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["work_days"], row["exercise_days"], row["checkin_days"]), (0, 1, 1))
+
+    def test_imports_keep_optout_closed_timezone_example_and_bot_exclusions(self):
+        variants = [{"public": "No"}, {"state": "closed"}, {"zone": "Unknown/Zone"},
+                    {"labels": [{"name": "example"}]}, {"pull_request": {}},
+                    {"title": "[Check-in] [Fictional example] Activity import"},
+                    {"title": "[Check-in] [虚构演示｜打卡] Activity import"},
+                    {"title": "[Activity] Unmigrated activity"},
+                    {"user": {"login": "robot", "type": "Bot"}},
+                    {"user": {"login": "robot[bot]"}}]
+        for overrides in variants:
+            with self.subTest(overrides=overrides):
+                self.assertEqual(build_week([imported_activity(**overrides)], WEEK, AS_OF)["leaderboard"], [])
+        issue = imported_activity()
+        issue["body"] += "\n<!-- club-example:daily -->\n"
+        self.assertEqual(build_week([issue], WEEK, AS_OF)["leaderboard"], [])
+
+    def test_latest_canonical_journal_supersedes_import_without_reactivating_it(self):
+        older = imported_activity()
+        for overrides in ({}, {"public": "No"}, {"state": "closed"}, {"zone": "Unknown/Zone"}):
+            newer = journal(number=2, created_at="2026-10-27T12:00:00Z", **overrides)
+            for records in ([older, newer], [newer, older]):
+                with self.subTest(overrides=overrides):
+                    self.assertEqual(build_week(records, WEEK, AS_OF)["leaderboard"], [])
+        newer = journal(number=2, created_at="2026-10-27T12:00:00Z", comments_data=[checkin("2026-10-28")])
+        row = build_week([older, newer], WEEK, AS_OF)["leaderboard"][0]
+        self.assertEqual((row["issue_number"], row["exercise_days"], row["checkin_days"]), (2, 1, 1))
 
 
 if __name__ == "__main__":

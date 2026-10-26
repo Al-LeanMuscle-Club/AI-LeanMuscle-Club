@@ -4,9 +4,15 @@ The scheduled worker reads daily check-in Issues and computes a fixed formula. I
 
 ## Daily statistics
 
-Use `club/daily_checkins.py` and `scripts/sync_daily.py` for the current v3 board. Count only the member's own valid `/checkin` comments, resolve same-date corrections deterministically, and respect the journal's public setting. The calculation never infers that someone worked or exercised from photos, discussion, or the absence of a record.
+Use `club/daily_checkins.py` and `scripts/sync_daily.py` for the current v3 board. Normal daily inputs come only from the member's own valid `/checkin` comments. Resolve same-date corrections deterministically and respect the journal's public setting. The calculation never infers that someone worked or exercised from photos, discussion, or the absence of a record.
 
 Use the report JSON for published numbers. Do not award bonus points for plans, reflections, meals, experience posts, or perceived effort. Do not write the historical ranking ledger or mix old 10-point reports with the new board.
+
+## Authorized legacy Activity migration
+
+An explicit maintainer instruction may authorize migrating specified existing public Activity posts into their original authors' check-in journals and setting public standings to Yes. Preserve the original text, activity date, and time zone. Add the validated import marker/date defined in [scoring](SCORING.md#authorized-legacy-activity-import); the imported date must match the original record and cannot be later than the Issue's original creation date in that time zone. The migration note must identify who enabled public standings and must not claim that the original author personally confirmed that setting.
+
+Import only one exercise day for that date. Do not invent a work record, post a comment impersonating the author, or extend this authorization to other members or new activity. Missing work records mean no work days have been registered, not that the person did not work. The author's valid same-day comment overrides the imported daily flags; No, closure, bot, and fictional-example exclusions continue to apply.
 
 ## Optional help for members
 
