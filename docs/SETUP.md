@@ -4,7 +4,7 @@ This starter contains English and Chinese community documentation, the supplied 
 
 ## 1. Put the files in the intended repository
 
-`README.md` is the Simplified Chinese homepage; `README.en.md` is the English version. The old `README.zh-CN.md` URL remains a short navigation page. Keep the homepage's `README:LANG=zh-CN` marker and its `CLUB` markers so report updates continue to render the live overview in Chinese. Both languages show the same independently generated fictional demo, while the English page links to the Chinese homepage for the live overview.
+`README.md` is the Simplified Chinese homepage; `README.en.md` is the English version. The old `README.zh-CN.md` URL remains a short navigation page. Keep the homepage's `README:LANG=zh-CN`, `README:COMMUNITY-FIRST`, and paired `CLUB` markers so report updates retain the compact Chinese activity overview. The English page links to that live overview. Optional planning and points instructions live in the advanced guides; fictional boards live in `examples/demo-board.md` and `examples/demo-board.en.md`. `python scripts/render_demo_board.py` refreshes only example artifacts and never rewrites either homepage.
 
 Use the existing `Al-LeanMuscle-Club/AI-LeanMuscle-Club` repository if that is still the club's home. Clone it, copy this starter's files into the checkout, inspect the diff, and commit through your usual workflow. Preserve existing content you want to keep.
 
@@ -91,7 +91,7 @@ Keep the chat available for members who do not want public tracking. Add nutriti
 
 ## 6. Configure the expanded community
 
-Keep Issues enabled and merge the six community forms in `.github/ISSUE_TEMPLATE/` into the default branch. [Community organization](COMMUNITY.md) lists the newcomer, training, food, research/Agent, partner/event, and notice forms. Members choose through **Issues → New issue** and continue in comments. Title prefixes organize topics without additional labels. Announcements are ordinary Issues that maintainers review and may pin; the form does not restrict who can submit one. Community posts and free activity/meal records need no scoring plan and earn no points. Experience contribution review still requires the approval label and a matching maintainer-reviewed ledger record.
+Keep Issues enabled and merge the community forms in `.github/ISSUE_TEMPLATE/` into the default branch. The homepage's **Join in / 我也参与** link opens `community-chat.yml`, which requires just one message; that new form becomes available after merging to the default branch. Members can also reply to an existing thread. [Community organization](COMMUNITY.md) lists the more specific newcomer, training, food, research/Agent, partner/event, and notice forms, still available through **Issues → New issue**. Title prefixes organize topics without additional labels. Announcements are ordinary Issues that maintainers review and may pin; the form does not restrict who can submit one. Community posts and free activity/meal records need no scoring plan and earn no points. Experience contribution review still requires the approval label and a matching maintainer-reviewed ledger record.
 
 The plan form now collects independent goals and research-week context. Each training row can specify its own sport and fallback. Old three-column plans and `/done` comments still work. Detailed instructions are in the [member guide](MEMBER_GUIDE.md) and its [Chinese version](MEMBER_GUIDE.zh-CN.md).
 

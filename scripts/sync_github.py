@@ -23,6 +23,7 @@ START = "<!-- CLUB:START -->"
 END = "<!-- CLUB:END -->"
 INDEX_WEEKS = 12
 CHINESE_README = "<!-- README:LANG=zh-CN -->"
+COMMUNITY_FIRST_README = "<!-- README:COMMUNITY-FIRST -->"
 
 
 def scoring_rules_note(board: dict, language: str = "en") -> str:
@@ -114,6 +115,31 @@ def reporting_weeks(as_of: datetime, explicit: str | None = None) -> list[str]:
     today = as_of.astimezone(ZoneInfo("Asia/Shanghai")).date()
     monday = today - timedelta(days=today.weekday())
     return [monday.isoformat(), (monday - timedelta(days=7)).isoformat()]
+
+
+def homepage_summary(boards: list[dict], language: str = "en") -> str:
+    """Keep the newcomer homepage to one week's anonymous activity snapshot."""
+    if not boards:
+        return ("社区近况将在首次周报更新后显示。\n" if language == "zh-CN" else
+                "Community activity will appear after the first report update.\n")
+    # Do not depend on caller ordering or mutate its full-report collection.
+    board = max(boards, key=lambda item: date.fromisoformat(item["week_start"]))
+    week = board["week_start"]
+    activity = public_community_activity(board.get("community_activity"))
+    updated = board.get("activity_updated_at") or board["generated_at"]
+    if language == "zh-CN":
+        line = (f"**{activity['participants_count']}** 位成员发帖或回复 · "
+                f"**{activity['posts_count']}** 篇新帖 · **{activity['replies_count']}** 条人工回复。"
+                if activity is not None else "社区交流统计尚未生成。")
+        return (f"{week} 起的一周（UTC）：{line}\n\n"
+                f"[查看完整周报](reports/{week}.md) · [历史周报](reports/README.md)\n\n"
+                f"数据更新：{updated}。统计排除虚构示例、机器人和开发事项。\n")
+    line = (f"**{activity['participants_count']}** members posted or replied · "
+            f"**{activity['posts_count']}** new posts · **{activity['replies_count']}** human replies."
+            if activity is not None else "Community activity counts are not available yet.")
+    return (f"Week of {week} (UTC): {line}\n\n"
+            f"[Full weekly report](reports/{week}.md) · [Report archive](reports/README.md)\n\n"
+            f"Updated: {updated}. Counts exclude fictional examples, bots and development threads.\n")
 
 
 def board_markdown(board: dict, report_links: bool = False) -> str:
@@ -208,7 +234,9 @@ def replace_readme(text: str, boards: list[dict]) -> str:
     start = text.index(START) + len(START)
     end = text.index(END)
     language = "zh-CN" if CHINESE_README in text else "en"
-    block = "\n\n" + "\n".join(board_summary(board, language) for board in boards) + "\n"
+    summary = (homepage_summary(boards, language) if COMMUNITY_FIRST_README in text else
+               "\n".join(board_summary(board, language) for board in boards))
+    block = "\n\n" + summary + "\n"
     if not re.search(r"^ {0,3}\[member-helper\]:", text, re.MULTILINE | re.IGNORECASE):
         block = block.replace("][member-helper]", "](docs/PAGES_QUICKSTART.zh-CN.md)")
     return text[:start] + block + text[end:]
@@ -281,7 +309,8 @@ def write_reports(root: Path, boards: list[dict], *, source_records: list | None
                 board = previous
         stable_boards.append(board)
     boards = stable_boards
-    updated_readme = replace_readme(readme.read_text(encoding="utf-8"), boards)
+    readme_text = readme.read_text(encoding="utf-8")
+    updated_readme = replace_readme(readme_text, boards)
     snapshots = {}
     rewritten = {}
     current_by_week = {board["week_start"]: board for board in boards}
@@ -310,6 +339,10 @@ def write_reports(root: Path, boards: list[dict], *, source_records: list | None
     rewritten.update({board["week_start"]: board for board in boards})
     for board in rewritten.values():
         snapshots[board["week_start"]] = public_index_snapshot(board)
+    if COMMUNITY_FIRST_README in readme_text:
+        # An explicit historical refresh must not move the homepage backwards.
+        # Include existing snapshots after applying any aggregate corrections.
+        updated_readme = replace_readme(readme_text, list(snapshots.values()))
     weeks = sorted(snapshots, reverse=True)
     index = {"schema_version": 2, "window_weeks": INDEX_WEEKS,
              "available_weeks": weeks, "weeks": [snapshots[week] for week in weeks[:INDEX_WEEKS]]}

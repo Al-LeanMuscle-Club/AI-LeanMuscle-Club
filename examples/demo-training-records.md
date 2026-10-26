@@ -4,9 +4,9 @@
 
 Demo week / 演示周：**2026-10-12** · Cutoff / 截止：**2026-10-19 12:00 UTC**
 
-The six Active/Yes demo plans below are scored by the repository's unchanged `build_week` function, with temporary in-memory confirmations and no trusted contribution approvals. Six fictional score rows appear in the README; the Recovery member is documented separately below.
+The six Active/Yes demo plans below are scored by the repository's unchanged `build_week` function, with temporary in-memory confirmations and no trusted contribution approvals. Six fictional score rows appear on the [demo board](demo-board.en.md); the Recovery member is documented separately below.
 
-以下六份 Active/Yes 虚构计划直接使用现有计分器，以临时内存确认计算，不读取真实审批 ledger。README 只展示六位虚拟用户的演示积分；恢复周成员在文末单独说明。
+以下六份 Active/Yes 虚构计划直接使用现有计分器，以临时内存确认计算，不读取真实审批 ledger。[演示榜](demo-board.md)展示六位虚拟用户的演示积分；恢复周成员在文末单独说明。
 
 Full/fallback = 1, partial = 0.5, skipped/unrecorded = 0. Execution points = `6 × (full + 0.5 × partial) / confirmed planned`. The full-completion rate does not count partial as full. Meal days count distinct dates and add no points.
 

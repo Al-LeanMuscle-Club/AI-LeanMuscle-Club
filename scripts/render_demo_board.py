@@ -1,12 +1,12 @@
 """Render a deterministic fictional leaderboard, never live community data.
 
-Run ``python scripts/render_demo_board.py`` to rebuild the two demo artifacts
-and the independent DEMO blocks in README.md (Chinese) and README.en.md. The
-legacy README.zh-CN.md navigation page is not read or generated. ``--check`` is read-only and
+Run ``python scripts/render_demo_board.py`` to rebuild the four demo artifacts
+under examples/, including standalone Chinese and English board pages.
+Repository homepages are never read or generated. ``--check`` is read-only and
 returns 1 when an output is missing or stale. ``--root`` selects the repository
-containing the fixture and READMEs, which also permits isolated local checks.
+containing the fixture, which also permits isolated local checks.
 
-Only examples/demo-training-records.json and the two READMEs are read. Scoring
+Only examples/demo-training-records.json is read. Scoring
 uses build_week with a fixed week/cutoff and temporary in-memory confirmations;
 no GitHub API, cache, trusted ledger, or reports directory is accessed.
 """
@@ -31,8 +31,6 @@ from club.scoring import build_week  # noqa: E402
 WEEK = "2026-10-12"
 AS_OF = datetime(2026, 10, 19, 12, tzinfo=timezone.utc)
 FIXTURE = Path("examples/demo-training-records.json")
-DEMO_START = "<!-- DEMO:START -->"
-DEMO_END = "<!-- DEMO:END -->"
 HANDLES = {"demo-aurora", "demo-birch", "demo-cedar", "demo-delta", "demo-ember", "demo-finch"}
 SPORTS = {
     "strength": ("Strength", "力量"), "basketball": ("Basketball", "篮球"),
@@ -48,7 +46,7 @@ STATUS = {
 
 
 def read_text(path: Path) -> str:
-    # Decode bytes directly to preserve every character outside the DEMO block.
+    # Decode bytes directly for deterministic generated output checks.
     return path.read_bytes().decode("utf-8")
 
 
@@ -113,55 +111,33 @@ def score(records: list[dict[str, Any]]) -> dict[str, Any]:
     return board
 
 
-def readme_demo(board: dict[str, Any], chinese: bool) -> str:
+def demo_board(board: dict[str, Any], chinese: bool) -> str:
     if chinese:
-        lines = ["### 虚拟用户演示榜 — 2026-10-12 周", "",
-                 "**以下是静态虚构演示，不是真实成员、打卡或成绩，不计入下方真实社区人数或排名。** "
+        lines = ["# 虚拟用户演示榜 — 2026-10-12 周", "",
+                 "**简体中文** | [English](demo-board.en.md)", "",
+                 "**以下是静态虚构演示，不是真实成员、打卡或成绩，不计入真实社区人数或排名。** "
                  "演示截止时间为 2026-10-19 12:00 UTC；六位参榜虚拟用户和一位恢复周虚拟用户均来自离线示例。", "",
                  "| 名次 | 虚拟用户 | 运动项目 | 完整 / 计划 | 部分完成 | 训练日 | 饮食日 | 参与分 / 10 |",
                  "| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
     else:
-        lines = ["### Fictional demo leaderboard — week of 2026-10-12", "",
+        lines = ["# Fictional demo leaderboard — week of 2026-10-12", "",
+                 "[简体中文](demo-board.md) | **English**", "",
                  "**Static fictional examples, not real members, check-ins, or results. These do not enter the live community counts or standings.** "
                  "The demo cutoff is 2026-10-19 12:00 UTC, with six ranked fictional members and one fictional Recovery member from offline sample data.", "",
                  "| Rank | Fictional member | Sports | Full / planned | Partial | Training days | Meal days | Points / 10 |",
                  "| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |"]
     for row in board["leaderboard"]:
         sports = ("、" if chinese else ", ").join(SPORTS[sport][1 if chinese else 0] for sport in row["sports"])
-        member = f"[{row['handle']}](examples/demo-training-records.md#{row['handle']})"
+        member = f"[{row['handle']}](demo-training-records.md#{row['handle']})"
         lines.append(f"| {row['rank']} | {member} | {sports} | {row['completed']} / {row['planned']} | "
                      f"{row['partial']} | {row['recorded_training_days']} | {row['meal_days']} | **{number(row['total_points'])}** |")
     lines += ["", ("完整与替代完成各计 1 次执行额度，部分完成计 0.5；训练日和饮食日不额外加分。恢复周不参榜。" if chinese else
                     "Full/fallback completion earns 1 execution unit; partial earns 0.5. Training and meal-record days add no points. Recovery is outside the board."), "",
-              ("[查看每位虚拟用户的完整计划、原始记录与积分组成](examples/demo-training-records.md) · "
-               "[虚构榜单数据](examples/demo-leaderboard.json)" if chinese else
-               "[Full fictional plans, raw records, and score components](examples/demo-training-records.md) · "
-               "[Synthetic leaderboard data](examples/demo-leaderboard.json)")]
-    return DEMO_START + "\n\n" + "\n".join(lines) + "\n\n" + DEMO_END
-
-
-def update_readme(text: str, demo: str, chinese: bool) -> str:
-    heading = "## 每周社区概况\n\n" if chinese else "## Weekly community board\n\n"
-    if text.count(heading) != 1:
-        raise ValueError("README must contain exactly one weekly-community heading.")
-    lower = text.index(heading) + len(heading)
-    next_heading = text.find("\n## ", lower)
-    upper = len(text) if next_heading < 0 else next_heading
-    live_start = text.find("<!-- CLUB:START -->", lower, upper)
-    if chinese and live_start < 0:
-        raise ValueError("Keep the existing live CLUB block in the Chinese README.")
-    anchor = live_start if chinese else text.find("[View latest overview", lower, upper)
-    if anchor < 0:
-        raise ValueError("README must retain its live-community overview entry.")
-    if text.count(DEMO_START) == text.count(DEMO_END) == 0:
-        return text[:lower] + demo + "\n\n" + text[lower:]
-    if text.count(DEMO_START) != 1 or text.count(DEMO_END) != 1:
-        raise ValueError("README must have one correctly paired DEMO marker block.")
-    start = text.index(DEMO_START)
-    end = text.index(DEMO_END) + len(DEMO_END)
-    if not lower <= start < end <= anchor:
-        raise ValueError("The fictional DEMO block must precede the live overview in its section.")
-    return text[:start] + demo + text[end:]
+              ("[查看每位虚拟用户的完整计划、原始记录与积分组成](demo-training-records.md) · "
+               "[虚构榜单数据](demo-leaderboard.json) · [返回社区首页](../README.md)" if chinese else
+               "[Full fictional plans, raw records, and score components](demo-training-records.md) · "
+               "[Synthetic leaderboard data](demo-leaderboard.json) · [Community home](../README.en.md)")]
+    return "\n".join(lines) + "\n"
 
 
 def session_details(raw: str) -> dict[str, tuple[str, str]]:
@@ -183,9 +159,9 @@ def record_markdown(records: list[dict[str, Any]], board: dict[str, Any]) -> str
              f"Demo week / 演示周：**{WEEK}** · Cutoff / 截止：**2026-10-19 12:00 UTC**", "",
              "The six Active/Yes demo plans below are scored by the repository's unchanged `build_week` function, "
              "with temporary in-memory confirmations and no trusted contribution approvals. "
-             "Six fictional score rows appear in the README; the Recovery member is documented separately below.", "",
+             "Six fictional score rows appear on the [demo board](demo-board.en.md); the Recovery member is documented separately below.", "",
              "以下六份 Active/Yes 虚构计划直接使用现有计分器，以临时内存确认计算，不读取真实审批 ledger。"
-             "README 只展示六位虚拟用户的演示积分；恢复周成员在文末单独说明。", "",
+             "[演示榜](demo-board.md)展示六位虚拟用户的演示积分；恢复周成员在文末单独说明。", "",
              "Full/fallback = 1, partial = 0.5, skipped/unrecorded = 0. "
              "Execution points = `6 × (full + 0.5 × partial) / confirmed planned`. "
              "The full-completion rate does not count partial as full. Meal days count distinct dates and add no points.", "",
@@ -251,20 +227,15 @@ def generated_files(root: Path) -> dict[Path, str]:
     outputs = {
         Path("examples/demo-leaderboard.json"): json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
         Path("examples/demo-training-records.md"): record_markdown(records, board),
+        Path("examples/demo-board.md"): demo_board(board, True),
+        Path("examples/demo-board.en.md"): demo_board(board, False),
     }
-    for filename, chinese in (("README.md", True), ("README.en.md", False)):
-        original = read_text(root / filename)
-        updated = update_readme(original, readme_demo(board, chinese), chinese)
-        pattern = r"<!-- CLUB:START -->[\s\S]*?<!-- CLUB:END -->"
-        if re.findall(pattern, original) != re.findall(pattern, updated):
-            raise ValueError("The live CLUB block must remain unchanged in every README.")
-        outputs[Path(filename)] = updated
     return outputs
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=SOURCE_ROOT, help="Repository containing the fixture and READMEs.")
+    parser.add_argument("--root", type=Path, default=SOURCE_ROOT, help="Repository containing the fictional fixture.")
     parser.add_argument("--check", action="store_true", help="Read-only check; return 1 for missing or stale generated content.")
     args = parser.parse_args(argv)
     try:
@@ -275,11 +246,11 @@ def main(argv: list[str] | None = None) -> int:
             if stale:
                 print("Stale fictional demo output: " + ", ".join(path.as_posix() for path in stale), file=sys.stderr)
                 return 1
-            print("Fictional demo artifacts and both README blocks are up to date.")
+            print("Fictional demo artifacts and standalone board pages are up to date.")
             return 0
         for path in stale:
             (args.root / path).write_bytes(outputs[path].encode("utf-8"))
-        print("Rendered fictional demo artifacts and both README blocks.")
+        print("Rendered fictional demo artifacts and standalone board pages.")
         return 0
     except (OSError, ValueError, KeyError, TypeError) as error:
         print(f"Demo generation failed: {error}", file=sys.stderr)

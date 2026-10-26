@@ -6,7 +6,7 @@ Use one repository to connect training, research rhythms, and shared experience.
 
 | Place | Purpose |
 | --- | --- |
-| README | Club purpose, participation steps, quick links, and an anonymous weekly overview |
+| README | Real member stories, a conversation to join, buddy invitations, and a short anonymous activity overview |
 | Activity-record and meal-record Issues | Free records without a weekly plan or ranking; labels `activity-record` and `meal-record` |
 | Weekly-plan Issues | One person's weekly plan, short records, optional meal logs, and reflection |
 | Experience Issues | Reusable experiences eligible for the existing maintainer approval process |
@@ -16,12 +16,19 @@ Use one repository to connect training, research rhythms, and shared experience.
 
 Community Issue posts and replies do not earn contribution points automatically. To request review, summarize a reusable experience in an Experience sharing Issue and link the source. Contribution credit requires `experience`, `points-approved`, and a trusted approval record matching the body, author, and week. Multiple posts about the same work cannot exceed one contribution point per author per week.
 
-## Six community Issue forms
+## Start with a reply or one sentence
+
+Reply to an existing member's thread to join that conversation. To start your own, use [Join the conversation](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml): one text field, no date, time zone, training plan or score choice. These `[Chat]` posts and human replies count toward anonymous community activity, not participation points.
+
+The homepage's featured conversation links to a real existing Issue. It is an editorial selection, not a new weekly event or an automatically created thread. A maintainer can select a new existing conversation when it is useful, or explicitly open a topic Issue and link it. Do not fabricate invitations, participants or replies to make the community look active.
+
+## More specific community Issue forms
 
 Open [New issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new/choose), choose a topic, and continue the conversation in its comments. The forms become available after `.github/ISSUE_TEMPLATE/` is merged into the default branch with Issues enabled. No weekly plan, leaderboard opt-in, extra category setting, or new community label is required.
 
 | Topic | Issue form | Title prefix |
 | --- | --- | --- |
+| One sentence or a question / 随手聊聊 | [Join the conversation](../.github/ISSUE_TEMPLATE/community-chat.yml) | `[Chat]` |
 | Newcomer introductions / 新人报到 | [Beginners](../.github/ISSUE_TEMPLATE/beginners.yml) | `[Hello]` |
 | Training and recovery / 训练交流 | [Training and recovery](../.github/ISSUE_TEMPLATE/training-and-recovery.yml) | `[Training]` |
 | Food conversations / 饮食分享 | [Nutrition](../.github/ISSUE_TEMPLATE/nutrition.yml) | `[Food]` |
@@ -31,7 +38,7 @@ Open [New issue](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues
 
 Use title prefixes to find related Issues. Announcements are ordinary Issues: anyone who can open an Issue can submit one. Maintainers review proposed notices and decide which to publish as official notices or pin; a template does not enforce maintainer-only posting.
 
-Welcome new and returning members through the Beginners Issue form. The [six independent example files](../examples/README.en.md) illustrate introductions, training, food, partners, research/Agents, and participation points. Published demonstrations must be clearly marked as fictional and excluded from participation scoring and member statistics.
+Welcome new and returning members with a reply or the short conversation form. The Beginners form remains available for a longer introduction. The [six independent example files](../examples/README.en.md) illustrate introductions, training, food, partners, research/Agents, and participation points. Published demonstrations must be clearly marked as fictional and excluded from participation scoring and member statistics.
 
 ## Independent classification
 

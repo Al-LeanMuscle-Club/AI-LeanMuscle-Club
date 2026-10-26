@@ -12,6 +12,15 @@ def issue(labels, action="edited", changed=None):
 
 
 class ReportEventTests(unittest.TestCase):
+    def test_simple_chat_and_replies_refresh_without_labels(self):
+        event = issue([])
+        event["issue"].update(user={"login": "member"}, title="[Chat] 一起聊聊",
+                              body="### 我想说的话\n\nSynthetic question.")
+        self.assertTrue(should_refresh("issues", event))
+        self.assertTrue(should_refresh("issue_comment", event))
+        event["issue"]["title"] = "[Chat] [Fictional example] Example"
+        self.assertFalse(should_refresh("issue_comment", event))
+
     def test_unrelated_community_events_are_ignored(self):
         self.assertFalse(should_refresh("issues", issue([])))
         self.assertFalse(should_refresh("issue_comment", issue(["bug"])))

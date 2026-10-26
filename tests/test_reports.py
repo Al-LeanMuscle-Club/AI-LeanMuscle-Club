@@ -43,6 +43,56 @@ def plan(number=1, handle="member-one", public="Yes"):
 
 
 class ReportingTests(unittest.TestCase):
+    def test_community_first_home_keeps_latest_week_and_preserves_news_and_full_reports(self):
+        from scripts.community_activity import build_community_activity
+        newer = build_week([plan()], "2026-10-26", AS_OF)
+        newer["community_activity"] = build_community_activity([
+            {"number": 7, "user": {"login": "sample-member"}, "labels": [{"name": "activity-record"}],
+             "title": "PRIVATE_TITLE", "body": "PRIVATE_NOTE", "created_at": "2026-10-27T10:00:00Z"}
+        ], "2026-10-26", AS_OF)
+        newer["activity_updated_at"] = "2026-11-03T12:00:00Z"
+        older = build_week([], "2026-10-19", AS_OF)
+        prefix = "<!-- README:LANG=zh-CN -->\n<!-- README:COMMUNITY-FIRST -->\n## News\nKeep this story.\n"
+        suffix = "\n[Optional plans](docs/ADVANCED.zh-CN.md)\n[member-helper]: https://example.org/tools/\n"
+        template = prefix + "<!-- CLUB:START -->old verbose overview<!-- CLUB:END -->" + suffix
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text(template)
+            # Caller order is intentionally newest first; lexical or input-order
+            # assumptions must not select the previous reporting week.
+            write_reports(root, [newer, older])
+            home = (root / "README.md").read_text()
+            self.assertTrue(home.startswith(prefix))
+            self.assertTrue(home.endswith(suffix))
+            self.assertIn("2026-10-26 起的一周（UTC）", home)
+            self.assertIn("**1** 位成员发帖或回复", home)
+            self.assertIn("数据更新：2026-11-03T12:00:00Z", home)
+            self.assertNotIn("2026-10-19", home)
+            for unwanted in ("周计划参与人数", "计分规则", "demo-", "PRIVATE_TITLE", "PRIVATE_NOTE", "sample-member"):
+                self.assertNotIn(unwanted, home)
+            report = (root / "reports/2026-10-26.md").read_text()
+            self.assertIn("Scoring rules: v2", report)
+            self.assertIn("member-one", report)
+            self.assertTrue((root / "reports/2026-10-19.json").is_file())
+            # A subsequent refresh must not restore instructions or old weeks.
+            write_reports(root, [older, newer])
+            self.assertEqual((root / "README.md").read_text(), home)
+            # Recomputing only an archived week keeps the newest saved week
+            # on the homepage instead of replacing it with historical counts.
+            write_reports(root, [older])
+            self.assertEqual((root / "README.md").read_text(), home)
+
+    def test_community_first_home_does_not_invent_missing_counts(self):
+        marker = "<!-- README:COMMUNITY-FIRST -->\n<!-- CLUB:START --><!-- CLUB:END -->"
+        board = build_week([], "2026-10-26", AS_OF)
+        home = replace_readme(marker, [board])
+        self.assertIn("Community activity counts are not available yet.", home)
+        self.assertNotIn("**0**", home)
+        self.assertNotIn("Scoring rules", home)
+        empty = replace_readme(marker, [])
+        self.assertIn("after the first report update", empty)
+        self.assertNotIn("**0**", empty)
+
     def test_helper_links_work_for_legacy_readme_and_preserve_existing_definitions(self):
         board = build_week([], "2026-10-26", AS_OF)
         prose = "An existing [custom link][member-helper].\n"

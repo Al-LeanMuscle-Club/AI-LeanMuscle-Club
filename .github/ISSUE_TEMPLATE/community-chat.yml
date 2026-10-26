@@ -1,0 +1,17 @@
+name: "我也参与 / Join the conversation"
+description: "聊一句近况、问一个问题，或说说想一起做什么。无需计划或打卡格式。"
+title: "[Chat] 一起聊聊"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        一句话也欢迎。这个帖子是公开的，请只写愿意公开的内容。
+        如果想接着某位成员的话题聊，也可以直接到对方的帖子下回复。
+  - type: textarea
+    id: message
+    attributes:
+      label: "我想说的话"
+      description: "今天做了什么、遇到什么困难、想问什么？写一句就可以。可以自行修改上方标题。"
+      placeholder: "例如：最近实验比较忙，大家怎么安排一周里的运动？"
+    validations:
+      required: true

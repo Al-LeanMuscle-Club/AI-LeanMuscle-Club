@@ -283,6 +283,7 @@
 
   function mount(doc) {
     if (!doc) return;
+    const pageWindow = doc.defaultView || globalThis;
     const get = id => doc.getElementById(id);
     const value = id => get(id).value;
     const setMessage = (id, text, error = false) => {
@@ -317,9 +318,12 @@
     }
     function updateCommunityLinks() {
       try {
-        for (const [id, topic] of [["browse-community","all"], ["browse-community-summary","all"], ["topic-activity","activity"], ["topic-experience","experience"], ["topic-meal","meal"], ["topic-buddies","buddies"], ["topic-research","research"], ["topic-hello","hello"]]) {
+        for (const [id, topic] of [["browse-community","all"], ["browse-community-summary","all"], ["browse-buddies","buddies"], ["topic-activity","activity"], ["topic-experience","experience"], ["topic-meal","meal"], ["topic-buddies","buddies"], ["topic-research","research"], ["topic-hello","hello"]]) {
           get(id).href = communitySearchUrl(value("repository"), topic);
         }
+        const repo = "https://github.com/" + repository(value("repository"));
+        for (const id of ["join-community", "join-community-topic"]) get(id).href = repo + "/issues/new?template=community-chat.yml";
+        get("invite-buddies").href = repo + "/issues/new?template=buddies-and-events.yml";
       } catch (_) { /* Keep the last valid repository links while a setting is edited. */ }
       get("activity-result").hidden = true;
     }
@@ -582,10 +586,11 @@
       updateData();
     });
     async function loadReports() {
-      if (globalThis.location && globalThis.location.protocol === "file:") {
+      if (pageWindow.location && pageWindow.location.protocol === "file:") {
         setMessage("report-message", "直接打开本地 HTML 无法读取报告，请使用 GitHub Pages 或本地网页服务器。上方找计划和文字工具仍可使用。");
-        return;
+        return false;
       }
+      setMessage("report-message", "正在读取公开报告…");
       try {
         const index = await fetchReport("../reports/index.json");
         weeks = reportWeeks(index);
@@ -595,11 +600,42 @@
         }
         availableWeeks = [...new Set([...weeks.map(week => week.week_start), ...validAvailable])].sort().reverse();
         updateData();
+        return true;
       } catch (_) {
         setMessage("report-message", "暂时无法读取公开报告。报告可能尚未生成或部署，也可能是网络问题；可以稍后刷新。上方找计划和文字工具仍可使用。", true);
+        return false;
       }
     }
-    loadReports();
+    let reportsLoaded = false;
+    let reportsLoading = false;
+    async function ensureReports() {
+      if (reportsLoaded || reportsLoading) return;
+      reportsLoading = true;
+      try { reportsLoaded = await loadReports(); }
+      finally { reportsLoading = false; }
+    }
+    const advanced = get("advanced-tools");
+    advanced.addEventListener("toggle", () => {
+      if (advanced.open) return ensureReports();
+    });
+    function revealHash() {
+      let id;
+      try { id = decodeURIComponent((pageWindow.location?.hash || "").slice(1)); }
+      catch (_) { return; }
+      const target = get(id);
+      if (!target) return;
+      // Preserve old bookmarks into optional sections, including nested details.
+      let disclosure = target.closest("details");
+      while (disclosure) {
+        disclosure.open = true;
+        disclosure = disclosure.parentElement?.closest("details");
+      }
+      if (advanced.open) ensureReports();
+      target.scrollIntoView?.({block:"start"});
+    }
+    pageWindow.addEventListener?.("hashchange", revealHash);
+    revealHash();
+    if (advanced.open) ensureReports();
   }
 
   return {DEFAULT_REPOSITORY, SPORTS, GOALS, repository, handle, isoDate, issueNumber, sessionId, searchUrl, freeRecordSearchUrl, communitySearchUrl, activityDraft, communityActivity, issueUrl, safeIssueUrl, buildComment, parsePlan, carryPlan, scoringVersion, scoringLabel, scoringExplanation, reportWeeks, publicRows, filterRows, memberSummary, localDate, weekDates, mount};

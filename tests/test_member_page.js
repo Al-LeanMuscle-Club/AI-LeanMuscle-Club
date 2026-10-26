@@ -256,7 +256,7 @@ test("invalid archive weeks and injected details cannot enter the public record 
 // Minimal DOM at the page boundary: verifies the real mount handlers without a
 // browser dependency or requiring network access to community data.
 class Element {
-  constructor() { this.children=[]; this.listeners={}; this.value=""; this.hidden=false; this.disabled=false; this.attributes={}; this.text=""; this.classes=new Set(); this.classList={toggle:(name,on)=>on ? this.classes.add(name) : this.classes.delete(name)}; }
+  constructor() { this.children=[]; this.listeners={}; this.value=""; this.hidden=false; this.disabled=false; this.open=false; this.parentElement=null; this.tagName=""; this.attributes={}; this.text=""; this.classes=new Set(); this.classList={toggle:(name,on)=>on ? this.classes.add(name) : this.classes.delete(name)}; }
   set textContent(text) { this.text=String(text); this.children=[]; }
   get textContent() { return this.text + this.children.map(child=>child.textContent).join(""); }
   setAttribute(name,value) { this.attributes[name]=String(value); }
@@ -266,35 +266,58 @@ class Element {
   async fire(name) { for (const listener of this.listeners[name] || []) await listener({preventDefault(){}}); }
   focus() {}
   select() {}
+  closest(tag) { return this.tagName === tag.toUpperCase() ? this : this.parentElement?.closest(tag) || null; }
+  scrollIntoView() { this.scrolled=true; }
 }
 function pageDocument() {
   const html=fs.readFileSync(path.join(__dirname,"../tools/index.html"),"utf8");
   const elements=new Map();
-  for (const match of html.matchAll(/<[^>]+\bid="([^"]+)"[^>]*>/g)) {
-    assert(!elements.has(match[1]), "duplicate page ID " + match[1]);
+  const stack=[];
+  const voidTags=new Set(["META","LINK","INPUT","BR","IMG","HR"]);
+  for (const match of html.matchAll(/<\/?([a-z][a-z0-9-]*)\b[^>]*>/gi)) {
+    const tag=match[1].toUpperCase();
+    if (match[0].startsWith("</")) {
+      assert.equal(stack.pop()?.tagName,tag,"page tags must nest correctly");
+      continue;
+    }
     const element=new Element();
+    element.tagName=tag;
+    element.parentElement=stack.at(-1) || null;
     element.hidden=/\bhidden(?:\s|>)/.test(match[0]);
+    element.open=/\bopen(?:\s|>)/.test(match[0]);
     element.value=/\bvalue="([^"]*)"/.exec(match[0])?.[1] || "";
     element.href=/\bhref="([^"]*)"/.exec(match[0])?.[1] || "";
-    elements.set(match[1],element);
+    const id=/\bid="([^"]+)"/.exec(match[0])?.[1];
+    if (id) {
+      assert(!elements.has(id), "duplicate page ID " + id);
+      elements.set(id,element);
+    }
+    if (!voidTags.has(tag)) stack.push(element);
   }
+  assert.equal(stack.length,0);
   elements.get("log-status").value="done";
   return {getElementById:id=>elements.get(id),createElement:()=>new Element()};
 }
-async function mountedPage(index, archives={}) {
+async function mountedPage(index, archives={}, {openAdvanced=true, hash=""}={}) {
   const originalFetch=globalThis.fetch;
   const originalLocation=globalThis.location;
   const calls=[];
-  globalThis.location={protocol:"https:"};
+  globalThis.location={protocol:"https:",hash};
   globalThis.fetch=async url=>{
     calls.push(url);
     const body=url==="../reports/index.json" ? index : archives[url];
     return {ok:body!==undefined,json:async()=>body};
   };
   const doc=pageDocument();
+  const windowListeners={};
+  doc.defaultView={location:globalThis.location,addEventListener(name,listener){(windowListeners[name] ||= []).push(listener);}};
   tools.mount(doc);
+  if (openAdvanced) {
+    doc.getElementById("advanced-tools").open=true;
+    await doc.getElementById("advanced-tools").fire("toggle");
+  }
   await new Promise(resolve=>setImmediate(resolve));
-  return {doc,calls,restore(){globalThis.fetch=originalFetch;if(originalLocation===undefined)delete globalThis.location;else globalThis.location=originalLocation;}};
+  return {doc,calls,async navigate(hash){doc.defaultView.location.hash=hash;for(const listener of windowListeners.hashchange || [])listener();await new Promise(resolve=>setImmediate(resolve));},restore(){globalThis.fetch=originalFetch;if(originalLocation===undefined)delete globalThis.location;else globalThis.location=originalLocation;}};
 }
 
 test("free-record entry links need no weekly plan and deployed helper links point to GitHub", () => {
@@ -541,4 +564,86 @@ test("community aggregate view follows the selected report and leaves legacy or 
     assert.equal(tools.communityActivity({...activity,schema_version:2}),null);
     assert.equal(tools.communityActivity({...activity,replies_count:"1"}),null);
   } finally {page.restore();}
+});
+
+test("first visit offers two community actions and an existing topic without loading optional reports", async () => {
+  const page=await mountedPage(undefined,{}, {openAdvanced:false});
+  try {
+    const get=page.doc.getElementById;
+    const repo="https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club";
+    const html=fs.readFileSync(path.join(__dirname,"../tools/index.html"),"utf8");
+    const hero=html.match(/<nav class="entry-grid community-entry"[^>]*>([\s\S]*?)<\/nav>/)[1];
+    assert.equal((hero.match(/<a\b/g) || []).length,2);
+    assert.equal(get("join-community").href,repo + "/issues/new?template=community-chat.yml");
+    const chatForm=fs.readFileSync(path.join(__dirname,"../.github/ISSUE_TEMPLATE/community-chat.yml"),"utf8");
+    assert.equal((chatForm.match(/type: textarea/g) || []).length,1);
+    assert.equal((chatForm.match(/required: true/g) || []).length,1);
+    assert(!/type: (?:input|dropdown|checkboxes)/.test(chatForm),"joining only requires the message, not dates, goals or plan choices");
+    assert.equal(get("reply-featured").href,repo + "/issues/35");
+    assert.equal(get("read-featured").href,repo + "/blob/main/docs/experiences/2026-10-24-rentainhe.md");
+    assert.equal(get("featured-topic").closest("details"),null,"a real member topic stays visible");
+    assert.equal(get("community-heading").closest("details"),null,"community conversation stays visible");
+    assert.equal(get("advanced-tools").open,false);
+    assert.equal(get("quick-record").open,false,"the dated activity form is optional");
+    for (const id of ["find-heading","log-heading","ranking-heading","history-heading","carry-heading"]) assert.equal(get(id).closest("details"),get("advanced-tools"),id + " is inside the advanced disclosure");
+    assert.deepEqual(page.calls,[],"reading community links needs no reports or member API requests");
+    get("repository").value="example/club";
+    await get("repository").fire("input");
+    assert.equal(get("join-community").href,"https://github.com/example/club/issues/new?template=community-chat.yml");
+    assert.equal(get("join-community-topic").href,get("join-community").href,"both community post links follow the selected repository");
+    assert.equal(new URL(get("browse-buddies").href).pathname,"/example/club/issues");
+    assert.equal(get("reply-featured").href,repo + "/issues/35","the curated source remains attributed to the original community");
+  } finally {page.restore();}
+});
+
+test("advanced reports load only on opening and successful snapshots are reused", async () => {
+  const page=await mountedPage({schema_version:2,weeks:[{week_start:"2026-10-26",leaderboard:[publicPlan("Alice",1,7)]}]},{},{openAdvanced:false});
+  try {
+    const get=page.doc.getElementById;
+    assert.deepEqual(page.calls,[]);
+    get("quick-record").open=true;
+    await get("quick-record").fire("toggle");
+    assert.deepEqual(page.calls,[],"quick free records do not need the weekly-plan data");
+    get("activity-text").value="今天出去走了一会。";
+    await get("activity-form").fire("submit");
+    assert.equal(get("activity-result").hidden,false);
+    assert.deepEqual(page.calls,[],"preparing a free record stays local");
+    get("advanced-tools").open=true;
+    await get("advanced-tools").fire("toggle");
+    assert.deepEqual(page.calls,["../reports/index.json"]);
+    assert.match(get("ranking-body").textContent,/@Alice/);
+    get("advanced-tools").open=false;
+    await get("advanced-tools").fire("toggle");
+    get("advanced-tools").open=true;
+    await get("advanced-tools").fire("toggle");
+    assert.equal(page.calls.length,1,"reopening does not refetch a successful snapshot");
+  } finally {page.restore();}
+});
+
+test("old deep links reveal the right optional section on arrival and subsequent navigation", async () => {
+  const page=await mountedPage({schema_version:2,weeks:[]},{},{openAdvanced:false,hash:"#activity-heading"});
+  try {
+    const get=page.doc.getElementById;
+    assert.equal(get("quick-record").open,true);
+    assert.equal(get("advanced-tools").open,false);
+    assert.equal(get("activity-heading").scrolled,true);
+    assert.deepEqual(page.calls,[]);
+    await page.navigate("#ranking-heading");
+    assert.equal(get("advanced-tools").open,true);
+    assert.equal(get("ranking-heading").scrolled,true);
+    assert.deepEqual(page.calls,["../reports/index.json"]);
+    get("advanced-tools").open=false;
+    await page.navigate("#log-heading");
+    assert.equal(get("advanced-tools").open,true);
+    assert.equal(get("log-heading").scrolled,true);
+    assert.equal(page.calls.length,1);
+    await page.navigate("#%invalid");
+    await page.navigate("#missing-section");
+    assert.equal(page.calls.length,1);
+  } finally {page.restore();}
+  const direct=await mountedPage({schema_version:2,weeks:[]},{},{openAdvanced:false,hash:"#history-heading"});
+  try {
+    assert.equal(direct.doc.getElementById("advanced-tools").open,true);
+    assert.deepEqual(direct.calls,["../reports/index.json"]);
+  } finally {direct.restore();}
 });
