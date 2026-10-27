@@ -5,7 +5,7 @@
 
 <h1 align="center">AI Lean Muscle Club</h1>
 
-<p align="center">A community for AI researchers to check in and share experiences.</p>
+<p align="center"><strong>Train models. Train your body.</strong><br>A community for AI researchers to check in and share experiences.</p>
 
 ![A laptop, basketball, and dumbbell against a warm neutral background](assets/club-cover.png)
 
@@ -26,6 +26,8 @@
 > [@yukang2017](https://github.com/yukang2017) reflects on ten years in AI research: adjusting training around deadlines, returning after busy periods, keeping meals simple, and asking whether time saved by Agents—after checking and rework—can make room for exercise and rest. It also explains why this club began.
 >
 > **[Read in English](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.en.md) · [中文原文](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.zh-CN.md)**
+
+Member experiences, translated into English. Each post links to the Chinese original.
 
 **[A programmer's guide to fitness](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/65)**<br>[@orange90](https://github.com/orange90) · Personal training experience, positive feedback, and adapting workouts to busy weeks.
 
