@@ -7,6 +7,8 @@
 
 <p align="center"><strong>练模型，也练身体。</strong><br>一个面向 AI 科研人员的打卡与经验交流社区。</p>
 
+![暖白背景上的笔记本电脑、篮球和哑铃](assets/club-cover.png)
+
 **[开始打卡 →](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml)** · [分享经验](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [随便聊聊](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)
 
 <a id="怎么打卡"></a><a id="member-helper"></a>
