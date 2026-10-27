@@ -29,6 +29,8 @@
 
 社区成员的亲身实践。点击标题，到原帖接着聊。
 
+**[脂包肌减重3个体会](docs/experiences/2026-10-27-andysonys.md)**<br>[@AndysonYs](https://github.com/AndysonYs) · 半年从250斤减到210斤，聊极端节食的代价、少量训练的正反馈，以及旅行中的“快乐热量比”。
+
 **[程序员到底怎么练？万字健身指南](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/57)**<br>[@orange90](https://github.com/orange90) · 从个人健身经历出发，聊正反馈与忙碌工作中的训练安排。
 
 **[减肥 30 kg：从喜欢的运动开始](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/35)**<br>[@rentainhe](https://github.com/rentainhe) · 从篮球开始，逐步建立运动和饮食习惯。[阅读整理](docs/experiences/2026-10-24-rentainhe.md)
