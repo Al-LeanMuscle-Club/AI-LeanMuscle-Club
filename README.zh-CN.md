@@ -11,13 +11,9 @@
 
 <a id="怎么打卡"></a><a id="member-helper"></a>
 
-[打卡与计分说明](docs/MEMBER_GUIDE.zh-CN.md) · [打卡辅助页][member-helper]
-
 <a id="news"></a>
 
 ## News · 精选经验分享
-
-社区成员的亲身实践。点击标题，到原帖接着聊。
 
 **[程序员到底怎么练？万字健身指南](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/57)**<br>[@orange90](https://github.com/orange90) · 从个人健身经历出发，聊正反馈与忙碌工作中的训练安排。
 
