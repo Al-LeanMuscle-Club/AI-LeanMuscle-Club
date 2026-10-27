@@ -7,8 +7,6 @@
 
 <p align="center"><strong>练模型，也练身体。</strong><br>一个面向 AI 科研人员的打卡与经验交流社区。</p>
 
-![暖白背景上的笔记本电脑、篮球和哑铃](assets/club-cover.png)
-
 **[开始打卡 →](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=daily-checkin.yml)** · [分享经验](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=experience.yml) · [随便聊聊](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/new?template=community-chat.yml)
 
 <a id="怎么打卡"></a><a id="member-helper"></a>
@@ -18,14 +16,6 @@
 <a id="news"></a>
 
 ## News · 精选经验分享
-
-> **专题文章 · 发起人的十年科研与运动实践**
->
-> **[研究 AI 十年了，模型越来越强，我们自己呢？](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.zh-CN.md)**
->
-> [@yukang2017](https://github.com/yukang2017) 的十年科研生活回顾：DDL 期间怎样调整训练、忙完后如何恢复、怎样把饭吃得省事，以及 Agent 扣除检查与返工后省下的时间，能否留给运动和休息。也谈到 AI 薄肌俱乐部的发起初衷。
->
-> **[中文原文](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.zh-CN.md) · [Read in English](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.en.md)**
 
 社区成员的亲身实践。点击标题，到原帖接着聊。
 
