@@ -5,7 +5,7 @@
 
 <h1 align="center">AI 薄肌俱乐部</h1>
 
-<p align="center"><strong>练模型，也练身体。</strong><br>一个面向 AI 科研人员的打卡与经验交流社区。</p>
+<p align="center">一个面向 AI 科研人员的打卡与经验交流社区。</p>
 
 ![A laptop, basketball, and dumbbell against a warm neutral background](assets/club-cover.png)
 
