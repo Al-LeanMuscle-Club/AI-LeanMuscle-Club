@@ -29,6 +29,8 @@
 
 Member experiences, translated into English. Each post links to the Chinese original.
 
+**[Muscle under fat: three reflections on losing weight](docs/experiences/2026-10-27-andysonys.en.md)**<br>[@AndysonYs](https://github.com/AndysonYs) · Losing 20 kg in six months, the cost of extreme food restriction, positive feedback from shorter workouts, and an “enjoyment-to-calorie ratio” for travel.
+
 **[A programmer's guide to fitness](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/65)**<br>[@orange90](https://github.com/orange90) · Personal training experience, positive feedback, and adapting workouts to busy weeks.
 
 **[Losing 30 kg, starting with a sport you enjoy](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/61)**<br>[@rentainhe](https://github.com/rentainhe) · Starting with basketball, then building exercise and eating habits.
