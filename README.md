@@ -55,14 +55,14 @@ Scores count registered work and exercise dates; see each journal for its record
 
 | Rank | Member | W | E | Score | Check-in |
 | ---: | --- | ---: | ---: | ---: | --- |
-| 1 | [@StiphyJay](https://github.com/StiphyJay) | 1 | 1 | 22.36 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
-| 1 | [@yukang2017](https://github.com/yukang2017) | 1 | 1 | 22.36 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
+| 1 | [@StiphyJay](https://github.com/StiphyJay) | 2 | 2 | 44.72 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
+| 1 | [@yukang2017](https://github.com/yukang2017) | 2 | 2 | 44.72 | [#51](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/51) |
 
 Recorded days: W = work · E = exercise. Maximum score: 100.
 
 [Full weekly board (Chinese)](reports/daily/2026-10-26.md) · [Past weeks (Chinese)](reports/daily/README.md) · [Check-in guide](docs/MEMBER_GUIDE.md)
 
-<sub>Updated daily · Last update: 2026-10-27 06:16 UTC</sub>
+<sub>Updated daily · Last update: 2026-10-28 06:51 UTC</sub>
 
 <!-- CLUB:END -->
 
