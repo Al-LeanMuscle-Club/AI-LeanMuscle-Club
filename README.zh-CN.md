@@ -62,7 +62,7 @@
 
 [完整周榜](reports/daily/2026-10-26.md) · [历史周榜](reports/daily/README.md) · [打卡指南](docs/MEMBER_GUIDE.zh-CN.md)
 
-<sub>每日更新 · 更新于 2026-10-29 07:04 UTC</sub>
+<sub>每日更新 · 更新于 2026-10-30 07:05 UTC</sub>
 
 <!-- CLUB:END -->
 
