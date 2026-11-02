@@ -53,6 +53,8 @@
 
 **2026-10-26 — 2026-11-01** · **2** 位成员
 
+<sub>最新统计周 2026-11-02 起暂无公开记录，现展示最近有记录的一周。</sub>
+
 | 排名 | 成员 | W | E | 得分 | 打卡 |
 | ---: | --- | ---: | ---: | ---: | --- |
 | 1 | [@StiphyJay](https://github.com/StiphyJay) | 3 | 3 | 67.08 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
@@ -62,7 +64,7 @@
 
 [完整周榜](reports/daily/2026-10-26.md) · [历史周榜](reports/daily/README.md) · [打卡指南](docs/MEMBER_GUIDE.zh-CN.md)
 
-<sub>每日更新 · 更新于 2026-11-01 07:31 UTC</sub>
+<sub>每日更新 · 更新于 2026-11-02 07:40 UTC</sub>
 
 <!-- CLUB:END -->
 

@@ -53,6 +53,8 @@ Scores count registered work and exercise dates; see each journal for its record
 
 **2026-10-26 — 2026-11-01** · **2** members
 
+<sub>No public records for the latest reporting week starting 2026-11-02; showing the most recent week with records.</sub>
+
 | Rank | Member | W | E | Score | Check-in |
 | ---: | --- | ---: | ---: | ---: | --- |
 | 1 | [@StiphyJay](https://github.com/StiphyJay) | 3 | 3 | 67.08 | [#58](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/58) |
@@ -62,7 +64,7 @@ Recorded days: W = work · E = exercise. Maximum score: 100.
 
 [Full weekly board (Chinese)](reports/daily/2026-10-26.md) · [Past weeks (Chinese)](reports/daily/README.md) · [Check-in guide](docs/MEMBER_GUIDE.md)
 
-<sub>Updated daily · Last update: 2026-11-01 07:31 UTC</sub>
+<sub>Updated daily · Last update: 2026-11-02 07:40 UTC</sub>
 
 <!-- CLUB:END -->
 
