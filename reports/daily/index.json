@@ -2,6 +2,7 @@
   "schema_version": 3,
   "scoring_version": 3,
   "available_weeks": [
+    "2026-11-09",
     "2026-11-02",
     "2026-10-26",
     "2026-10-19"
@@ -10,9 +11,18 @@
     {
       "schema_version": 3,
       "scoring_version": 3,
+      "week_start": "2026-11-09",
+      "week_end": "2026-11-15",
+      "generated_at": "2026-11-09T07:58:06.202433Z",
+      "participants_count": 0,
+      "leaderboard": []
+    },
+    {
+      "schema_version": 3,
+      "scoring_version": 3,
       "week_start": "2026-11-02",
       "week_end": "2026-11-08",
-      "generated_at": "2026-11-08T07:18:51.947059Z",
+      "generated_at": "2026-11-09T07:58:06.202433Z",
       "participants_count": 0,
       "leaderboard": []
     },

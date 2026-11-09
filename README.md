@@ -53,7 +53,7 @@ Scores count registered work and exercise dates; see each journal for its record
 
 **2026-10-26 — 2026-11-01** · **2** members
 
-<sub>No public records for the latest reporting week starting 2026-11-02; showing the most recent week with records.</sub>
+<sub>No public records for the latest reporting week starting 2026-11-09; showing the most recent week with records.</sub>
 
 | Rank | Member | W | E | Score | Check-in |
 | ---: | --- | ---: | ---: | ---: | --- |
