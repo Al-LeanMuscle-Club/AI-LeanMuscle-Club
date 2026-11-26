@@ -29,6 +29,8 @@
 
 社区成员的亲身实践。点击标题，到原帖接着聊。
 
+**[从摸框到首次扣篮：六个月的训练记录](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/71)**<br>[@phython96](https://github.com/phython96) · 四个月减重与力量训练、两个月教练指导的弹跳训练，分享首次扣篮前的尝试与个人观察的局限。
+
 **[脂包肌减重3个体会](docs/experiences/2026-10-27-andysonys.md)**<br>[@AndysonYs](https://github.com/AndysonYs) · 半年从250斤减到210斤，聊极端节食的代价、少量训练的正反馈，以及旅行中的“快乐热量比”。
 
 **[程序员到底怎么练？万字健身指南](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/57)**<br>[@orange90](https://github.com/orange90) · 从个人健身经历出发，聊正反馈与忙碌工作中的训练安排。

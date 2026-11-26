@@ -27,7 +27,9 @@
 >
 > **[Read in English](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.en.md) · [中文原文](docs/articles/ai-lean-muscle-club/AI-Lean-Muscle-Club.zh-CN.md)**
 
-Member experiences, translated into English. Each post links to the Chinese original.
+Member experiences and practical lessons. Posts available only in Chinese are marked.
+
+**[From touching the rim to a first dunk (Chinese)](https://github.com/Al-LeanMuscle-Club/AI-LeanMuscle-Club/issues/71)**<br>[@phython96](https://github.com/phython96) · A six-month account of strength training, weight management, and coached jump training, including observations and limitations from one person's experience.
 
 **[Muscle under fat: three reflections on losing weight](docs/experiences/2026-10-27-andysonys.en.md)**<br>[@AndysonYs](https://github.com/AndysonYs) · Losing 20 kg in six months, the cost of extreme food restriction, positive feedback from shorter workouts, and an “enjoyment-to-calorie ratio” for travel.
 
